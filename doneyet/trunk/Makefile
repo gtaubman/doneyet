@@ -1,4 +1,4 @@
-EXECUTABLE=doneyet
+EXECUTABLE=todo
 OBJECTS = main project
 DEBUGFLAGS = -g
 FASTFLAGS = -O3
