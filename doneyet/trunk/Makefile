@@ -1,5 +1,7 @@
+# The suffixes is necessary to allow make to recompile what's changed
+.SUFFIXES= .h .cc
 EXECUTABLE=todo
-OBJECTS = main project
+OBJECTS = main project task
 DEBUGFLAGS = -g
 FASTFLAGS = -O3
 COMPILEFLAGS =$(DEBUGFLAGS)
@@ -8,7 +10,7 @@ OFILES =	$(OBJECTS:%=%.o)
 CCC	= g++
 IFLAGS = -I.
 LFLAGS =
-LIBS	= -lncurses -lcdk
+LIBS	= -lform -lmenu -lpanel -lncurses
 OPTIMIZATIONFLAGS	= -O3
 
 all	: $(EXECUTABLE)
@@ -36,3 +38,6 @@ tidy:
 # clean will tidy first
 clean: tidy
 	$(RM) $(EXECUTABLE)
+
+# remake
+remake: clean $(EXECUTABLE)

@@ -4,7 +4,8 @@
 #ifndef __PROJECT_H__
 #define __PROJECT_H__
 
-#include "cdk/cdk.h"
+#include <ncurses.h>
+#include <panel.h>
 #include <string>
 
 using std::string;
@@ -14,7 +15,7 @@ class Project {
   explicit Project(string name);
   virtual ~Project();
 
-  static Project* NewProject(CDKSCREEN* screen);
+  static Project* NewProject();
 
   string name_;
 };

@@ -1,27 +1,36 @@
-#include "cdk/cdk.h"
+#include <curses.h>
+#include <menu.h>
 #include "project.h"
 
 int main(int argc, char** argv) {
-  CDK_PARAMS params;
-  CDKparseParams(argc, argv, &params, "w:h:l:" CDK_MIN_PARAMS);
+  initscr();  // Create the standard window.
+  keypad(stdscr, true);        // Enable keyboard mappings
+  nonl();                         // Disable weird newline stuff.
+  cbreak();                       // Take input characters one at a time.
+  noecho();                       // We don't want input to be echoed
 
-  // Set up CDK
-  WINDOW* cursesWin = initscr();
-  CDKSCREEN* cdkscreen = initCDKScreen(cursesWin);
+  // If our terminal has color, start up colors
+  if (has_colors()) {
+    start_color();
+    
+    // Make some color pairs
+    init_pair(1, COLOR_RED,     COLOR_BLACK);
+    init_pair(2, COLOR_GREEN,   COLOR_BLACK);
+    init_pair(3, COLOR_YELLOW,  COLOR_BLACK);
+    init_pair(4, COLOR_BLUE,    COLOR_BLACK);
+    init_pair(5, COLOR_CYAN,    COLOR_BLACK);
+    init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(7, COLOR_WHITE,   COLOR_BLACK);
+  }
 
-  // Start CDK Colors.
-  initCDKColor();
+  wborder(stdscr, '|', '|', '-', '-', '+', '+', '+', '+');
+  Project* p = Project::NewProject();
 
-  Project* p = Project::NewProject(cdkscreen);
-  refreshCDKScreen(cdkscreen);
-  /* Set what ever was given from the command line. */
-  //char* ep = copyChar(activateCDKEntry(entry, NULL));
-  destroyCDKScreen(cdkscreen);
-  endCDK();
+  endwin();
   if (p) {
-    printf("Project Created: %s\n", p->name_.c_str());
+    printf("NEW PROJECT: \"%s\"\n", p->name_.c_str());
   } else {
-    printf(" They chose to abort.\n");
+    printf("hit escape\n");
   }
   return 0;
 }
