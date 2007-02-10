@@ -1,7 +1,7 @@
 # The suffixes is necessary to allow make to recompile what's changed
 .SUFFIXES= .h .cc
 EXECUTABLE=todo
-OBJECTS = main project task
+OBJECTS = main project task dialog-box utils
 DEBUGFLAGS = -g
 FASTFLAGS = -O3
 COMPILEFLAGS =$(DEBUGFLAGS)
