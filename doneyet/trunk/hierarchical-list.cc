@@ -189,6 +189,7 @@ void HierarchicalList::SelectNextItem() {
     SelectItem(0);
     top_line_ = 0;
     selected_line_ = 0;
+    win_rel_selected_line_ = 0;
   } else if (selected_item_->Index() == flattened_items_.size() - 1) {
     // We just hit next on the last guy.
     SelectItem(-1);
@@ -231,6 +232,12 @@ void HierarchicalList::SelectPrevLine() {
 }
 
 void HierarchicalList::SelectNextLine() {
+  if (selected_item_ == NULL) {
+    // Nobody is selected.  Select the first guy.
+    top_line_ = 0;
+    selected_line_ = -1;
+    win_rel_selected_line_ = -1;
+  }
   ListItem* item = ItemForLineNumber(selected_line_ + 1);
   if (item == NULL) {
     // We're at the end of our list of items

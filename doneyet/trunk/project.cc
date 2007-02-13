@@ -5,7 +5,7 @@
 Project::Project(string name)
   : name_(name) {
   // Add some bogus tasks.
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 500; ++i) {
   Task* t = AddTaskNamed("Get GWS Working so that it can host crowd using much better rules.  Unfortunately this is going to involve running the gws unittests over and over and over to see if I've messed up.");
   t->AddSubTask(new Task("Write the code.", ""));
   t->AddSubTask(new Task("Write unittests and run them.", ""));
