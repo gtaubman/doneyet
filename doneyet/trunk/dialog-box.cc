@@ -1,48 +1,11 @@
 #include "dialog-box.h"
 
-#define max(a,b) ((a) > (b) ? (a) : (b))
-
-static void print_in_middle(WINDOW *win,
-    int starty,
-    int startx,
-    int width,
-    const char *string,
-    chtype color) {
-  int length, x, y;
-  float temp;
-
-  if(win == NULL)
-    win = stdscr;
-  getyx(win, y, x);
-  if(startx != 0)
-    x = startx;
-  if(starty != 0)
-    y = starty;
-  if(width == 0)
-    width = 80;
-
-  length = strlen(string);
-  temp = (width - length)/ 2;
-  x = startx + (int)temp;
-  wattron(win, color | A_BOLD);
-  mvwprintw(win, y, x, "%s", string);
-  wattroff(win, color | A_BOLD);
-
-  // Draw a horizontal line
-  wmove(win, 2, 0);
-  waddch(win, '+');
-  for (int i = 1; i < width - 1; ++i) {
-    waddch(win, '-');
-  }
-  waddch(win, '+');
-  refresh();
-}
-
 string DialogBox::RunMultiLine(const string& title,
     const string& default_text,
+    int width,
     int height) {
   // Create the text field
-  FIELD* field = new_field(height, title.size(), 0, 0, 0, 0);
+  FIELD* field = new_field(height, width, 0, 0, 0, 0);
 
   // Set its options
   set_field_back(field, A_UNDERLINE);
@@ -91,11 +54,13 @@ string DialogBox::RunMultiLine(const string& title,
   set_form_win(form, form_win);
 
   // Make the subwindow for the form itself
-  set_form_sub(form, derwin(form_win, rows, cols, 2 + label_rows, 3));
+  WINDOW* subwindow = derwin(form_win, rows, cols, 2 + label_rows, 3);
+  set_form_sub(form, subwindow);
 
   // Draw a box around our form's window
-  wborder(form_win, '|', '|', '-', '-', '+', '+', '+', '+');
-
+  //wborder(form_win, '|', '|', '-', '-', '+', '+', '+', '+');
+  box(form_win, 0, 0);
+  
   // Draw the label text
   print_in_middle(form_win, 1, 0, form_win_cols, title.c_str(), COLOR_PAIR(1));
 
@@ -151,11 +116,13 @@ string DialogBox::RunMultiLine(const string& title,
   unpost_form(form);
   free_form(form);
   free_field(field);
+  delwin(subwindow);
   delwin(form_win);
 
+  redrawwin(stdscr);
   return answer;
 }
 
 string DialogBox::RunCentered(const string& title, const string& default_text) {
-  return DialogBox::RunMultiLine(title, default_text, 1);
+  return DialogBox::RunMultiLine(title, default_text, title.size(), 1);
 }

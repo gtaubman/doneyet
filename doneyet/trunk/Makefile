@@ -1,10 +1,10 @@
 # The suffixes is necessary to allow make to recompile what's changed
 .SUFFIXES= .h .cc
 EXECUTABLE=todo
-OBJECTS = main project task dialog-box utils
+OBJECTS = main project task dialog-box utils hierarchical-list
 DEBUGFLAGS = -g
 FASTFLAGS = -O3
-COMPILEFLAGS =$(DEBUGFLAGS)
+COMPILEFLAGS =$(DEBUGFLAGS) -mdynamic-no-pic
 
 OFILES =	$(OBJECTS:%=%.o)
 CCC	= g++

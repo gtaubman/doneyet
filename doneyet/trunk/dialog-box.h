@@ -15,6 +15,7 @@ class DialogBox {
    static string RunMultiLine(
        const string& title,
        const string& default_text,
+       int width,
        int height);
 
   static string RunCentered(

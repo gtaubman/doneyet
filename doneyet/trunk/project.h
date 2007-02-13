@@ -7,8 +7,11 @@
 #include <ncurses.h>
 #include <panel.h>
 #include <string>
+#include <vector>
+#include "task.h"
 
 using std::string;
+using std::vector;
 
 class Project {
  public:
@@ -17,7 +20,11 @@ class Project {
 
   static Project* NewProject();
 
+  void DrawInWindow(WINDOW* win);
+  Task* AddTaskNamed(const string& name);
+
   string name_;
+  vector<Task*> tasks_;
 };
 
 #endif

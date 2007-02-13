@@ -1,14 +1,39 @@
 #ifndef __TASK_H__
 #define __TASK_H__
 
+#include <ncurses.h>
+#include <string>
 #include <vector>
+#include "hierarchical-list.h"
 
-class Task {
+using std::string;
+using std::vector;
+
+class Task : public ListItem{
  public:
-   Task();
+   Task(const string& title,
+        const string& description);
    virtual ~Task();
 
+   void SetTitle(const string& title);
+   void SetDescription(const string& description);
+   
    void AddSubTask(Task* subtask);
+   int DrawInWindow(WINDOW* win, int line_num, int indent);
+
+   void SetParent(Task* p) { parent_ = p; }
+  
+   // Functions required by list item
+   const string Text() { return title_; }
+   bool ShouldExpand() { return true; }
+   int NumChildren() { return subtasks_.size(); }
+   ListItem* Child(int i) { return subtasks_[i]; }
+
+ //private:
+   Task* parent_;
+   vector<Task*> subtasks_;
+   string title_;
+   string description_;
 };
 
 #endif

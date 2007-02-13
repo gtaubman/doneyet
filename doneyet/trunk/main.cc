@@ -1,6 +1,7 @@
 #include <curses.h>
 #include <menu.h>
 #include "project.h"
+#include "dialog-box.h"
 
 int main(int argc, char** argv) {
   initscr();  // Create the standard window.
@@ -23,14 +24,21 @@ int main(int argc, char** argv) {
     init_pair(7, COLOR_WHITE,   COLOR_BLACK);
   }
 
-  wborder(stdscr, '|', '|', '-', '-', '+', '+', '+', '+');
+  //wborder(stdscr, '|', '|', '-', '-', '+', '+', '+', '+');
+  box(stdscr, 0, 0);
   Project* p = Project::NewProject();
 
-  endwin();
+  doupdate();
   if (p) {
+    p->DrawInWindow(stdscr);
+    getch();
+    DialogBox::RunMultiLine( "Edit Task", p->tasks_[0]->title_,
+        30, 1);
     printf("NEW PROJECT: \"%s\"\n", p->name_.c_str());
+    refresh();
   } else {
     printf("hit escape\n");
   }
+  endwin();
   return 0;
 }

@@ -1,3 +1,4 @@
+#include <string.h>
 #include "utils.h"
 
 // Returns the origin and dimensions of an ncurses window.
@@ -19,3 +20,55 @@ window_info get_window_info(WINDOW* win) {
   return info;
 }
 
+void print_in_middle(WINDOW *win,
+    int starty,
+    int startx,
+    int width,
+    const char *string,
+    chtype color) {
+  int length, x, y;
+  float temp;
+
+  if(win == NULL)
+    win = stdscr;
+  getyx(win, y, x);
+  if(startx != 0)
+    x = startx;
+  if(starty != 0)
+    y = starty;
+  if(width == 0)
+    width = 80;
+
+  length = strlen(string);
+  temp = (width - length)/ 2;
+  x = startx + (int)temp;
+  wattron(win, color | A_BOLD);
+  mvwprintw(win, y, x, "%s", string);
+  wattroff(win, color | A_BOLD);
+
+  // Draw a horizontal line
+  wmove(win, 2, 0);
+  waddch(win, ACS_LTEE);
+  for (int i = 1; i < width - 1; ++i) {
+    waddch(win, ACS_HLINE);
+  }
+  waddch(win, ACS_RTEE);
+  refresh();
+}
+
+int winheight(WINDOW* win) {
+  int w,h;
+  getmaxyx(win, h, w);
+  return h;
+}
+
+int winwidth(WINDOW* win) {
+  int w,h;
+  getmaxyx(win, h, w);
+  return w;
+}
+
+int chars_to_whitespace(const string& str, int i) {
+  int p = str.find(" ", i);
+  return p == string::npos ? str.size() - i : p - i - 1;
+}
