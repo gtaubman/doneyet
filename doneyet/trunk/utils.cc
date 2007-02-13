@@ -70,5 +70,5 @@ int winwidth(WINDOW* win) {
 
 int chars_to_whitespace(const string& str, int i) {
   int p = str.find(" ", i);
-  return p == string::npos ? str.size() - i : p - i - 1;
+  return p == string::npos ? str.size() - i : p - i;
 }

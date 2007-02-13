@@ -28,6 +28,8 @@ class Task : public ListItem{
    bool ShouldExpand() { return true; }
    int NumChildren() { return subtasks_.size(); }
    ListItem* Child(int i) { return subtasks_[i]; }
+   ListItem* Parent() { return parent_; }
+   void AppendCharacter(char* c) { title_.append(c); }
 
  //private:
    Task* parent_;

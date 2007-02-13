@@ -38,7 +38,8 @@ Project* Project::NewProject() {
 }
 
 void Project::DrawInWindow(WINDOW* win) {
-  HierarchicalList* list = new HierarchicalList(name_, 50, 64, 2, 2);
+  window_info info = get_window_info(win);
+  HierarchicalList* list = new HierarchicalList(name_, info.height, info.width, 0, 0);
   vector<ListItem*> roots;
   for (int i = 0; i < tasks_.size(); ++i) {
     roots.push_back((ListItem*) tasks_[i]);
@@ -47,7 +48,6 @@ void Project::DrawInWindow(WINDOW* win) {
   list->Run();
   return;
   
-  window_info info = get_window_info(win);
 
   // First draw the name of the project centered at the top of the window
   print_in_middle(win, 1, 0, info.width, name_.c_str(), COLOR_PAIR(2));

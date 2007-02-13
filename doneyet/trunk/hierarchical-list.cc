@@ -4,7 +4,8 @@
 
 ListItem::ListItem()
   : height_(1),
-    index_(-1) { }
+    index_(-1),
+    depth_(-1) { }
 
 ListItem::~ListItem() {
   // Nothing to delete at the moment.
@@ -119,6 +120,9 @@ void HierarchicalList::Run() {
       case 'k':
         SelectPrevLine();
         break;
+      case 'e':
+        EditSelectedItem();
+        break;
       case 27: // escape
         SelectItem(-1);
         break;
@@ -135,7 +139,6 @@ int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {
 
   window_info info = get_window_info(subwin_);
   wmove(subwin_, line_num, indent);
-  int available_width = info.width - indent;
   int curx = indent;
   int cury = line_num;
 
@@ -148,7 +151,7 @@ int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {
   for (int i = 0; i < text.size(); ++i) {
     // Figure out how many characters from i to the next white space.
     int chars_to_ws = chars_to_whitespace(text, i);
-    if (curx + chars_to_ws > available_width) {
+    if (curx + chars_to_ws > info.width) {
       curx = indent;
       ++cury;
       ++lines_used;
@@ -255,7 +258,23 @@ void HierarchicalList::SelectItem(int item_index) {
 }
 
 void HierarchicalList::EditSelectedItem() {
+  if (selected_item_ == NULL)
     return;
+
+  int width = winwidth(subwin_);
+  int hanging_chars = selected_item_->Text().size() % width;
+  int chars_added = 0;
+  int ch;
+  while (ch = wgetch(subwin_)) {
+    if (ch == '\r')
+      return;
+
+    ++chars_added;
+    char word[] = {ch, NULL};
+    selected_item_->AppendCharacter(word);
+    UpdateFlattenedItems();
+    Draw();
+  }
 }
 
 void HierarchicalList::UpdateFlattenedItems() {
@@ -279,7 +298,7 @@ void HierarchicalList::UpdateFlattenedItems() {
   item_for_line_.clear();
   for (int i = 0; i < flattened_items_.size(); ++i) {
     ListItem* item = flattened_items_[i];
-    int height = item->ComputeHeight(info.width);
+    int height = item->ComputeHeight(info.width - item->Depth() * indent_);
     item->SetHeight(height);
     for (int j = 0; j < height; ++j) {
       item_for_line_.push_back(item);
@@ -290,6 +309,12 @@ void HierarchicalList::UpdateFlattenedItems() {
 
 void HierarchicalList::PreOrderAddToList(ListItem* l) {
   flattened_items_.push_back(l);
+  if (l->Parent() != NULL) {
+    l->SetDepth(l->Parent()->Depth() + 1);
+  } else {
+    l->SetDepth(0);
+  }
+
   for (int i = 0; i < l->NumChildren(); ++i) {
     PreOrderAddToList(l->Child(i));
   }

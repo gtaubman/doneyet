@@ -16,17 +16,22 @@ class ListItem {
   virtual bool ShouldExpand() = 0;
   virtual int NumChildren() = 0;
   virtual ListItem* Child(int i) = 0;
+  virtual ListItem* Parent() = 0;
+  virtual void AppendCharacter(char* c) = 0;
 
   virtual int ComputeHeight(int width);
   virtual int Height() { return height_; }
   virtual void SetHeight(int h) { height_ = h; }
   virtual int Index() { return index_; }
   virtual void SetIndex(int i) { index_ = i; }
+  virtual int Depth() { return depth_; }
+  virtual void SetDepth(int d) { depth_ = d; }
 
  private:
   // How many lines this entry takes up.
   int height_;
   int index_;
+  int depth_;
 };
 
 class HierarchicalList {

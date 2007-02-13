@@ -8,6 +8,7 @@ Task::Task(const string& title,
            const string& description) 
     : title_(title),
       description_(description) {
+        parent_ = NULL;
 }
 
 Task::~Task() {
