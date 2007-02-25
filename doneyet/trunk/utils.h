@@ -25,4 +25,6 @@ int winwidth(WINDOW* win);
 
 int chars_to_whitespace(const string& str, int i);
 
+void trim_multiple_spaces(string& str);
+
 #endif

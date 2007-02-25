@@ -17,7 +17,7 @@ class ListItem {
   virtual int NumChildren() = 0;
   virtual ListItem* Child(int i) = 0;
   virtual ListItem* Parent() = 0;
-  virtual void AppendCharacter(char* c) = 0;
+  virtual void SetText(string& text) = 0;
 
   virtual int ComputeHeight(int width);
   virtual int Height() { return height_; }
@@ -30,8 +30,23 @@ class ListItem {
  private:
   // How many lines this entry takes up.
   int height_;
+
+  // Which number item we are in the list.
   int index_;
+
+  // How many parents we have before getting to a root.
   int depth_;
+};
+
+// This is a protocol defining how data can be accessed by the HierarchicalList.
+// It supports multiple table columns, each with a separate title.  It's
+// currently unused.
+class HierarchicalListDataSource {
+ public:
+  virtual int NumRoots() = 0;
+  virtual ListItem* Root(int i) = 0;
+  virtual int NumColumns() = 0;
+  virtual int ColumnName(int i) = 0;
 };
 
 class HierarchicalList {
@@ -39,9 +54,9 @@ class HierarchicalList {
   HierarchicalList(string& name, int height, int width, int y, int x);
   virtual ~HierarchicalList();
 
-  void SetDatasource(vector<ListItem*> roots);
+  void SetDatasource(vector<ListItem*>* roots);
 
-  void Run();
+  int GetInput();
   void Draw();
   void SelectPrevItem();
   void SelectNextItem();
@@ -71,7 +86,7 @@ class HierarchicalList {
 
   ListItem* selected_item_;
 
-  vector<ListItem*> roots_;
+  vector<ListItem*>* roots_;
   vector<ListItem*> flattened_items_;
   vector<ListItem*> item_for_line_;
 };

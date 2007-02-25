@@ -1,6 +1,17 @@
 #include <math.h>
 #include "hierarchical-list.h"
+#include "dialog-box.h"
 #include "utils.h"
+
+// TODO: It looks like when I added the extra space for the line indicator, the
+//       text got somehow pushed right one space and gets hidden by the
+//       scrollbar.  Fix this up (and possibly make the line indicator be an
+//       option).  The line indicator becomes less necessary when the next todo
+//       is fixed up.
+// TODO: Make NextItem() and PrevItem() actually work.  This shouldn't be
+//       impossible considering that NextLine() and PrevLine() work fine.
+// TODO: Change the data view from being a vector pointer to being an actual
+//       interface.  This will enable things like multiple table columns.
 
 ListItem::ListItem()
   : height_(1),
@@ -40,8 +51,9 @@ HierarchicalList::HierarchicalList(string& name,
   // Create the window that actual holds the text.  We need to leave three lines
   // at the top: one for the border, one for the label, one for the line under
   // the label.  We also need to leave three on the right.  Two for the scrollbar
-  // and one for the righthand border.
-  subwin_ = derwin(win_, height - 3, width - 3, 3, 1);
+  // and one for the righthand border.  Also add one on the left for the line
+  // indicator.
+  subwin_ = derwin(win_, height - 3, width - 4, 3, 2);
   top_line_ = 0;
   selected_line_ = -1;
   win_rel_selected_line_ = -1;
@@ -55,12 +67,13 @@ HierarchicalList::~HierarchicalList() {
   delwin(win_);
 }
 
-void HierarchicalList::SetDatasource(vector<ListItem*> roots) {
+void HierarchicalList::SetDatasource(vector<ListItem*>* roots) {
   roots_ = roots;
   UpdateFlattenedItems();
 }
 
 void HierarchicalList::Draw() {
+  UpdateFlattenedItems();
   // First figure out how big our sub-window is:
   window_info sinfo = get_window_info(subwin_);
   int swidth = sinfo.width;
@@ -70,8 +83,8 @@ void HierarchicalList::Draw() {
   wclear(subwin_);
 
   int lines_used = -top_line_;
-  for (int i = 0; i < roots_.size(); ++i) {
-    lines_used += Draw(roots_[i], lines_used, 0);
+  for (int i = 0; i < roots_->size(); ++i) {
+    lines_used += Draw((*roots_)[i], lines_used, 0);
   }
 
   // Now that we're done drawing text, draw the frills:
@@ -82,6 +95,12 @@ void HierarchicalList::Draw() {
   // Draw the scrollbar
   for (int i = 3; i < sheight + 2; ++i) {
     mvwaddch(win_, i, swidth + 1, ACS_CKBOARD);
+    // Draw the line indicator
+    if (i == win_rel_selected_line_ + 3) {
+      mvwaddch(win_, i, 1, '>');
+    } else {
+      mvwaddch(win_, i , 1, ' ');
+    }
   }
   // Draw the block.
   mvwaddch(win_, 3 + lrintf(selected_line_ * (winheight(subwin_) - 1) /
@@ -101,37 +120,15 @@ void HierarchicalList::Draw() {
   }
   waddch(win_, ACS_RTEE);
 
-  mvwaddch(subwin_, win_rel_selected_line_, 0, ACS_BLOCK);
   
   wrefresh(win_);
 }
 
-void HierarchicalList::Run() {
+int HierarchicalList::GetInput() {
   UpdateFlattenedItems();
   Draw();
 
-  int ch;
-  bool done = false;
-  while ((ch = wgetch(win_)) && !done) {
-    switch (ch) {
-      case 'j':
-        SelectNextLine();
-        break;
-      case 'k':
-        SelectPrevLine();
-        break;
-      case 'e':
-        EditSelectedItem();
-        break;
-      case 27: // escape
-        SelectItem(-1);
-        break;
-      case '\r':
-        done = true;
-        return;
-    }
-    Draw();
-  }
+  return wgetch(win_);
 }
 
 int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {
@@ -178,6 +175,16 @@ void HierarchicalList::SelectPrevItem() {
   if (selected_item_ == NULL) {
     // We select the bottom guy
     SelectItem(flattened_items_.size() - 1);
+    if (total_lines_ > winheight(subwin_)) {
+      // We need to scroll things to show the last guy.
+      top_line_ = total_lines_ - (winheight(subwin_) - 1);
+      win_rel_selected_line_ = winheight(subwin_) - 1;
+      selected_line_ = total_lines_;
+    } else {
+      top_line_ = 0;
+      win_rel_selected_line_ = total_lines_;
+      selected_line_ = total_lines_;
+    }
   } else {
     SelectItem(selected_item_->Index() - 1);
   }
@@ -191,7 +198,7 @@ void HierarchicalList::SelectNextItem() {
     selected_line_ = 0;
     win_rel_selected_line_ = 0;
   } else if (selected_item_->Index() == flattened_items_.size() - 1) {
-    // We just hit next on the last guy.
+    // We just hit next when the last guy was selected.
     SelectItem(-1);
   } else {
     // Normal situation.  Select the next guy.
@@ -268,20 +275,12 @@ void HierarchicalList::EditSelectedItem() {
   if (selected_item_ == NULL)
     return;
 
-  int width = winwidth(subwin_);
-  int hanging_chars = selected_item_->Text().size() % width;
-  int chars_added = 0;
-  int ch;
-  while (ch = wgetch(subwin_)) {
-    if (ch == '\r')
-      return;
+  string answer = DialogBox::RunMultiLine("Please Edit Task",
+      selected_item_->Text(),
+      winwidth(win_) / 3,
+      winheight(win_) / 3);
 
-    ++chars_added;
-    char word[] = {ch, NULL};
-    selected_item_->AppendCharacter(word);
-    UpdateFlattenedItems();
-    Draw();
-  }
+  selected_item_->SetText(answer);
 }
 
 void HierarchicalList::UpdateFlattenedItems() {
@@ -290,8 +289,8 @@ void HierarchicalList::UpdateFlattenedItems() {
   flattened_items_.clear();
   total_lines_ = 0;
 
-  for (int i = 0; i < roots_.size(); ++i) {
-    PreOrderAddToList(roots_[i]);
+  for (int i = 0; i < roots_->size(); ++i) {
+    PreOrderAddToList((*roots_)[i]);
   }
 
   for (int i = 0; i < flattened_items_.size(); ++i) {
@@ -328,8 +327,6 @@ void HierarchicalList::PreOrderAddToList(ListItem* l) {
 }
 
 ListItem* HierarchicalList::ItemForLineNumber(int n) {
-  // For now do this the slow way until it becomes apparent it needs to be sped
-  // up.
   if (n < 0 || n >= item_for_line_.size())
     return NULL;
 

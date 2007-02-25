@@ -29,9 +29,9 @@ class Task : public ListItem{
    int NumChildren() { return subtasks_.size(); }
    ListItem* Child(int i) { return subtasks_[i]; }
    ListItem* Parent() { return parent_; }
-   void AppendCharacter(char* c) { title_.append(c); }
+   void SetText(string& text) { title_ = text; }
 
- //private:
+ private:
    Task* parent_;
    vector<Task*> subtasks_;
    string title_;

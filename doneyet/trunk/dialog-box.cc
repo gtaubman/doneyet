@@ -111,6 +111,7 @@ string DialogBox::RunMultiLine(const string& title,
   // trim trailing whitespace
   int notwhite = answer.find_last_not_of(" \t\n"); 
   answer.erase(notwhite + 1); 
+  trim_multiple_spaces(answer);
 
   // Free up our memory
   unpost_form(form);

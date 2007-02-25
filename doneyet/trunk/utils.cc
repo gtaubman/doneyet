@@ -72,3 +72,16 @@ int chars_to_whitespace(const string& str, int i) {
   int p = str.find(" ", i);
   return p == string::npos ? str.size() - i : p - i;
 }
+
+void trim_multiple_spaces(string& str) {
+  int space = 0;
+  while (true) {
+    space = str.find_first_of(" ", space);
+    if (space == string::npos) {
+      return;
+    }
+    int next_char = str.find_first_not_of(" ", space);
+    str.erase(++space, next_char - space);
+    ++space;
+  }
+}

@@ -5,7 +5,14 @@
 Project::Project(string name)
   : name_(name) {
   // Add some bogus tasks.
-    for (int i = 0; i < 500; ++i) {
+    /*
+    Task* l = AddTaskNamed("Temp Task");
+    for (int i = 0; i < 20; ++i) {
+      Task* s = new Task("Temp Task", "");
+      l->AddSubTask(s);
+      l = s;
+    }
+    for (int i = 0; i < 10; ++i) {
   Task* t = AddTaskNamed("Get GWS Working so that it can host crowd using much better rules.  Unfortunately this is going to involve running the gws unittests over and over and over to see if I've messed up.");
   t->AddSubTask(new Task("Write the code.", ""));
   t->AddSubTask(new Task("Write unittests and run them.", ""));
@@ -16,7 +23,7 @@ Project::Project(string name)
   t2->AddSubTask(new Task("Write unittests and run them.", ""));
   t2->AddSubTask(new Task("Code review.", ""));
   t2->AddSubTask(new Task("Submit.", ""));
-    }
+    }*/
 }
 
 Project::~Project() {
@@ -30,11 +37,7 @@ Project* Project::NewProject() {
   string answer = DialogBox::RunCentered(
       "Please Enter a Project Name",
       "Default Project");
-  Project* p = NULL;
-  if (!answer.empty()) {
-    p = new Project(answer);
-  }
-  return p;
+  return new Project(answer);
 }
 
 void Project::DrawInWindow(WINDOW* win) {
@@ -44,22 +47,36 @@ void Project::DrawInWindow(WINDOW* win) {
   for (int i = 0; i < tasks_.size(); ++i) {
     roots.push_back((ListItem*) tasks_[i]);
   }
-  list->SetDatasource(roots);
-  list->Run();
-  return;
-  
-
-  // First draw the name of the project centered at the top of the window
-  print_in_middle(win, 1, 0, info.width, name_.c_str(), COLOR_PAIR(2));
-
-  // Scoot us over one and down one so we don't draw over the box lines
-  ++info.origin_x;
-  ++info.origin_y;
-  info.width -= 1;
-
-  int lines_to_draw_on = 3;
-  for (int i = 0; i < tasks_.size(); ++i) {
-    lines_to_draw_on += tasks_[i]->DrawInWindow(win, lines_to_draw_on, 5);
+  list->SetDatasource(&roots);
+  int ch;
+  bool done = false;
+  //while (!done && (ch = list->GetInput())) {
+  while (!done && (ch = getch())) {
+    switch (ch) {
+      case 'a':
+      case 'A':
+        tasks_.push_back(new Task(DialogBox::RunMultiLine("Enter New Task",
+            "",
+            winwidth(win) / 3,
+            winheight(win) / 3), ""));
+        roots.push_back((ListItem*) tasks_[tasks_.size() - 1]);
+      case 'j':
+        list->SelectNextLine();
+        break;
+      case 'k':
+        list->SelectPrevLine();
+        break;
+      case 'e':
+        list->EditSelectedItem();
+        break;
+      case 27: // escape
+        list->SelectItem(-1);
+        break;
+      case '\r':
+        done = true;
+        return;
+    }
+    list->Draw();
   }
 }
 

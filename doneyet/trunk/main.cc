@@ -31,10 +31,6 @@ int main(int argc, char** argv) {
   doupdate();
   if (p) {
     p->DrawInWindow(stdscr);
-    getch();
-    DialogBox::RunMultiLine( "Edit Task", p->tasks_[0]->title_,
-        30, 1);
-    printf("NEW PROJECT: \"%s\"\n", p->name_.c_str());
     refresh();
   } else {
     printf("hit escape\n");
