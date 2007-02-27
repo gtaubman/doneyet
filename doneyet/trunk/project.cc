@@ -12,18 +12,19 @@ Project::Project(string name)
       l->AddSubTask(s);
       l = s;
     }
-    for (int i = 0; i < 10; ++i) {
-  Task* t = AddTaskNamed("Get GWS Working so that it can host crowd using much better rules.  Unfortunately this is going to involve running the gws unittests over and over and over to see if I've messed up.");
-  t->AddSubTask(new Task("Write the code.", ""));
-  t->AddSubTask(new Task("Write unittests and run them.", ""));
-  t->AddSubTask(new Task("Code review.", ""));
-  t->AddSubTask(new Task("Submit.", ""));
-  Task* t2 = AddTaskNamed("Get GWS Working so that it can host crowd using much better rules.  Unfortunately this is going to involve running the gws unittests over and over and over to see if I've messed up.");
-  t2->AddSubTask(new Task("Write the code.", ""));
-  t2->AddSubTask(new Task("Write unittests and run them.", ""));
-  t2->AddSubTask(new Task("Code review.", ""));
-  t2->AddSubTask(new Task("Submit.", ""));
-    }*/
+     
+  for (int i = 0; i < 200; ++i) {
+    Task* t = AddTaskNamed("Get GWS Working so that it can host crowd using much better rules.  Unfortunately this is going to involve running the gws unittests over and over and over to see if I've messed up.");
+    t->AddSubTask(new Task("Write the code.", ""));
+    t->AddSubTask(new Task("Write unittests and run them.", ""));
+    t->AddSubTask(new Task("Code review.", ""));
+    t->AddSubTask(new Task("Submit.", ""));
+    Task* t2 = AddTaskNamed("Get GWS Working so that it can host crowd using much better rules.  Unfortunately this is going to involve running the gws unittests over and over and over to see if I've messed up.");
+    t2->AddSubTask(new Task("Write the code.", ""));
+    t2->AddSubTask(new Task("Write unittests and run them.", ""));
+    t2->AddSubTask(new Task("Code review.", ""));
+    t2->AddSubTask(new Task("Submit.", ""));
+  }*/
 }
 
 Project::~Project() {
@@ -48,6 +49,8 @@ void Project::DrawInWindow(WINDOW* win) {
     roots.push_back((ListItem*) tasks_[i]);
   }
   list->SetDatasource(&roots);
+  list->Draw();
+
   int ch;
   bool done = false;
   //while (!done && (ch = list->GetInput())) {
@@ -61,10 +64,10 @@ void Project::DrawInWindow(WINDOW* win) {
             winheight(win) / 3), ""));
         roots.push_back((ListItem*) tasks_[tasks_.size() - 1]);
       case 'j':
-        list->SelectNextLine();
+        list->SelectNextItem();
         break;
       case 'k':
-        list->SelectPrevLine();
+        list->SelectPrevItem();
         break;
       case 'e':
         list->EditSelectedItem();

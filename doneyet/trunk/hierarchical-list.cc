@@ -53,7 +53,7 @@ HierarchicalList::HierarchicalList(string& name,
   // the label.  We also need to leave three on the right.  Two for the scrollbar
   // and one for the righthand border.  Also add one on the left for the line
   // indicator.
-  subwin_ = derwin(win_, height - 3, width - 4, 3, 2);
+  subwin_ = derwin(win_, height - 3, width - 3, 3, 1);
   top_line_ = 0;
   selected_line_ = -1;
   win_rel_selected_line_ = -1;
@@ -95,12 +95,6 @@ void HierarchicalList::Draw() {
   // Draw the scrollbar
   for (int i = 3; i < sheight + 2; ++i) {
     mvwaddch(win_, i, swidth + 1, ACS_CKBOARD);
-    // Draw the line indicator
-    if (i == win_rel_selected_line_ + 3) {
-      mvwaddch(win_, i, 1, '>');
-    } else {
-      mvwaddch(win_, i , 1, ' ');
-    }
   }
   // Draw the block.
   mvwaddch(win_, 3 + lrintf(selected_line_ * (winheight(subwin_) - 1) /
@@ -173,36 +167,40 @@ int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {
 
 void HierarchicalList::SelectPrevItem() {
   if (selected_item_ == NULL) {
-    // We select the bottom guy
-    SelectItem(flattened_items_.size() - 1);
-    if (total_lines_ > winheight(subwin_)) {
-      // We need to scroll things to show the last guy.
-      top_line_ = total_lines_ - (winheight(subwin_) - 1);
-      win_rel_selected_line_ = winheight(subwin_) - 1;
-      selected_line_ = total_lines_;
-    } else {
-      top_line_ = 0;
-      win_rel_selected_line_ = total_lines_;
-      selected_line_ = total_lines_;
-    }
+    // Select the bottom item
+    SelectItem(flattened_items_.size() - 1, SCROLL_BOTTOM);
+  } else if (selected_item_ == flattened_items_[0]) {
+    // We're at the top of the list and hit scroll up.  Don't do anything.
+    return;
+  } else if (win_rel_selected_line_ -
+      flattened_items_[selected_item_->Index() - 1]->Height() <= 0) {
+    // Either we're already at the top, or the first line of the previous item
+    // is off the screen.  Scroll up.
+    SelectItem(selected_item_->Index() - 1, SCROLL_TOP);
   } else {
-    SelectItem(selected_item_->Index() - 1);
+    // It's just a normal case of selecting the previous item.  No window moving
+    // necessary.
+    SelectItem(selected_item_->Index() - 1, SCROLL_NONE);
   }
 }
 
 void HierarchicalList::SelectNextItem() {
   if (selected_item_ == NULL) {
     // Nobody's selected.  Select the first guy.
-    SelectItem(0);
-    top_line_ = 0;
-    selected_line_ = 0;
-    win_rel_selected_line_ = 0;
+    SelectItem(0, SCROLL_TOP);
   } else if (selected_item_->Index() == flattened_items_.size() - 1) {
-    // We just hit next when the last guy was selected.
-    SelectItem(-1);
+    // We just hit next when the last guy was selected.  Don't do anything.
+    return;
+  } else if (win_rel_selected_line_ + selected_item_->Height() +
+      flattened_items_[selected_item_->Index() + 1]->Height() >=
+      winheight(subwin_)) {
+    // We need to scroll to show the next guy at the bottom.
+    SelectItem(selected_item_->Index() + 1, SCROLL_BOTTOM);
   } else {
     // Normal situation.  Select the next guy.
-    SelectItem(selected_item_->Index() + 1);
+    if (selected_item_->Index() != flattened_items_.size() - 1) {
+      SelectItem(selected_item_->Index() + 1, SCROLL_NONE);
+    }
   }
 }
 
@@ -261,6 +259,56 @@ void HierarchicalList::SelectNextLine() {
   selected_item_ = item;
 }
 
+int HierarchicalList::NumLinesDownInList(ListItem* item) {
+  int d = 0;
+  for (int i = 0; i < flattened_items_.size(); ++i) {
+    if (item == flattened_items_[i])
+      break;
+    d += flattened_items_[i]->Height();
+  }
+
+  return d;
+}
+
+void HierarchicalList::SelectItem(int item_index, ScrollType type) {
+  if (item_index < 0) {
+    SelectItem(item_index);
+  }
+
+  if (type == SCROLL_TOP) {
+    // We're going to show the item at the top of the window.  This is a pretty
+    // easy case because regardless of the number of items, we can always do
+    // this.
+    selected_item_ = flattened_items_[item_index];
+    top_line_ = NumLinesDownInList(selected_item_);
+    selected_line_ = top_line_;
+    win_rel_selected_line_ = 0;
+  } else if (type == SCROLL_BOTTOM) {
+    // Here things get complicated.  The situation can arise where we don't
+    // actually have enough lines of ListItems in order to place the desired
+    // item at the bottom of the window.
+    if (total_lines_ >= winheight(subwin_)) {
+      // We have enough items to put one at the bottom.
+      selected_item_ = flattened_items_[item_index];
+      top_line_ = NumLinesDownInList(selected_item_) -
+        (winheight(subwin_) - selected_item_->Height()) + 1;
+      selected_line_ = NumLinesDownInList(selected_item_);
+      win_rel_selected_line_ = winheight(subwin_) - selected_item_->Height() - 1;
+    } else {
+      // We don't have enough items to warrant putting one at the bottom of the
+      // screen.  In this case, we act just like a normal NONE scrolltype had
+      // been passed.
+      type = SCROLL_NONE;
+    }
+  }
+
+  if (type == SCROLL_NONE) {
+    // The reason this is outside the else if block is to allow a SCROLL_BOTTOM
+    // to turn into a SCROLL_NONE.
+    SelectItem(item_index);
+  }
+}
+
 void HierarchicalList::SelectItem(int item_index) {
   if (item_index < 0) {
     selected_item_ = NULL;
@@ -268,6 +316,8 @@ void HierarchicalList::SelectItem(int item_index) {
     win_rel_selected_line_ = 0;
   } else {
     selected_item_ = flattened_items_[item_index];
+    win_rel_selected_line_ = NumLinesDownInList(selected_item_) - top_line_;
+    selected_line_ = NumLinesDownInList(selected_item_);
   }
 }
 

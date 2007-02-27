@@ -49,6 +49,12 @@ class HierarchicalListDataSource {
   virtual int ColumnName(int i) = 0;
 };
 
+enum ScrollType {
+  SCROLL_TOP,
+  SCROLL_NONE,
+  SCROLL_BOTTOM,
+};
+
 class HierarchicalList {
  public:
   HierarchicalList(string& name, int height, int width, int y, int x);
@@ -65,6 +71,7 @@ class HierarchicalList {
   void SelectNextLine();
 
   void SelectItem(int item_index);
+  void SelectItem(int item_index, ScrollType type);
 
   void EditSelectedItem();
 
@@ -73,15 +80,29 @@ class HierarchicalList {
   void UpdateFlattenedItems();
   void PreOrderAddToList(ListItem* l);
   ListItem* ItemForLineNumber(int n);
+  int NumLinesDownInList(ListItem* item);
 
   WINDOW* win_;
   WINDOW* subwin_;
 
+  // Which line to show at the top of the window.  Goes from 0 to the sum of all
+  // the heights of all the items.
   int top_line_;
+
+  // The individual line we want selected from 0 to the sum of all heights.
   int selected_line_;
+
+  // The individual line that is selected, goes from 0 to sub_win_.height
   int win_rel_selected_line_;
+
+  // The sum of all heights.
   int total_lines_;
+
+  // How much to indent each level.
   int indent_;
+
+  // If wanted, hierarchical lists can display a small header with a title.
+  // This is good for when they're being used as a whole window.
   string name_;
 
   ListItem* selected_item_;
@@ -89,6 +110,7 @@ class HierarchicalList {
   vector<ListItem*>* roots_;
   vector<ListItem*> flattened_items_;
   vector<ListItem*> item_for_line_;
+
 };
 
 #endif
