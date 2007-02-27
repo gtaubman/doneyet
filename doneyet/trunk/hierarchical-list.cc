@@ -60,6 +60,7 @@ HierarchicalList::HierarchicalList(string& name,
   total_lines_ = 0;
   indent_ = 2;
   name_ = name;
+  selected_item_ = NULL;
 }
 
 HierarchicalList::~HierarchicalList() {
@@ -166,6 +167,9 @@ int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {
 }
 
 void HierarchicalList::SelectPrevItem() {
+  if (!flattened_items_.size()) {
+    return;
+  }
   if (selected_item_ == NULL) {
     // Select the bottom item
     SelectItem(flattened_items_.size() - 1, SCROLL_BOTTOM);
@@ -185,6 +189,9 @@ void HierarchicalList::SelectPrevItem() {
 }
 
 void HierarchicalList::SelectNextItem() {
+  if (!flattened_items_.size()) {
+    return;
+  }
   if (selected_item_ == NULL) {
     // Nobody's selected.  Select the first guy.
     SelectItem(0, SCROLL_TOP);
@@ -205,6 +212,9 @@ void HierarchicalList::SelectNextItem() {
 }
 
 void HierarchicalList::SelectPrevLine() {
+  if (!flattened_items_.size()) {
+    return;
+  }
   if (selected_item_ == NULL) {
     // Nobody's selected.  Select the last guy.
     SelectItem(flattened_items_.size() - 1);
@@ -237,6 +247,9 @@ void HierarchicalList::SelectPrevLine() {
 }
 
 void HierarchicalList::SelectNextLine() {
+  if (!flattened_items_.size()) {
+    return;
+  }
   if (selected_item_ == NULL) {
     // Nobody is selected.  Select the first guy.
     top_line_ = 0;
