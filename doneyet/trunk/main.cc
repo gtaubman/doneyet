@@ -1,9 +1,17 @@
 #include <curses.h>
 #include <menu.h>
+#include <iostream>
+#include <fstream>
 #include "project.h"
 #include "dialog-box.h"
+#include "file-manager.h"
+#include "serializer.h"
+
+using std::ofstream;
+using std::iostream;
 
 int main(int argc, char** argv) {
+  FileManager* fm = FileManager::DefaultFileManager();
   initscr();  // Create the standard window.
   keypad(stdscr, true);        // Enable keyboard mappings
   nonl();                         // Disable weird newline stuff.
@@ -24,11 +32,16 @@ int main(int argc, char** argv) {
     init_pair(7, COLOR_WHITE,   COLOR_BLACK);
   }
 
-  //wborder(stdscr, '|', '|', '-', '-', '+', '+', '+', '+');
   box(stdscr, 0, 0);
-  Project* p = Project::NewProject();
 
-  doupdate();
+  Project* p = NULL;
+  if (fm->NumSavedProjects() == 1) {
+    printf("There was one saved project.\n");
+    p = Project::NewProjectFromFile(fm->ProjectDir() + fm->SavedProjectNames()[0]);
+  } else {
+    p = Project::NewProject();
+  }
+
   if (p) {
     p->DrawInWindow(stdscr);
     refresh();
@@ -36,5 +49,10 @@ int main(int argc, char** argv) {
     printf("hit escape\n");
   }
   endwin();
+
+  std::string filename = fm->ProjectDir() + p->Name();  
+  Serializer s("", filename);
+  p->Serialize(&s);
+  s.CloseAll();
   return 0;
 }

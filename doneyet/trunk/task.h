@@ -4,10 +4,14 @@
 #include <ncurses.h>
 #include <string>
 #include <vector>
+#include <iostream>
+#include <fstream>
 #include "hierarchical-list.h"
+#include "serializer.h"
 
 using std::string;
 using std::vector;
+using std::ofstream;
 
 class Task : public ListItem{
  public:
@@ -19,9 +23,15 @@ class Task : public ListItem{
    void SetDescription(const string& description);
    
    void AddSubTask(Task* subtask);
-   int DrawInWindow(WINDOW* win, int line_num, int indent);
-
    void SetParent(Task* p) { parent_ = p; }
+
+   // Tasks are serialized into lines as follows:
+   // my pointer
+   // my title
+   // my description
+   // completed
+   // the pointer to my parent
+   void Serialize(Serializer* s);
   
    // Functions required by list item
    const string Text() { return title_; }
@@ -30,9 +40,11 @@ class Task : public ListItem{
    ListItem* Child(int i) { return subtasks_[i]; }
    ListItem* Parent() { return parent_; }
    void SetText(string& text) { title_ = text; }
+   int NumOffspring();
 
  private:
    Task* parent_;
+   bool completed_;
    vector<Task*> subtasks_;
    string title_;
    string description_;

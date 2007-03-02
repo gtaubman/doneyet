@@ -8,10 +8,15 @@
 #include <panel.h>
 #include <string>
 #include <vector>
+#include <iostream>
+#include <fstream>
 #include "task.h"
+#include "serializer.h"
 
 using std::string;
 using std::vector;
+using std::ofstream;
+using std::ifstream;
 
 class Project {
  public:
@@ -19,9 +24,13 @@ class Project {
   virtual ~Project();
 
   static Project* NewProject();
+  static Project* NewProjectFromFile(string path);
 
+  string Name() { return name_; }
   void DrawInWindow(WINDOW* win);
   Task* AddTaskNamed(const string& name);
+  void Serialize(Serializer* s);
+  int NumTasks();
 
   string name_;
   vector<Task*> tasks_;

@@ -70,10 +70,10 @@ class HierarchicalList {
   void SelectPrevLine();
   void SelectNextLine();
 
-  void SelectItem(int item_index);
-  void SelectItem(int item_index, ScrollType type);
+  void SelectNoItem() { SelectItem(-1); }
 
   void EditSelectedItem();
+  ListItem* SelectedItem() { return selected_item_; }
 
  private:
   int Draw(ListItem* node, int line_num, int indent);
@@ -81,6 +81,9 @@ class HierarchicalList {
   void PreOrderAddToList(ListItem* l);
   ListItem* ItemForLineNumber(int n);
   int NumLinesDownInList(ListItem* item);
+  void SelectItem(int item_index);
+  void SelectItem(int item_index, ScrollType type);
+
 
   WINDOW* win_;
   WINDOW* subwin_;

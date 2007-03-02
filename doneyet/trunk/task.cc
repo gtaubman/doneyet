@@ -6,9 +6,10 @@ using std::string;
 
 Task::Task(const string& title,
            const string& description) 
-    : title_(title),
+    : parent_(NULL),
+      completed_(false),
+      title_(title),
       description_(description) {
-        parent_ = NULL;
 }
 
 Task::~Task() {
@@ -30,7 +31,32 @@ void Task::SetDescription(const string& description) {
   description_ = description;
 }
 
-int Task::DrawInWindow(WINDOW* win, int line_num, int indent) {
-  return 0;
+static void SerializeString(const string& str,
+    ofstream& file) {
+  if (str.empty()) {
+    file << string("_") << std::endl;
+  } else {
+    file << str << std::endl;
+  }
 }
 
+void Task::Serialize(Serializer* s) {
+  std::cout << "Serializing \"" << title_ << "\"" << std::endl;
+  s->Write((int)this);
+  s->Write(title_);
+  s->Write(description_);
+  s->Write((int) completed_);
+  s->Write((int) parent_);
+  for (int i = 0; i < subtasks_.size(); ++i) {
+    subtasks_[i]->Serialize(s);
+  }
+}
+
+int Task::NumOffspring() {
+  int sum_from_children = 0;
+  for (int i = 0; i < subtasks_.size(); ++i) {
+    sum_from_children += subtasks_[i]->NumOffspring();
+  }
+
+  return 1 + sum_from_children;
+}
