@@ -3,13 +3,6 @@
 #include "dialog-box.h"
 #include "utils.h"
 
-// TODO: It looks like when I added the extra space for the line indicator, the
-//       text got somehow pushed right one space and gets hidden by the
-//       scrollbar.  Fix this up (and possibly make the line indicator be an
-//       option).  The line indicator becomes less necessary when the next todo
-//       is fixed up.
-// TODO: Make NextItem() and PrevItem() actually work.  This shouldn't be
-//       impossible considering that NextLine() and PrevLine() work fine.
 // TODO: Change the data view from being a vector pointer to being an actual
 //       interface.  This will enable things like multiple table columns.
 
