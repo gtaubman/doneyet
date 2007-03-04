@@ -29,7 +29,6 @@ class Serializer {
   bool Done() { return done_; }
 
  private:
-  inline char EndianIndependentByte(unsigned char byte);
   inline void ChangeToStdBytes(char* data, long unsigned int bytes);
   
   ofstream* out_;
