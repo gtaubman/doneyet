@@ -81,7 +81,8 @@ void trim_multiple_spaces(string& str) {
       return;
     }
     int next_char = str.find_first_not_of(" ", space);
-    str.erase(++space, next_char - space);
+    ++space;
+    str.erase(space, next_char - space);
     ++space;
   }
 }

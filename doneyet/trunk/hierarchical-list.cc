@@ -91,8 +91,10 @@ void HierarchicalList::Draw() {
     mvwaddch(win_, i, swidth + 1, ACS_CKBOARD);
   }
   // Draw the block.
-  mvwaddch(win_, 3 + lrintf(selected_line_ * (winheight(subwin_) - 1) /
-        total_lines_), swidth + 1, ACS_BLOCK);
+  if (total_lines_) {
+    mvwaddch(win_, 3 + lrintf(selected_line_ * (winheight(subwin_) - 1) /
+          total_lines_), swidth + 1, ACS_BLOCK);
+  }
   
   // Draw the title
   print_in_middle(win_, 1, 0, width, name_.c_str(), COLOR_PAIR(2));

@@ -101,8 +101,7 @@ float Serializer::ReadFloat() {
 
 string Serializer::ReadString() {
   // First read the size of the string
-  int str_size = 0;
-  READ(str_size);
+  int str_size = ReadInt();
 
   char data[1000] = {0};
   in_->read(data, str_size);
