@@ -32,6 +32,7 @@ class Project {
   void Serialize(Serializer* s);
   int NumTasks();
 
+ private:
   string name_;
   vector<Task*> tasks_;
 };

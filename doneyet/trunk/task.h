@@ -25,14 +25,12 @@ class Task : public ListItem{
    void AddSubTask(Task* subtask);
    void SetParent(Task* p) { parent_ = p; }
 
-   // Tasks are serialized into lines as follows:
-   // my pointer
-   // my title
-   // my description
-   // completed
-   // the pointer to my parent
+   // Serializes this task and all of its children.
    void Serialize(Serializer* s);
   
+   // Returns the number of tasks below this task.
+   int NumOffspring();
+
    // Functions required by list item
    const string Text() { return title_; }
    bool ShouldExpand() { return true; }
@@ -40,7 +38,7 @@ class Task : public ListItem{
    ListItem* Child(int i) { return subtasks_[i]; }
    ListItem* Parent() { return parent_; }
    void SetText(string& text) { title_ = text; }
-   int NumOffspring();
+
 
  private:
    Task* parent_;

@@ -128,13 +128,14 @@ Project* Project::NewProjectFromFile(string path) {
   map<Task*, int> tasks_parents;
   vector<Task*> tasks;
   for (int i = 0; i < num_tasks; ++i) {
+    // Read in the values.
     pointer_val = s.ReadInt();
     title = s.ReadString();
     description = s.ReadString();
     completed = (bool) s.ReadInt();
     parent_pointer = s.ReadInt();
-    cout << "Read task " << title << ", " << description << ". Parent: " <<
-      parent_pointer << ", Self: " << pointer_val << endl;
+
+    // Make the new task.
     Task* t = new Task(title, description);
     tasks_parents[t] = parent_pointer;
     task_map[pointer_val] = t;

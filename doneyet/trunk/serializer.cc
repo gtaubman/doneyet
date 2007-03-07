@@ -105,21 +105,20 @@ string Serializer::ReadString() {
 
   char data[1000] = {0};
   in_->read(data, str_size);
-  ChangeToStdBytes(data, str_size);
   
   return string(data);
 }
 
 void Serializer::ChangeToStdBytes(char* data, long unsigned int bytes) {
-#ifndef __BIG_ENDIAN__
+  #ifndef __BIG_ENDIAN__
   // We assume that big endian is the "standard" here.  So, if we're running on
   // a big endian machine this is essentially a no-op.
   char tmp[bytes];
   for (int i = 0; i < bytes; ++i) {
     tmp[i] = data[bytes - i - 1];
   } 
-  memcpy(tmp, data, bytes);
-#endif
+  memcpy(data, tmp, bytes);
+  #endif
 }
 
 void Serializer::CloseAll() {
