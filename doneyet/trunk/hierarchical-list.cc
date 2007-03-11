@@ -131,7 +131,9 @@ int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {
 
   // If we're selected reverse the text
   if (node == selected_item_) {
-    wattron(subwin_, A_REVERSE | COLOR_PAIR(3));
+    wattron(subwin_, A_UNDERLINE | node->Color());
+  } else {
+    wattron(subwin_, node->Color());
   }
   
   int lines_used = 1;
@@ -148,7 +150,9 @@ int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {
 
   // If we're selected, we're done reversing the text.
   if (node == selected_item_) {
-    wattroff(subwin_, A_REVERSE | COLOR_PAIR(3));
+    wattroff(subwin_, A_UNDERLINE | node->Color());
+  } else {
+    wattroff(subwin_, node->Color());
   }
 
   // now that we've drawn ourselves, draw our children:

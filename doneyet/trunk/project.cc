@@ -1,8 +1,8 @@
 #include "project.h"
+#include <map>
 #include "dialog-box.h"
 #include "hierarchical-list.h"
 #include "utils.h"
-#include <map>
 
 using std::map;
 using std::cout;
@@ -74,6 +74,20 @@ void Project::DrawInWindow(WINDOW* win) {
       case 27: // escape
         list->SelectNoItem();
         break;
+      case 32: // space
+        switch (static_cast<Task*>(list->SelectedItem())->Status()) {
+          case CREATED:
+          case PAUSED:
+            static_cast<Task*>(list->SelectedItem())->SetStatus(IN_PROGRESS);
+            break;
+          case IN_PROGRESS:
+            static_cast<Task*>(list->SelectedItem())->SetStatus(COMPLETED);
+            break;
+          case COMPLETED:
+            static_cast<Task*>(list->SelectedItem())->SetStatus(PAUSED);
+            break;
+        }
+        break;
       case '\r':
         done = true;
         return;
@@ -122,7 +136,7 @@ Project* Project::NewProjectFromFile(string path) {
   int pointer_val;
   string title;
   string description;
-  bool completed;
+  TaskStatus status;
   int parent_pointer;
   map<int, Task*> task_map;
   map<Task*, int> tasks_parents;
@@ -132,11 +146,12 @@ Project* Project::NewProjectFromFile(string path) {
     pointer_val = s.ReadInt();
     title = s.ReadString();
     description = s.ReadString();
-    completed = (bool) s.ReadInt();
+    status = static_cast<TaskStatus>(s.ReadInt());
     parent_pointer = s.ReadInt();
 
     // Make the new task.
     Task* t = new Task(title, description);
+    t->SetStatus(status);
     tasks_parents[t] = parent_pointer;
     task_map[pointer_val] = t;
     tasks.push_back(t);
@@ -147,11 +162,9 @@ Project* Project::NewProjectFromFile(string path) {
     Task* t = tasks[i];
     if (tasks_parents[t] == 0) {
       // We have a root task.  Add it to the root list.
-      printf("Found a root task\n");
       p->tasks_.push_back(tasks[i]);
     } else {
       // We have a child task.  Add it to its parent's list.
-      printf("Found a subtask.\n");
       task_map[tasks_parents[t]]->AddSubTask(tasks[i]);
     }
   }

@@ -26,6 +26,7 @@ class ListItem {
   virtual void SetIndex(int i) { index_ = i; }
   virtual int Depth() { return depth_; }
   virtual void SetDepth(int d) { depth_ = d; }
+  virtual int Color() { return 0; }
 
  private:
   // How many lines this entry takes up.

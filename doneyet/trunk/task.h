@@ -6,14 +6,23 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <ctime>
 #include "hierarchical-list.h"
 #include "serializer.h"
+#include "date.h"
 
 using std::string;
 using std::vector;
 using std::ofstream;
 
-class Task : public ListItem{
+typedef enum TaskStatus_ {
+  CREATED,
+  PAUSED,
+  IN_PROGRESS,
+  COMPLETED,
+} TaskStatus;
+
+class Task : public ListItem {
  public:
    Task(const string& title,
         const string& description);
@@ -24,6 +33,8 @@ class Task : public ListItem{
    
    void AddSubTask(Task* subtask);
    void SetParent(Task* p) { parent_ = p; }
+   void SetStatus(TaskStatus t) { status_ = t; }
+   TaskStatus Status() { return status_; }
 
    // Serializes this task and all of its children.
    void Serialize(Serializer* s);
@@ -32,7 +43,8 @@ class Task : public ListItem{
    int NumOffspring();
 
    // Functions required by list item
-   const string Text() { return title_; }
+   const string Text() { return title_ + " " + creation_date_.ToString(); }
+   int Color();
    bool ShouldExpand() { return true; }
    int NumChildren() { return subtasks_.size(); }
    ListItem* Child(int i) { return subtasks_[i]; }
@@ -42,10 +54,12 @@ class Task : public ListItem{
 
  private:
    Task* parent_;
-   bool completed_;
+   TaskStatus status_;
    vector<Task*> subtasks_;
    string title_;
    string description_;
+   Date creation_date_;
+   Date completion_date_;
 };
 
 #endif

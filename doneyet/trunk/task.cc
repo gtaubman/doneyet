@@ -7,9 +7,11 @@ using std::string;
 Task::Task(const string& title,
            const string& description) 
     : parent_(NULL),
-      completed_(false),
+      status_(CREATED),
       title_(title),
       description_(description) {
+  creation_date_.SetToNow();
+  completion_date_.SetToEmptyTime();
 }
 
 Task::~Task() {
@@ -31,21 +33,12 @@ void Task::SetDescription(const string& description) {
   description_ = description;
 }
 
-static void SerializeString(const string& str,
-    ofstream& file) {
-  if (str.empty()) {
-    file << string("_") << std::endl;
-  } else {
-    file << str << std::endl;
-  }
-}
-
 void Task::Serialize(Serializer* s) {
   std::cout << "Serializing \"" << title_ << "\"" << std::endl;
   s->Write((int)this);
   s->Write(title_);
   s->Write(description_);
-  s->Write((int) completed_);
+  s->Write((int) status_);
   s->Write((int) parent_);
   for (int i = 0; i < subtasks_.size(); ++i) {
     subtasks_[i]->Serialize(s);
@@ -59,4 +52,15 @@ int Task::NumOffspring() {
   }
 
   return 1 + sum_from_children;
+}
+
+int Task::Color() {
+  int c = 0;
+  if (status_ == CREATED) {
+    c |= COLOR_PAIR(0) | A_DIM;
+  } else {
+    c |= COLOR_PAIR(status_);
+  }
+
+  return c;
 }
