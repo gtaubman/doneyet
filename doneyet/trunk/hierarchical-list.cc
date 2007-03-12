@@ -3,9 +3,6 @@
 #include "dialog-box.h"
 #include "utils.h"
 
-// TODO: Change the data view from being a vector pointer to being an actual
-//       interface.  This will enable things like multiple table columns.
-
 ListItem::ListItem()
   : height_(1),
     index_(-1),
@@ -15,9 +12,9 @@ ListItem::~ListItem() {
   // Nothing to delete at the moment.
 }
 
-int ListItem::ComputeHeight(int width) {
+int ListItem::ComputeHeight(int width, string& prepend) {
   int lines_used = 1;
-  string text = Text();
+  string text = prepend + Text();
   int curx = 0;
   for (int i = 0; i < text.size(); ++i) {
     int chars_to_ws = chars_to_whitespace(text, i);
@@ -25,7 +22,7 @@ int ListItem::ComputeHeight(int width) {
     // Make sure to keep this line in sync with the equivalent line in Draw()
     if (curx + chars_to_ws > width) {
       ++lines_used;
-      curx = 0;
+      curx = prepend.length();
     }
     ++curx;
   }
@@ -54,6 +51,9 @@ HierarchicalList::HierarchicalList(string& name,
   indent_ = 2;
   name_ = name;
   selected_item_ = NULL;
+  prepend_ = "- ";
+  flush_left_text_border_ = true;
+  prepend_size_ = prepend_.length();
 }
 
 HierarchicalList::~HierarchicalList() {
@@ -61,8 +61,8 @@ HierarchicalList::~HierarchicalList() {
   delwin(win_);
 }
 
-void HierarchicalList::SetDatasource(vector<ListItem*>* roots) {
-  roots_ = roots;
+void HierarchicalList::SetDatasource(HierarchicalListDataSource* d) {
+  datasource_ = d;
   UpdateFlattenedItems();
 }
 
@@ -77,8 +77,8 @@ void HierarchicalList::Draw() {
   wclear(subwin_);
 
   int lines_used = -top_line_;
-  for (int i = 0; i < roots_->size(); ++i) {
-    lines_used += Draw((*roots_)[i], lines_used, 0);
+  for (int i = 0; i < NumRoots(); ++i) {
+    lines_used += Draw(Root(i), lines_used, 0);
   }
 
   // Now that we're done drawing text, draw the frills:
@@ -122,7 +122,7 @@ int HierarchicalList::GetInput() {
 }
 
 int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {
-  const string text = node->Text();
+  const string text = prepend_ + node->Text();
 
   window_info info = get_window_info(subwin_);
   wmove(subwin_, line_num, indent);
@@ -141,7 +141,7 @@ int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {
     // Figure out how many characters from i to the next white space.
     int chars_to_ws = chars_to_whitespace(text, i);
     if (curx + chars_to_ws > info.width) {
-      curx = indent;
+      curx = indent + (flush_left_text_border_ ? prepend_size_ : 0);
       ++cury;
       ++lines_used;
     }
@@ -351,8 +351,8 @@ void HierarchicalList::UpdateFlattenedItems() {
   flattened_items_.clear();
   total_lines_ = 0;
 
-  for (int i = 0; i < roots_->size(); ++i) {
-    PreOrderAddToList((*roots_)[i]);
+  for (int i = 0; i < NumRoots(); ++i) {
+    PreOrderAddToList(Root(i));
   }
 
   for (int i = 0; i < flattened_items_.size(); ++i) {
@@ -366,7 +366,8 @@ void HierarchicalList::UpdateFlattenedItems() {
   item_for_line_.clear();
   for (int i = 0; i < flattened_items_.size(); ++i) {
     ListItem* item = flattened_items_[i];
-    int height = item->ComputeHeight(info.width - item->Depth() * indent_);
+    int height = item->ComputeHeight(info.width - item->Depth() * indent_,
+                                     prepend_);
     item->SetHeight(height);
     for (int j = 0; j < height; ++j) {
       item_for_line_.push_back(item);

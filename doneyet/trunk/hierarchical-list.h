@@ -19,7 +19,7 @@ class ListItem {
   virtual ListItem* Parent() = 0;
   virtual void SetText(string& text) = 0;
 
-  virtual int ComputeHeight(int width);
+  virtual int ComputeHeight(int width, string& prepend);
   virtual int Height() { return height_; }
   virtual void SetHeight(int h) { height_ = h; }
   virtual int Index() { return index_; }
@@ -40,14 +40,12 @@ class ListItem {
 };
 
 // This is a protocol defining how data can be accessed by the HierarchicalList.
-// It supports multiple table columns, each with a separate title.  It's
-// currently unused.
+// It supports multiple table columns, each with a separate title.
 class HierarchicalListDataSource {
  public:
   virtual int NumRoots() = 0;
   virtual ListItem* Root(int i) = 0;
   virtual int NumColumns() = 0;
-  virtual int ColumnName(int i) = 0;
 };
 
 enum ScrollType {
@@ -61,7 +59,7 @@ class HierarchicalList {
   HierarchicalList(string& name, int height, int width, int y, int x);
   virtual ~HierarchicalList();
 
-  void SetDatasource(vector<ListItem*>* roots);
+  void SetDatasource(HierarchicalListDataSource* d);
 
   int GetInput();
   void Draw();
@@ -85,7 +83,12 @@ class HierarchicalList {
   void SelectItem(int item_index);
   void SelectItem(int item_index, ScrollType type);
 
+  // Convenience methods:
+  int NumRoots() { return datasource_->NumRoots(); }
+  ListItem* Root(int i) { return datasource_->Root(i); }
 
+  // These two windows hold the the frills such as title and scrollbar, and the
+  // actual text.
   WINDOW* win_;
   WINDOW* subwin_;
 
@@ -111,9 +114,27 @@ class HierarchicalList {
 
   ListItem* selected_item_;
 
-  vector<ListItem*>* roots_;
+  // The datasource tells us such things as how many roots we have, how many
+  // columns to draw and what data corresponds with which column.
+  HierarchicalListDataSource* datasource_;
+
+  // These two vectors are for performance improvements to the drawing code.
   vector<ListItem*> flattened_items_;
   vector<ListItem*> item_for_line_;
+
+  // The following string is prepended to every task.  Default's to "- ".
+  string prepend_;
+  int prepend_size_;
+
+  // This determines whether or not to align the text in a line after scooting
+  // right to display the prepended text.  Example:
+  // When true:
+  // - Blah blah ...
+  //   blah blah.
+  // When false:
+  // - Blah blah ...
+  // blah blah.
+  bool flush_left_text_border_;
 
 };
 

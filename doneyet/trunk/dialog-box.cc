@@ -121,9 +121,20 @@ string DialogBox::RunMultiLine(const string& title,
   delwin(form_win);
 
   redrawwin(stdscr);
+  if (hit_escape) {
+    // Clear out whatever was in the box if they hit escape.
+    answer = "";
+  }
   return answer;
 }
 
 string DialogBox::RunCentered(const string& title, const string& default_text) {
   return DialogBox::RunMultiLine(title, default_text, title.size(), 1);
+}
+
+string DialogBox::RunCenteredWithWidth(
+    const string& title,
+    const string& default_text,
+    const int width) {
+  return DialogBox::RunMultiLine(title, default_text, width, 1);
 }

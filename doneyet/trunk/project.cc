@@ -9,12 +9,13 @@ using std::cout;
 using std::endl;
 
 Project::Project(string name)
-  : name_(name) {
+  : name_(name),
+    list_(NULL) {
 }
 
 Project::~Project() {
   for (int i = 0; i < tasks_.size(); ++i) {
-    delete tasks_[i];
+    tasks_[i]->Delete();
   }
 }
 
@@ -28,21 +29,16 @@ Project* Project::NewProject() {
 
 void Project::DrawInWindow(WINDOW* win) {
   window_info info = get_window_info(win);
-  HierarchicalList* list = new HierarchicalList(name_,
+  list_ = new HierarchicalList(name_,
       info.height,
       info.width,
       0,
       0);
-  vector<ListItem*> roots;
-  for (int i = 0; i < tasks_.size(); ++i) {
-    roots.push_back((ListItem*) tasks_[i]);
-  }
-  list->SetDatasource(&roots);
-  list->Draw();
+  list_->SetDatasource(this);
+  list_->Draw();
 
   int ch;
   bool done = false;
-  //while (!done && (ch = list->GetInput())) {
   string tmp_str;
   while (!done && (ch = getch())) {
     switch (ch) {
@@ -54,37 +50,46 @@ void Project::DrawInWindow(WINDOW* win) {
             winheight(win) / 3);
         if (!tmp_str.empty()) {
           Task* t = new Task(tmp_str, "");
-          if (list->SelectedItem() == NULL) {
+          if (list_->SelectedItem() == NULL) {
             tasks_.push_back(t);
-            roots.push_back(static_cast<ListItem*>(t));
           } else {
-            static_cast<Task*>(list->SelectedItem())->AddSubTask(t);
+            static_cast<Task*>(list_->SelectedItem())->AddSubTask(t);
           }
         }
         break;
       case 'j':
-        list->SelectNextItem();
+      case KEY_DOWN:
+        list_->SelectNextItem();
         break;
+      case KEY_UP:
       case 'k':
-        list->SelectPrevItem();
+        list_->SelectPrevItem();
+        break;
+      case 'r':
+        Rename();
         break;
       case 'e':
-        list->EditSelectedItem();
+        list_->EditSelectedItem();
+        break;
+      case 'd':
+        Task* si = static_cast<Task*>(list_->SelectedItem());
+        list_->SelectPrevItem();
+        DeleteTask(si);
         break;
       case 27: // escape
-        list->SelectNoItem();
+        list_->SelectNoItem();
         break;
       case 32: // space
-        switch (static_cast<Task*>(list->SelectedItem())->Status()) {
+        switch (static_cast<Task*>(list_->SelectedItem())->Status()) {
           case CREATED:
           case PAUSED:
-            static_cast<Task*>(list->SelectedItem())->SetStatus(IN_PROGRESS);
+            static_cast<Task*>(list_->SelectedItem())->SetStatus(IN_PROGRESS);
             break;
           case IN_PROGRESS:
-            static_cast<Task*>(list->SelectedItem())->SetStatus(COMPLETED);
+            static_cast<Task*>(list_->SelectedItem())->SetStatus(COMPLETED);
             break;
           case COMPLETED:
-            static_cast<Task*>(list->SelectedItem())->SetStatus(PAUSED);
+            static_cast<Task*>(list_->SelectedItem())->SetStatus(PAUSED);
             break;
         }
         break;
@@ -92,7 +97,7 @@ void Project::DrawInWindow(WINDOW* win) {
         done = true;
         return;
     }
-    list->Draw();
+    list_->Draw();
   }
 }
 
@@ -146,11 +151,13 @@ Project* Project::NewProjectFromFile(string path) {
     pointer_val = s.ReadInt();
     title = s.ReadString();
     description = s.ReadString();
+    Task* t = new Task(title, description);
     status = static_cast<TaskStatus>(s.ReadInt());
+    t->UnserializeDates(&s);
+
     parent_pointer = s.ReadInt();
 
-    // Make the new task.
-    Task* t = new Task(title, description);
+    // Set values in the new task.
     t->SetStatus(status);
     tasks_parents[t] = parent_pointer;
     task_map[pointer_val] = t;
@@ -161,10 +168,10 @@ Project* Project::NewProjectFromFile(string path) {
   for (int i = 0; i < tasks.size(); ++i) {
     Task* t = tasks[i];
     if (tasks_parents[t] == 0) {
-      // We have a root task.  Add it to the root list.
+      // We have a root task.  Add it to the root list_.
       p->tasks_.push_back(tasks[i]);
     } else {
-      // We have a child task.  Add it to its parent's list.
+      // We have a child task.  Add it to its parent's list_.
       task_map[tasks_parents[t]]->AddSubTask(tasks[i]);
     }
   }
@@ -178,4 +185,30 @@ int Project::NumTasks() {
     total += tasks_[i]->NumOffspring();
   }
   return total;
+}
+
+void Project::DeleteTask(Task* t) {
+  if (t->Parent() == NULL) {
+    // It's a top level task.  Remove it from our list of roots.
+    for (int i = 0; i < tasks_.size(); ++i) {
+      if (tasks_[i] == t) {
+        tasks_[i]->Delete();
+        tasks_.erase(tasks_.begin() + i);
+        break;
+      }
+    }
+  } else {
+    for (int i = 0; i < tasks_.size(); ++i) {
+      tasks_[i]->DeleteTask(t);
+    }
+  }
+}
+
+void Project::Rename() {
+  string answer = DialogBox::RunCenteredWithWidth(
+      "Rename Project",
+      name_,
+      20);
+  if (!answer.empty())
+    name_ = answer;
 }

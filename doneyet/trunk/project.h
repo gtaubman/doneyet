@@ -18,7 +18,7 @@ using std::vector;
 using std::ofstream;
 using std::ifstream;
 
-class Project {
+class Project : HierarchicalListDataSource {
  public:
   explicit Project(string name);
   virtual ~Project();
@@ -31,10 +31,18 @@ class Project {
   Task* AddTaskNamed(const string& name);
   void Serialize(Serializer* s);
   int NumTasks();
+  void DeleteTask(Task* t);
 
+  // Functions required by HierarchicalListDataSource:
+  int NumRoots() { return tasks_.size(); }
+  ListItem* Root(int i) { return static_cast<ListItem*>(tasks_[i]); }
+  int NumColumns() { return 1; }
  private:
+  void Rename();
+
   string name_;
   vector<Task*> tasks_;
+  HierarchicalList* list_;
 };
 
 #endif

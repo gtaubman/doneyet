@@ -3,6 +3,7 @@
 
 #include <ctime>
 #include <string>
+#include "serializer.h"
 
 using std::time_t;
 using std::string;
@@ -15,6 +16,9 @@ class Date {
   void SetToNow();
   void SetToEmptyTime();
 
+  void Serialize(Serializer* s);
+  void ReadFromSerializer(Serializer* s);
+  
   string ToString();
 
  private:

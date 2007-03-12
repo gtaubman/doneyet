@@ -33,7 +33,10 @@ class Task : public ListItem {
    
    void AddSubTask(Task* subtask);
    void SetParent(Task* p) { parent_ = p; }
-   void SetStatus(TaskStatus t) { status_ = t; }
+   void RemoveSubtaskFromList(Task* t);
+   void Delete();
+   void DeleteTask(Task* t);
+   void SetStatus(TaskStatus t);
    TaskStatus Status() { return status_; }
 
    // Serializes this task and all of its children.
@@ -43,22 +46,26 @@ class Task : public ListItem {
    int NumOffspring();
 
    // Functions required by list item
-   const string Text() { return title_ + " " + creation_date_.ToString(); }
+   const string Text() { return title_; }
    int Color();
    bool ShouldExpand() { return true; }
    int NumChildren() { return subtasks_.size(); }
-   ListItem* Child(int i) { return subtasks_[i]; }
-   ListItem* Parent() { return parent_; }
+   Task* Child(int i) { return subtasks_[i]; }
+   Task* Parent() { return parent_; }
    void SetText(string& text) { title_ = text; }
 
 
  private:
+   friend class Project;
+   void UnserializeDates(Serializer* s);
+   
    Task* parent_;
    TaskStatus status_;
    vector<Task*> subtasks_;
    string title_;
    string description_;
    Date creation_date_;
+   Date start_date_;
    Date completion_date_;
 };
 

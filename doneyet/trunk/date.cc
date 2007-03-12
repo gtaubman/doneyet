@@ -17,4 +17,13 @@ void Date::SetToEmptyTime() {
 }
 
 string Date::ToString() {
-  return string(ctime(&time_)); }
+  return string(ctime(&time_));
+}
+
+void Date::Serialize(Serializer* s) {
+  s->Write(static_cast<int>(time_));
+}
+
+void Date::ReadFromSerializer(Serializer* s) {
+  time_ = s->ReadInt();
+}

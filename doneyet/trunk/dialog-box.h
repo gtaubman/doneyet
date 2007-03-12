@@ -21,6 +21,11 @@ class DialogBox {
   static string RunCentered(
       const string& title,
       const string& default_text);
+
+  static string RunCenteredWithWidth(
+      const string& title,
+      const string& default_text,
+      const int width);
 };
 
 #endif
