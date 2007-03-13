@@ -73,10 +73,12 @@ void Project::DrawInWindow(WINDOW* win) {
         list_->EditSelectedItem();
         break;
       case 'd':
-        Task* si = static_cast<Task*>(list_->SelectedItem());
-        list_->SelectPrevItem();
-        DeleteTask(si);
-        ComputeNodeStatus();
+        {
+          Task* si = static_cast<Task*>(list_->SelectedItem());
+          list_->SelectPrevItem();
+          DeleteTask(si);
+          ComputeNodeStatus();
+        }
         break;
       case 'c':
         list_->ToggleExpansionOfSelectedItem();
