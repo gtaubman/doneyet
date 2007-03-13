@@ -56,6 +56,7 @@ void Project::DrawInWindow(WINDOW* win) {
             static_cast<Task*>(list_->SelectedItem())->AddSubTask(t);
           }
         }
+        ComputeNodeStatus();
         break;
       case 'j':
       case KEY_DOWN:
@@ -75,22 +76,29 @@ void Project::DrawInWindow(WINDOW* win) {
         Task* si = static_cast<Task*>(list_->SelectedItem());
         list_->SelectPrevItem();
         DeleteTask(si);
+        ComputeNodeStatus();
+        break;
+      case 'c':
+        list_->ToggleExpansionOfSelectedItem();
         break;
       case 27: // escape
         list_->SelectNoItem();
         break;
       case 32: // space
-        switch (static_cast<Task*>(list_->SelectedItem())->Status()) {
-          case CREATED:
-          case PAUSED:
-            static_cast<Task*>(list_->SelectedItem())->SetStatus(IN_PROGRESS);
-            break;
-          case IN_PROGRESS:
-            static_cast<Task*>(list_->SelectedItem())->SetStatus(COMPLETED);
-            break;
-          case COMPLETED:
-            static_cast<Task*>(list_->SelectedItem())->SetStatus(PAUSED);
-            break;
+        if (!static_cast<Task*>(list_->SelectedItem())->NumChildren()) {
+          switch (static_cast<Task*>(list_->SelectedItem())->Status()) {
+            case CREATED:
+            case PAUSED:
+              static_cast<Task*>(list_->SelectedItem())->SetStatus(IN_PROGRESS);
+              break;
+            case IN_PROGRESS:
+              static_cast<Task*>(list_->SelectedItem())->SetStatus(COMPLETED);
+              break;
+            case COMPLETED:
+              static_cast<Task*>(list_->SelectedItem())->SetStatus(PAUSED);
+              break;
+          }
+          ComputeNodeStatus();
         }
         break;
       case '\r':
@@ -109,10 +117,10 @@ Task* Project::AddTaskNamed(const string& name) {
 
 void Project::Serialize(Serializer* s) {
   // Write our project name to the file.
-  s->Write(name_);
+  s->WriteString(name_);
 
   // Write how many tasks there are.
-  s->Write(NumTasks());
+  s->WriteInt32(NumTasks());
 
   // Serialize the tree.
   for (int i = 0; i < tasks_.size(); ++i) {
@@ -135,7 +143,8 @@ Project* Project::NewProjectFromFile(string path) {
   Project* p = new Project(project_name);
 
   // Find how many tasks there are.
-  int num_tasks = s.ReadInt();
+  int num_tasks = s.ReadInt32();
+  cout << "There are " << num_tasks << " tasks." << endl;
   
   // First read in every task in the file.
   int pointer_val;
@@ -148,14 +157,14 @@ Project* Project::NewProjectFromFile(string path) {
   vector<Task*> tasks;
   for (int i = 0; i < num_tasks; ++i) {
     // Read in the values.
-    pointer_val = s.ReadInt();
+    pointer_val = s.ReadUint64();
     title = s.ReadString();
     description = s.ReadString();
     Task* t = new Task(title, description);
-    status = static_cast<TaskStatus>(s.ReadInt());
+    status = static_cast<TaskStatus>(s.ReadInt32());
     t->UnserializeDates(&s);
 
-    parent_pointer = s.ReadInt();
+    parent_pointer = s.ReadUint64();
 
     // Set values in the new task.
     t->SetStatus(status);
@@ -211,4 +220,48 @@ void Project::Rename() {
       20);
   if (!answer.empty())
     name_ = answer;
+}
+
+// Compute the status of all nodes.  Nodes which have children have their status
+// for them (hence the need for this function).  A node with any IN_PROGRESS
+// child is itself IN_PROGRESS.  If all of a node's children are PAUSED, the
+// node is PAUSED.
+void Project::ComputeNodeStatus() {
+  for (int i = 0; i < tasks_.size(); ++i) {
+    ComputeStatusForTask(tasks_[i]);
+  }
+}
+
+TaskStatus Project::ComputeStatusForTask(Task* t) {
+  if (!t->NumChildren()) {
+    return t->Status();
+  }
+
+  int status_counts[NUM_STATUSES];
+  for (int i = 0; i < NUM_STATUSES; ++i) {
+    status_counts[i] = 0;
+  }
+
+  for (int i = 0; i < t->NumChildren(); ++i) {
+    TaskStatus s = ComputeStatusForTask(t->Child(i));
+    ++status_counts[s];
+  }
+
+  // If any children are in progress, so is this one.
+  if (status_counts[IN_PROGRESS]) {
+    t->SetStatus(IN_PROGRESS);
+    return IN_PROGRESS;
+  }
+
+  // If all children are the same, this node gets that status.
+  for (int i = 0; i < NUM_STATUSES; ++i) {
+    if (status_counts[i] == t->NumChildren()) {
+      t->SetStatus((TaskStatus) i);
+      return (TaskStatus) i;
+    }
+  }
+
+  // Under any other circumstance we're in progress.
+  t->SetStatus(IN_PROGRESS);
+  return IN_PROGRESS;
 }

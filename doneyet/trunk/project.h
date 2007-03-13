@@ -39,6 +39,8 @@ class Project : HierarchicalListDataSource {
   int NumColumns() { return 1; }
  private:
   void Rename();
+  void ComputeNodeStatus();
+  TaskStatus ComputeStatusForTask(Task* t);
 
   string name_;
   vector<Task*> tasks_;

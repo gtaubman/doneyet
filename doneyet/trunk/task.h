@@ -20,6 +20,7 @@ typedef enum TaskStatus_ {
   PAUSED,
   IN_PROGRESS,
   COMPLETED,
+  NUM_STATUSES,
 } TaskStatus;
 
 class Task : public ListItem {
@@ -48,7 +49,6 @@ class Task : public ListItem {
    // Functions required by list item
    const string Text() { return title_; }
    int Color();
-   bool ShouldExpand() { return true; }
    int NumChildren() { return subtasks_.size(); }
    Task* Child(int i) { return subtasks_[i]; }
    Task* Parent() { return parent_; }

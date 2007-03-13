@@ -6,7 +6,9 @@
 ListItem::ListItem()
   : height_(1),
     index_(-1),
-    depth_(-1) { }
+    depth_(-1) {
+  should_expand_ = true;
+}
 
 ListItem::~ListItem() {
   // Nothing to delete at the moment.
@@ -122,7 +124,7 @@ int HierarchicalList::GetInput() {
 }
 
 int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {
-  const string text = prepend_ + node->Text();
+  const string text = (node->ShouldExpand() ? prepend_ : string("+ ")) + node->Text();
 
   window_info info = get_window_info(subwin_);
   wmove(subwin_, line_num, indent);
@@ -345,6 +347,16 @@ void HierarchicalList::EditSelectedItem() {
   selected_item_->SetText(answer);
 }
 
+void HierarchicalList::ToggleExpansionOfSelectedItem() {
+  if (selected_item_) {
+    selected_item_->ToggleExpanded();
+
+    // Update our flattened items because the task_for_line_ mapping just
+    // changed.
+    UpdateFlattenedItems();
+  }
+}
+
 void HierarchicalList::UpdateFlattenedItems() {
   // Do a pre-order traversal of the item tree and add them in that order to our
   // vector.
@@ -385,7 +397,9 @@ void HierarchicalList::PreOrderAddToList(ListItem* l) {
   }
 
   for (int i = 0; i < l->NumChildren(); ++i) {
-    PreOrderAddToList(l->Child(i));
+    if (l->ShouldExpand()) {
+      PreOrderAddToList(l->Child(i));
+    }
   }
 }
 

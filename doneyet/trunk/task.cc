@@ -70,14 +70,14 @@ void Task::SetDescription(const string& description) {
 }
 
 void Task::Serialize(Serializer* s) {
-  s->Write((int)this);
-  s->Write(title_);
-  s->Write(description_);
-  s->Write((int) status_);
+  s->WriteUint64((uint64)this);
+  s->WriteString(title_);
+  s->WriteString(description_);
+  s->WriteInt32(static_cast<int32>(status_));
   creation_date_.Serialize(s);
   start_date_.Serialize(s);
   completion_date_.Serialize(s);
-  s->Write((int) parent_);
+  s->WriteUint64((uint64)parent_);
   for (int i = 0; i < subtasks_.size(); ++i) {
     subtasks_[i]->Serialize(s);
   }

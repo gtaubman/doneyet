@@ -15,30 +15,6 @@ static void Print(char v) {
   }
 }
 
-#define TESTNOTNULL(a) \
-  if (a == NULL) \
-    cout << "Error, NULL stream." << endl;
-
-#define WRITE(a) \
-  { \
-  TESTNOTNULL(out_) \
-  char* ptr_to_data = reinterpret_cast<char*>(&(a)); \
-  ChangeToStdBytes(ptr_to_data, sizeof(a)); \
-  out_->write(ptr_to_data, sizeof(a)); \
-  if (out_->eof()) \
-    done_ = true; \
-  }
-
-#define READ(a) \
-  { \
-  TESTNOTNULL(in_) \
-  char* ptr_to_data = reinterpret_cast<char*>(&(a)); \
-  in_->read(ptr_to_data, sizeof(a)); \
-  ChangeToStdBytes(ptr_to_data, sizeof(a)); \
-  if (in_->eof()) \
-    done_ = true; \
-  }
-
 Serializer::Serializer(const string& inpath,
                        const string& outpath)
   : out_(NULL), in_(NULL), okay_(true), done_(false) {
@@ -68,40 +44,129 @@ Serializer::~Serializer() {
   delete out_;
 }
 
-void Serializer::Write(int i) {
-  WRITE(i);
+void Serializer::WriteInt8(int8 i) {
+  WriteUint8(static_cast<uint8>(i));
 }
 
-void Serializer::Write(float f) {
-  WRITE(f);
+void Serializer::WriteUint8(uint8 i) {
+  assert(out_ != NULL);
+  assert(!done_);
+  const char* c = (const char*) &i;
+  out_->write(c, 1);
 }
 
-void Serializer::Write(string str) {
+void Serializer::WriteInt16(int16 i) {
+  WriteUint16(i);
+}
+
+void Serializer::WriteUint16(uint16 i) {
+  WriteUint8(i >> 8);
+  WriteUint8(i);
+}
+
+void Serializer::WriteInt32(int i) {
+  WriteUint32(static_cast<uint32>(i));
+}
+
+void Serializer::WriteUint32(uint32 ui) {
+  WriteUint16(ui >> 16);
+  WriteUint16(ui);
+}
+
+void Serializer::WriteInt64(int64 i) {
+  WriteUint64(i);
+}
+
+void Serializer::WriteUint64(uint64 i) {
+  WriteUint32(i >> 32);
+  WriteUint32(i);
+}
+
+void Serializer::WriteFloat(float f) {
+  uint32* i = (uint32*) (&f);
+  WriteUint32(*i);
+}
+
+void Serializer::WriteDouble(double d) {
+  uint64* i = (uint64*) (&d);
+  WriteUint64(*i);
+}
+
+void Serializer::WriteString(string str) {
   int length = str.length();
-  const char* s = str.c_str();
-  WRITE(length);
+  WriteUint32(length);
 
   for (int i = 0; i < length; ++i) {
-    char c = s[i];
-    WRITE(c);
+    WriteUint8(str[i]);
   }
 }
 
-int Serializer::ReadInt() {
-  int i = 0;
-  READ(i);
+uint8 Serializer::ReadUint8() {
+  assert(in_ != NULL);
+
+  uint8 i = 0;
+  char* c = (char*) &i;
+  in_->read(c, 1);
+
+  if (in_->eof()) {
+    done_ = true;
+  }
+
   return i;
 }
 
+int8 Serializer::ReadInt8() {
+  return static_cast<int8>(ReadUint8());
+}
+
+uint16 Serializer::ReadUint16() {
+  uint16 i = 0;
+  i |= (static_cast<uint16>(ReadUint8()) << 8);
+  i |= ReadUint8();
+  return i;
+}
+
+int16 Serializer::ReadInt16() {
+  return static_cast<int16>(ReadUint16());
+}
+
+uint32 Serializer::ReadUint32() {
+  uint32 i = 0;
+  i |= (static_cast<uint32>(ReadUint16()) << 16);
+  i |= ReadUint16();
+  return i;
+}
+
+int32 Serializer::ReadInt32() {
+  return static_cast<int32>(ReadUint32());
+}
+
+uint64 Serializer::ReadUint64() {
+  uint64 i = 0;
+  i |= (static_cast<uint64>(ReadUint32()) << 32);
+  i |= ReadUint32();
+  return i;
+}
+
+int64 Serializer::ReadInt64() {
+  return static_cast<int64>(ReadUint64());
+}
+
 float Serializer::ReadFloat() {
-  float f = 0;
-  READ(f);
-  return f;
+  uint32 i = ReadUint32();
+  float* f = (float*) &i;
+  return *f;
+}
+
+double Serializer::ReadDouble() {
+  uint64 i = ReadUint64();
+  double* d = (double*) &i;
+  return *d;
 }
 
 string Serializer::ReadString() {
   // First read the size of the string
-  int str_size = ReadInt();
+  uint32 str_size = ReadUint32();
 
   char data[1000] = {0};
   in_->read(data, str_size);

@@ -21,9 +21,9 @@ string Date::ToString() {
 }
 
 void Date::Serialize(Serializer* s) {
-  s->Write(static_cast<int>(time_));
+  s->WriteInt32(static_cast<int32>(time_));
 }
 
 void Date::ReadFromSerializer(Serializer* s) {
-  time_ = s->ReadInt();
+  time_ = s->ReadInt32();
 }

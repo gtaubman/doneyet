@@ -13,7 +13,6 @@ class ListItem {
   ListItem();
   virtual ~ListItem();
   virtual const string Text() = 0;
-  virtual bool ShouldExpand() = 0;
   virtual int NumChildren() = 0;
   virtual ListItem* Child(int i) = 0;
   virtual ListItem* Parent() = 0;
@@ -27,16 +26,17 @@ class ListItem {
   virtual int Depth() { return depth_; }
   virtual void SetDepth(int d) { depth_ = d; }
   virtual int Color() { return 0; }
+  virtual bool ShouldExpand() { return should_expand_; }
+  virtual void ToggleExpanded() {
+    if (NumChildren())
+      should_expand_ = !should_expand_;
+  }
 
  private:
-  // How many lines this entry takes up.
-  int height_;
-
-  // Which number item we are in the list.
-  int index_;
-
-  // How many parents we have before getting to a root.
-  int depth_;
+  int height_;   // How many lines this entry takes up.
+  int index_;    // Which number item we are in the list.
+  int depth_;    // How many parents we have before getting to a root.
+  bool should_expand_;   // Whether or not to draw this node's children.
 };
 
 // This is a protocol defining how data can be accessed by the HierarchicalList.
@@ -73,6 +73,8 @@ class HierarchicalList {
 
   void EditSelectedItem();
   ListItem* SelectedItem() { return selected_item_; }
+
+  void ToggleExpansionOfSelectedItem();
 
  private:
   int Draw(ListItem* node, int line_num, int indent);
