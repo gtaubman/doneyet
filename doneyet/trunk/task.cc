@@ -21,6 +21,14 @@ Task::~Task() {
   }
 }
 
+Task* Task::NewTaskFromSerializer(Serializer* s) {
+  string title = s->ReadString();
+  string description = s->ReadString();
+  Task* t = new Task(title, description);
+  t->UnSerializeFromSerializer(s);
+  return t;
+}
+
 void Task::AddSubTask(Task* subtask) {
   subtask->SetParent(this);
   subtasks_.push_back(subtask);
@@ -83,7 +91,8 @@ void Task::Serialize(Serializer* s) {
   }
 }
 
-void Task::UnserializeDates(Serializer* s) {
+void Task::UnSerializeFromSerializer(Serializer* s) {
+  status_ = static_cast<TaskStatus>(s->ReadInt32());
   creation_date_.ReadFromSerializer(s);
   start_date_.ReadFromSerializer(s);
   completion_date_.ReadFromSerializer(s);

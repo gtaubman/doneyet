@@ -28,6 +28,7 @@ class Task : public ListItem {
    Task(const string& title,
         const string& description);
    virtual ~Task();
+   static Task* NewTaskFromSerializer(Serializer* s);
 
    void SetTitle(const string& title);
    void SetDescription(const string& description);
@@ -57,7 +58,7 @@ class Task : public ListItem {
 
  private:
    friend class Project;
-   void UnserializeDates(Serializer* s);
+   void UnSerializeFromSerializer(Serializer* s);
    
    Task* parent_;
    TaskStatus status_;

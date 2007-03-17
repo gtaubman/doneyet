@@ -344,7 +344,9 @@ void HierarchicalList::EditSelectedItem() {
       winwidth(win_) / 3,
       winheight(win_) / 3);
 
-  selected_item_->SetText(answer);
+  if (!answer.empty()) {
+    selected_item_->SetText(answer);
+  }
 }
 
 void HierarchicalList::ToggleExpansionOfSelectedItem() {

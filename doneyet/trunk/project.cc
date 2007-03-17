@@ -41,6 +41,7 @@ void Project::DrawInWindow(WINDOW* win) {
   bool done = false;
   string tmp_str;
   while (!done && (ch = getch())) {
+    Task* si = static_cast<Task*>(list_->SelectedItem());
     switch (ch) {
       case 'a':
       case 'A':
@@ -50,10 +51,10 @@ void Project::DrawInWindow(WINDOW* win) {
             winheight(win) / 3);
         if (!tmp_str.empty()) {
           Task* t = new Task(tmp_str, "");
-          if (list_->SelectedItem() == NULL) {
+          if (si == NULL) {
             tasks_.push_back(t);
           } else {
-            static_cast<Task*>(list_->SelectedItem())->AddSubTask(t);
+            si->AddSubTask(t);
           }
         }
         ComputeNodeStatus();
@@ -73,12 +74,9 @@ void Project::DrawInWindow(WINDOW* win) {
         list_->EditSelectedItem();
         break;
       case 'd':
-        {
-          Task* si = static_cast<Task*>(list_->SelectedItem());
-          list_->SelectPrevItem();
-          DeleteTask(si);
-          ComputeNodeStatus();
-        }
+        list_->SelectPrevItem();
+        DeleteTask(si);
+        ComputeNodeStatus();
         break;
       case 'c':
         list_->ToggleExpansionOfSelectedItem();
@@ -87,17 +85,17 @@ void Project::DrawInWindow(WINDOW* win) {
         list_->SelectNoItem();
         break;
       case 32: // space
-        if (!static_cast<Task*>(list_->SelectedItem())->NumChildren()) {
-          switch (static_cast<Task*>(list_->SelectedItem())->Status()) {
+        if (si && !si->NumChildren()) {
+          switch (si->Status()) {
             case CREATED:
             case PAUSED:
-              static_cast<Task*>(list_->SelectedItem())->SetStatus(IN_PROGRESS);
+              si->SetStatus(IN_PROGRESS);
               break;
             case IN_PROGRESS:
-              static_cast<Task*>(list_->SelectedItem())->SetStatus(COMPLETED);
+              si->SetStatus(COMPLETED);
               break;
             case COMPLETED:
-              static_cast<Task*>(list_->SelectedItem())->SetStatus(PAUSED);
+              si->SetStatus(PAUSED);
               break;
           }
           ComputeNodeStatus();
@@ -118,6 +116,9 @@ Task* Project::AddTaskNamed(const string& name) {
 }
 
 void Project::Serialize(Serializer* s) {
+  // Write a serialization version.
+  s->WriteInt64(0);
+
   // Write our project name to the file.
   s->WriteString(name_);
 
@@ -138,7 +139,10 @@ Project* Project::NewProjectFromFile(string path) {
     cout << "Error opening saved project: \"" << path << "\"" << endl;
     return NULL;
   }
-
+  
+  // Read the file version
+  uint64 file_version = s.ReadUint64();
+  
   // Find the project's name
   string project_name = s.ReadString();
   printf("PROJECT NAME: %s\n", project_name.c_str());
@@ -149,29 +153,19 @@ Project* Project::NewProjectFromFile(string path) {
   cout << "There are " << num_tasks << " tasks." << endl;
   
   // First read in every task in the file.
-  int pointer_val;
-  string title;
-  string description;
-  TaskStatus status;
+  int task_identifier;
   int parent_pointer;
   map<int, Task*> task_map;
   map<Task*, int> tasks_parents;
   vector<Task*> tasks;
   for (int i = 0; i < num_tasks; ++i) {
     // Read in the values.
-    pointer_val = s.ReadUint64();
-    title = s.ReadString();
-    description = s.ReadString();
-    Task* t = new Task(title, description);
-    status = static_cast<TaskStatus>(s.ReadInt32());
-    t->UnserializeDates(&s);
-
+    task_identifier = s.ReadUint64();
+    Task* t = Task::NewTaskFromSerializer(&s);
     parent_pointer = s.ReadUint64();
 
-    // Set values in the new task.
-    t->SetStatus(status);
     tasks_parents[t] = parent_pointer;
-    task_map[pointer_val] = t;
+    task_map[task_identifier] = t;
     tasks.push_back(t);
   }
   
