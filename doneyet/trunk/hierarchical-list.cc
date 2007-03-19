@@ -14,40 +14,19 @@ ListItem::~ListItem() {
   // Nothing to delete at the moment.
 }
 
-int ListItem::ComputeHeight(int width, string& prepend) {
-  int lines_used = 1;
-  string text = prepend + Text();
-  int curx = 0;
-  for (int i = 0; i < text.size(); ++i) {
-    int chars_to_ws = chars_to_whitespace(text, i);
-
-    // Make sure to keep this line in sync with the equivalent line in Draw()
-    if (curx + chars_to_ws > width) {
-      ++lines_used;
-      curx = prepend.length();
-    }
-    ++curx;
-  }
-
-  return lines_used;
-}
-
 HierarchicalList::HierarchicalList(string& name,
     int height,
     int width,
     int y,
-    int x) {
+    int x,
+    const string& column_spec) {
   // Create the frills window
-  win_ = newwin(height, width, y, x);
-
-  // Create the window that actual holds the text.  We need to leave three lines
-  // at the top: one for the border, one for the label, one for the line under
-  // the label.  We also need to leave three on the right.  Two for the scrollbar
-  // and one for the righthand border.  Also add one on the left for the line
-  // indicator.
-  subwin_ = derwin(win_, height - 3, width - 3, 3, 1);
+  height_ = height;
+  width_ = width;
+  win_ = newwin(height_, width_, y, x);
   top_line_ = 0;
   selected_line_ = -1;
+  selected_column_ = 0;
   win_rel_selected_line_ = -1;
   total_lines_ = 0;
   indent_ = 2;
@@ -55,11 +34,16 @@ HierarchicalList::HierarchicalList(string& name,
   selected_item_ = NULL;
   prepend_ = "- ";
   flush_left_text_border_ = true;
+  draw_column_headers_ = true;
   prepend_size_ = prepend_.length();
+
+  ParseColumnSpec(column_spec);
 }
 
 HierarchicalList::~HierarchicalList() {
-  delwin(subwin_);
+  for (int i = 0; i < columns_.size(); ++i) {
+    delwin(columns_[i]);
+  }
   delwin(win_);
 }
 
@@ -69,102 +53,171 @@ void HierarchicalList::SetDatasource(HierarchicalListDataSource* d) {
 }
 
 void HierarchicalList::Draw() {
-  UpdateFlattenedItems();
   // First figure out how big our sub-window is:
-  window_info sinfo = get_window_info(subwin_);
-  int swidth = sinfo.width;
-  int sheight = sinfo.height;
+  int swidth = usable_width_;
+  int sheight = column_height_;
 
-  // Clear the window 'cause who knows what was there before.
-  wclear(subwin_);
+  // Clear all of the columns
+  for (int i = 0; i < columns_.size(); ++i) {
+    wclear(columns_[i]);
+  }
 
   int lines_used = -top_line_;
   for (int i = 0; i < NumRoots(); ++i) {
     lines_used += Draw(Root(i), lines_used, 0);
   }
 
-  // Now that we're done drawing text, draw the frills:
-  window_info info = get_window_info(win_);
-  int width = info.width;
-  int height = info.height;
+  if (draw_column_headers_) {
+    int col_start = 1;
+    wattron(win_, COLOR_PAIR(1) | A_BOLD);
+    int col_height = 1;
+    if (!name_.empty())
+      col_height += 2;
+    for (int i = 0; i < columns_.size(); ++i) {
+      int col_width = CursesUtils::winwidth(columns_[i]);
+      int xstart = col_start + floor(col_width / 2) -
+        ceil(strlen(column_names_[i].c_str()) / 2);
+      mvwprintw(win_, col_height, xstart, "%s", column_names_[i].c_str());
 
-  // Draw the scrollbar
-  for (int i = 3; i < sheight + 2; ++i) {
-    mvwaddch(win_, i, swidth + 1, ACS_CKBOARD);
-  }
-  // Draw the block.
-  if (total_lines_) {
-    mvwaddch(win_, 3 + lrintf(selected_line_ * (winheight(subwin_) - 1) /
-          total_lines_), swidth + 1, ACS_BLOCK);
+      col_start += CursesUtils::winwidth(columns_[i]) + 1;
+    }
+    wattroff(win_, COLOR_PAIR(1) | A_BOLD);
+
+    // Draw an underline
+    mvwhline(win_, col_height + 1, 1, ACS_HLINE, CursesUtils::winwidth(win_) - 2);
   }
   
-  // Draw the title
-  print_in_middle(win_, 1, 0, width, name_.c_str(), COLOR_PAIR(2));
+  // Now that we're done drawing text, draw the frills:
+  window_info info = CursesUtils::get_window_info(win_);
+  int width = info.width;
+  int height = info.height;
 
   // Draw the border around the frill window
   box(win_, 0, 0);
 
-  // Draw the divider between title and text
-  wmove(win_, 2, 0);
-  waddch(win_, ACS_LTEE);
-  for (int i = 1; i < width - 1; ++i) {
-    waddch(win_, ACS_HLINE);
+  // Draw the scrollbar
+  const int sbstart = (name_.empty() ? 1 : 3) + (draw_column_headers_ ? 2 : 0);
+  for (int i = sbstart; i < height - 1; ++i) {
+    mvwaddch(win_, i, width - 2, ACS_CKBOARD);
   }
-  waddch(win_, ACS_RTEE);
 
+  // Draw the block.
+  if (total_lines_) {
+    mvwaddch(win_, sbstart + lrintf(selected_line_ * (column_height_ - 1) /
+          total_lines_), width - 2, ACS_BLOCK);
+  }
   
+  // Draw the lines between columns:
+  if (columns_.size() > 1) {
+    int draw_at = 1;
+    for (int c = 0; c < columns_.size(); ++c) {
+      draw_at += CursesUtils::winwidth(columns_[c]);
+      mvwvline(win_, sbstart - (draw_column_headers_ ? 2 : 0), draw_at, ACS_VLINE,
+          column_height_ + (draw_column_headers_ ? 2 : 0));
+      ++draw_at;
+    }
+  }
+  
+  if (!name_.empty()) {
+    // Draw the title
+    CursesUtils::print_in_middle(win_, 1, 0, width, name_.c_str(), COLOR_PAIR(2));
+
+    // Draw the divider between title and text
+    wmove(win_, 2, 0);
+    waddch(win_, ACS_LTEE);
+    for (int i = 1; i < width - 1; ++i) {
+      waddch(win_, ACS_HLINE);
+    }
+    waddch(win_, ACS_RTEE);
+  }
+
+  // Fix things up with some plus symbols:
+  int col_start = 1;
+  for (int i = 0; i < columns_.size(); ++i) {
+    col_start += CursesUtils::winwidth(columns_[i]);
+    int xheight = 0;
+    if (!name_.empty()) {
+      xheight += 2;
+    }
+    mvwaddch(win_, xheight, col_start, ACS_TTEE);
+
+    if (draw_column_headers_) {
+      xheight += 2;
+      mvwaddch(win_, xheight, col_start, ACS_PLUS);
+    }
+    ++col_start;
+  }
+  
+  mvwaddch(columns_[0], win_rel_selected_line_, 0, '%');
+  
+  refresh();
   wrefresh(win_);
 }
 
-int HierarchicalList::GetInput() {
-  UpdateFlattenedItems();
-  Draw();
-
-  return wgetch(win_);
-}
-
 int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {
-  const string text = (node->ShouldExpand() ? prepend_ : string("+ ")) + node->Text();
+  int max_lines_used = 0;
+  for (int c = 0; c < columns_.size(); ++c) {
+    WINDOW* column = columns_[c];
+    string text = "";
+    if (!c)
+      text += (node->ShouldExpand() ? prepend_ : string("+ "));
+    text += node->TextForColumn(column_names_[c]);
 
-  window_info info = get_window_info(subwin_);
-  wmove(subwin_, line_num, indent);
-  int curx = indent;
-  int cury = line_num;
+    wmove(column, line_num, indent);
+    int curx = !c ? indent : 0;   // Only indent the first column
+    int cury = line_num;
 
-  // If we're selected reverse the text
-  if (node == selected_item_) {
-    wattron(subwin_, A_UNDERLINE | node->Color());
-  } else {
-    wattron(subwin_, node->Color());
-  }
-  
-  int lines_used = 1;
-  for (int i = 0; i < text.size(); ++i) {
-    // Figure out how many characters from i to the next white space.
-    int chars_to_ws = chars_to_whitespace(text, i);
-    if (curx + chars_to_ws > info.width) {
-      curx = indent + (flush_left_text_border_ ? prepend_size_ : 0);
-      ++cury;
-      ++lines_used;
+    // If we're selected reverse the text
+    if (node == selected_item_) {
+      int attrs = A_UNDERLINE | node->Color();
+      if (c == selected_column_) {
+        attrs |= A_REVERSE;
+      }
+      wattron(column, attrs);
+    } else {
+      wattron(column, node->Color());
     }
-    mvwaddch(subwin_, cury, curx++, text.c_str()[i]);
-  }
 
-  // If we're selected, we're done reversing the text.
-  if (node == selected_item_) {
-    wattroff(subwin_, A_UNDERLINE | node->Color());
-  } else {
-    wattroff(subwin_, node->Color());
+    int lines_used = 1;
+    int column_width = CursesUtils::winwidth(column);
+    for (int i = 0; i < text.size(); ++i) {
+      // Figure out how many characters from i to the next white space.
+      int chars_to_ws = StrUtils::chars_to_whitespace(text, i);
+      if (curx + chars_to_ws > column_width) {
+        curx = 0;
+        // We only indent the first column
+        if (!c)
+          curx += indent + prepend_size_;
+        ++cury;
+        ++lines_used;
+      }
+      mvwaddch(column, cury, curx++, text.c_str()[i]);
+    }
+
+    // If we're selected, we're done reversing the text.
+    if (node == selected_item_) {
+      int attrs = A_UNDERLINE | node->Color();
+      if (c == selected_column_) {
+        attrs |= A_REVERSE;
+      }
+      wattroff(column, attrs);
+    } else {
+      wattroff(column, node->Color());
+    }
+    if (lines_used > max_lines_used) {
+      max_lines_used = lines_used;
+    }
   }
 
   // now that we've drawn ourselves, draw our children:
   if (node->ShouldExpand()) {
     for (int i = 0; i < node->NumChildren(); ++i) {
-      lines_used += Draw(node->Child(i), line_num + lines_used, indent + indent_);
+      // We only want to indent the first column's items.
+      int ind = indent + indent_;
+      max_lines_used += Draw(node->Child(i), line_num + max_lines_used, ind);
     }
   }
-
-  return lines_used;
+  return max_lines_used;
 }
 
 void HierarchicalList::SelectPrevItem() {
@@ -200,8 +253,8 @@ void HierarchicalList::SelectNextItem() {
     // We just hit next when the last guy was selected.  Don't do anything.
     return;
   } else if (win_rel_selected_line_ + selected_item_->Height() +
-      flattened_items_[selected_item_->Index() + 1]->Height() >=
-      winheight(subwin_)) {
+      flattened_items_[selected_item_->Index() + 1]->Height() >
+      column_height_) {
     // We need to scroll to show the next guy at the bottom.
     SelectItem(selected_item_->Index() + 1, SCROLL_BOTTOM);
   } else {
@@ -219,10 +272,10 @@ void HierarchicalList::SelectPrevLine() {
   if (selected_item_ == NULL) {
     // Nobody's selected.  Select the last guy.
     SelectItem(flattened_items_.size() - 1);
-    if (total_lines_ > winheight(subwin_)) {
+    if (total_lines_ > column_height_) {
       // We need to scroll things to get to the last guy.
-      top_line_ = total_lines_ - (winheight(subwin_) - 1);
-      win_rel_selected_line_ = winheight(subwin_) - 1;
+      top_line_ = total_lines_ - (column_height_ - 1);
+      win_rel_selected_line_ = column_height_ - 1;
       selected_line_ = total_lines_;
     } else {
       top_line_ = 0;
@@ -263,7 +316,7 @@ void HierarchicalList::SelectNextLine() {
     return;
   }
 
-  if (win_rel_selected_line_ + 1 == winheight(subwin_) - 1) {
+  if (win_rel_selected_line_ + 1 == column_height_ - 1) {
     // We're going to be at the bottom of the window.
     ++top_line_;
   } else {
@@ -301,13 +354,13 @@ void HierarchicalList::SelectItem(int item_index, ScrollType type) {
     // Here things get complicated.  The situation can arise where we don't
     // actually have enough lines of ListItems in order to place the desired
     // item at the bottom of the window.
-    if (total_lines_ >= winheight(subwin_)) {
+    if (total_lines_ >= column_height_) {
       // We have enough items to put one at the bottom.
       selected_item_ = flattened_items_[item_index];
-      top_line_ = NumLinesDownInList(selected_item_) -
-        (winheight(subwin_) - selected_item_->Height()) + 1;
+      top_line_ = NumLinesDownInList(selected_item_) +
+        selected_item_->Height() - column_height_;
       selected_line_ = NumLinesDownInList(selected_item_);
-      win_rel_selected_line_ = winheight(subwin_) - selected_item_->Height() - 1;
+      win_rel_selected_line_ = column_height_ - selected_item_->Height();
     } else {
       // We don't have enough items to warrant putting one at the bottom of the
       // screen.  In this case, we act just like a normal NONE scrolltype had
@@ -335,18 +388,82 @@ void HierarchicalList::SelectItem(int item_index) {
   }
 }
 
+bool HierarchicalList::ParseColumnSpec(const string& spec) {
+  if (spec.empty())
+    return false;
+
+  int top_offset = 1;              // Account for the top border.
+  if (!name_.empty())
+    top_offset += 2;               // Title and divider line.
+  if (draw_column_headers_)
+    top_offset += 2;               // Column name and divider line.
+  int left_offset = 1;             // Account for the left border.
+  int usable_width = width_ - 3;   // Left and right borders + scroll bar.
+  int usable_height = height_ - (1 + top_offset);  // bottom border + top border
+
+  // First we need to split things on commas:
+  vector<string> column_specs;
+  StrUtils::SplitStringUsing(",", spec, &column_specs);
+
+  // Now that we know how many columns we have, we need to update the
+  // usable_width variable to take into account the lines drawn between columns.
+  usable_width -= (column_specs.size() - 1);
+
+  // Next for each column we have to create the window that will hold its text.
+  int percent_width_used = 0;
+  for (int i = 0; i < column_specs.size(); ++i) {
+    vector<string> column_info;
+    StrUtils::SplitStringUsing(":", column_specs[i], &column_info);
+    if (column_info.size() != 2 ||
+        column_info[0].empty() ||
+        column_info[1].empty()) {
+      return false;
+    }
+
+    // Figure out how wide to make this column.
+    int width = -1;
+    if (column_info[1] == "X" ||
+        column_info[1] == "x") {
+      if (i != column_specs.size() - 1) {
+        // If we're not the last column to be made, bail out.
+        for (int j = 0; j < columns_.size(); ++j) {
+          delwin(columns_[j]);
+        }
+        return false;
+      } else {
+        width = usable_width * ((100 - percent_width_used) / 100.0);
+      }
+    } else {
+      int w = atoi(column_info[1].c_str());
+      percent_width_used += w;
+      width = usable_width * (w / 100.0);
+    }
+
+    // Create the column:
+    column_names_.push_back(column_info[0]);
+    WINDOW* col = derwin(win_, usable_height, width, top_offset, left_offset);
+    columns_.push_back(col);
+
+    // Put a one char space between cols
+    left_offset += width + 1;
+  }
+  usable_width_ = usable_width;
+  column_height_ = usable_height;
+}
+
 void HierarchicalList::EditSelectedItem() {
   if (selected_item_ == NULL)
     return;
 
   string answer = DialogBox::RunMultiLine("Please Edit Task",
-      selected_item_->Text(),
-      winwidth(win_) / 3,
-      winheight(win_) / 3);
+      selected_item_->TextForColumn(column_names_[0]),
+      CursesUtils::winwidth(win_) / 3,
+      CursesUtils::winheight(win_) / 3);
 
   if (!answer.empty()) {
     selected_item_->SetText(answer);
   }
+  UpdateFlattenedItems();
 }
 
 void HierarchicalList::ToggleExpansionOfSelectedItem() {
@@ -373,15 +490,35 @@ void HierarchicalList::UpdateFlattenedItems() {
     flattened_items_[i]->SetIndex(i);
   }
 
-  // Get how much space we have to draw in:
-  window_info info = get_window_info(subwin_);
-  
   // Compute the heights of all of our list items.
   item_for_line_.clear();
   for (int i = 0; i < flattened_items_.size(); ++i) {
     ListItem* item = flattened_items_[i];
-    int height = item->ComputeHeight(info.width - item->Depth() * indent_,
-                                     prepend_);
+
+    // Figure out how much space we have for each column this list item will
+    // draw in.  We want the height of the whole list item to be the max of the
+    // heights it takes up in every column.
+    int height = 1;
+    for (int c = 0; c < columns_.size(); ++c) {
+      int testing_width = CursesUtils::winwidth(columns_[c]);
+      int prepend_size = 0;
+      if (!c) {
+        testing_width -= item->Depth() * indent_;
+        prepend_size = prepend_.size();
+      }
+      string text = "";
+      if (!c) {
+        text += prepend_;
+      }
+      text += item->TextForColumn(column_names_[c]);
+      int height_in_col_c =
+        StrUtils::HeightOfTextInWidth(testing_width,
+                                      text,
+                                      prepend_size);
+      if (height_in_col_c > height) {
+        height = height_in_col_c;
+      }
+    }
     item->SetHeight(height);
     for (int j = 0; j < height; ++j) {
       item_for_line_.push_back(item);

@@ -5,6 +5,14 @@
 #include <string>
 #include <vector>
 
+// The column spec is comprised of as many characters as columns.  It controls
+// column sizing and naming.  Each column is defined by a pair consisting of a
+// name and percent of the total width you want this column to be.  An example:
+// "Column One:88,Column Two:12"
+// The final column is allowed to have a width of X which will give it any
+// unused space such as:
+// "One:20,Two:24,Three:X"
+
 using std::string;
 using std::vector;
 
@@ -12,13 +20,12 @@ class ListItem {
  public:
   ListItem();
   virtual ~ListItem();
-  virtual const string Text() = 0;
+  virtual const string TextForColumn(const string& c) = 0;
   virtual int NumChildren() = 0;
   virtual ListItem* Child(int i) = 0;
   virtual ListItem* Parent() = 0;
   virtual void SetText(string& text) = 0;
 
-  virtual int ComputeHeight(int width, string& prepend);
   virtual int Height() { return height_; }
   virtual void SetHeight(int h) { height_ = h; }
   virtual int Index() { return index_; }
@@ -56,13 +63,14 @@ enum ScrollType {
 
 class HierarchicalList {
  public:
-  HierarchicalList(string& name, int height, int width, int y, int x);
+  HierarchicalList(string& name, int height, int width, int y, int x, const
+      string& column_spec);
   virtual ~HierarchicalList();
 
   void SetDatasource(HierarchicalListDataSource* d);
 
-  int GetInput();
   void Draw();
+  void Update() { UpdateFlattenedItems(); }
   void SelectPrevItem();
   void SelectNextItem();
 
@@ -70,6 +78,8 @@ class HierarchicalList {
   void SelectNextLine();
 
   void SelectNoItem() { SelectItem(-1); }
+  void SelectNextColumn() { selected_column_ = (selected_column_ + 1) %
+    columns_.size(); }
 
   void EditSelectedItem();
   ListItem* SelectedItem() { return selected_item_; }
@@ -84,15 +94,26 @@ class HierarchicalList {
   int NumLinesDownInList(ListItem* item);
   void SelectItem(int item_index);
   void SelectItem(int item_index, ScrollType type);
+  bool ParseColumnSpec(const string& spec);
 
   // Convenience methods:
   int NumRoots() { return datasource_->NumRoots(); }
   ListItem* Root(int i) { return datasource_->Root(i); }
 
-  // These two windows hold the the frills such as title and scrollbar, and the
-  // actual text.
+  // win_ holds all the frills for the window such as the title bar and the
+  // scrollbar and any vertical lines being drawn for column dividers.
   WINDOW* win_;
-  WINDOW* subwin_;
+  int height_;
+  int width_;
+  int column_height_;
+  int usable_width_;
+
+  // This is a list of columns in order.
+  vector<WINDOW*> columns_;
+  vector<string> column_names_;
+
+  // Which column we currently have selected.
+  int selected_column_;
 
   // Which line to show at the top of the window.  Goes from 0 to the sum of all
   // the heights of all the items.
@@ -138,6 +159,7 @@ class HierarchicalList {
   // blah blah.
   bool flush_left_text_border_;
 
+  bool draw_column_headers_;
 };
 
 #endif

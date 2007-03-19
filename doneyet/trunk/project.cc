@@ -28,12 +28,14 @@ Project* Project::NewProject() {
 }
 
 void Project::DrawInWindow(WINDOW* win) {
-  window_info info = get_window_info(win);
+  window_info info = CursesUtils::get_window_info(win);
+  string name = "";
   list_ = new HierarchicalList(name_,
       info.height,
       info.width,
       0,
-      0);
+      0,
+      "Task:50,Created:15,Completed:15,User:10,Duration:10");
   list_->SetDatasource(this);
   list_->Draw();
 
@@ -47,8 +49,8 @@ void Project::DrawInWindow(WINDOW* win) {
       case 'A':
         tmp_str = DialogBox::RunMultiLine("Enter New Task",
             "",
-            winwidth(win) / 3,
-            winheight(win) / 3);
+            CursesUtils::winwidth(win) / 3,
+            CursesUtils::winheight(win) / 3);
         if (!tmp_str.empty()) {
           Task* t = new Task(tmp_str, "");
           if (si == NULL) {
@@ -58,6 +60,7 @@ void Project::DrawInWindow(WINDOW* win) {
           }
         }
         ComputeNodeStatus();
+        list_->Update();
         break;
       case 'j':
       case KEY_DOWN:
@@ -77,6 +80,7 @@ void Project::DrawInWindow(WINDOW* win) {
         list_->SelectPrevItem();
         DeleteTask(si);
         ComputeNodeStatus();
+        list_->Update();
         break;
       case 'c':
         list_->ToggleExpansionOfSelectedItem();
@@ -100,6 +104,9 @@ void Project::DrawInWindow(WINDOW* win) {
           }
           ComputeNodeStatus();
         }
+        break;
+      case '\t':
+        list_->SelectNextColumn();
         break;
       case '\r':
         done = true;

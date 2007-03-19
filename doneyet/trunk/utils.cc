@@ -1,8 +1,9 @@
 #include <string.h>
 #include "utils.h"
+#include <stdio.h>
 
 // Returns the origin and dimensions of an ncurses window.
-window_info get_window_info(WINDOW* win) {
+window_info CursesUtils::get_window_info(WINDOW* win) {
   // The struct to return;
   window_info info;
 
@@ -20,7 +21,7 @@ window_info get_window_info(WINDOW* win) {
   return info;
 }
 
-void print_in_middle(WINDOW *win,
+void CursesUtils::print_in_middle(WINDOW *win,
     int starty,
     int startx,
     int width,
@@ -53,27 +54,26 @@ void print_in_middle(WINDOW *win,
     waddch(win, ACS_HLINE);
   }
   waddch(win, ACS_RTEE);
-  refresh();
 }
 
-int winheight(WINDOW* win) {
+int CursesUtils::winheight(WINDOW* win) {
   int w,h;
   getmaxyx(win, h, w);
   return h;
 }
 
-int winwidth(WINDOW* win) {
+int CursesUtils::winwidth(WINDOW* win) {
   int w,h;
   getmaxyx(win, h, w);
   return w;
 }
 
-int chars_to_whitespace(const string& str, int i) {
+int StrUtils::chars_to_whitespace(const string& str, int i) {
   int p = str.find(" ", i);
   return p == string::npos ? str.size() - i : p - i;
 }
 
-void trim_multiple_spaces(string& str) {
+void StrUtils::trim_multiple_spaces(string& str) {
   int space = 0;
   while (true) {
     space = str.find_first_of(" ", space);
@@ -85,4 +85,40 @@ void trim_multiple_spaces(string& str) {
     str.erase(space, next_char - space);
     ++space;
   }
+}
+
+void StrUtils::SplitStringUsing(const string splitter,
+    const string str,
+    vector<string>* vec) {
+  if (!splitter.size()) {
+    return;
+  }
+
+  int start_pos = 0;
+  int find_pos = string::npos;
+  while ((find_pos = str.find(splitter, start_pos)) != string::npos) {
+    vec->push_back(str.substr(start_pos, find_pos - start_pos));
+    start_pos = find_pos + splitter.size();
+  }
+  if (start_pos != str.size()) {
+    vec->push_back(str.substr(start_pos, find_pos));
+  }
+}
+
+int StrUtils::HeightOfTextInWidth(int width, const string& text, int
+    non_first_line_indent) {
+  if (width == 107) {
+    assert(non_first_line_indent == 2);
+  }
+  int lines_used = 1;
+  int curx = 0;
+  for (int i = 0; i < text.size(); ++i) {
+    int chars_to_ws = chars_to_whitespace(text, i);
+    if (curx + chars_to_ws > width) {
+      ++lines_used;
+      curx = non_first_line_indent;
+    }
+    ++curx;
+  }
+  return lines_used;
 }

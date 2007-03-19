@@ -48,7 +48,13 @@ class Task : public ListItem {
    int NumOffspring();
 
    // Functions required by list item
-   const string Text() { return title_; }
+   const string TextForColumn(const string& c) {
+     if (c == "Task") return title_;
+     if (c == "Created") return creation_date_.ToString();
+     if (c == "Completed") return completion_date_.ToString();
+     if (c == "User") return "gtaubman";
+     return "UNKNOWN";
+   }
    int Color();
    int NumChildren() { return subtasks_.size(); }
    Task* Child(int i) { return subtasks_[i]; }

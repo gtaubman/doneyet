@@ -39,7 +39,7 @@ string DialogBox::RunMultiLine(const string& title,
 
   // Get the dimensions of the main screen so we can put this new window in the
   // center of it.
-  window_info info = get_window_info(stdscr);
+  window_info info = CursesUtils::get_window_info(stdscr);
 
   // Create the outer form window
   WINDOW* form_win = newwin(form_win_rows,
@@ -62,7 +62,12 @@ string DialogBox::RunMultiLine(const string& title,
   box(form_win, 0, 0);
   
   // Draw the label text
-  print_in_middle(form_win, 1, 0, form_win_cols, title.c_str(), COLOR_PAIR(1));
+  CursesUtils::print_in_middle(form_win,
+      1,
+      0,
+      form_win_cols,
+      title.c_str(),
+      COLOR_PAIR(1));
 
   // Show the form window
   post_form(form);
@@ -111,7 +116,7 @@ string DialogBox::RunMultiLine(const string& title,
   // trim trailing whitespace
   int notwhite = answer.find_last_not_of(" \t\n"); 
   answer.erase(notwhite + 1); 
-  trim_multiple_spaces(answer);
+  StrUtils::trim_multiple_spaces(answer);
 
   // Free up our memory
   unpost_form(form);
