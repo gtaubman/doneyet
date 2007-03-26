@@ -21,10 +21,11 @@ class ListItem {
   ListItem();
   virtual ~ListItem();
   virtual const string TextForColumn(const string& c) = 0;
-  virtual int NumChildren() = 0;
-  virtual ListItem* Child(int i) = 0;
-  virtual ListItem* Parent() = 0;
-  virtual void SetText(string& text) = 0;
+  virtual int NumListChildren() = 0;
+  virtual ListItem* ListChild(int i) = 0;
+  virtual ListItem* ListParent() = 0;
+  virtual void SetListText(string& text) = 0;
+  virtual int ListColor() { return 0; }
 
   virtual int Height() { return height_; }
   virtual void SetHeight(int h) { height_ = h; }
@@ -32,10 +33,9 @@ class ListItem {
   virtual void SetIndex(int i) { index_ = i; }
   virtual int Depth() { return depth_; }
   virtual void SetDepth(int d) { depth_ = d; }
-  virtual int Color() { return 0; }
   virtual bool ShouldExpand() { return should_expand_; }
   virtual void ToggleExpanded() {
-    if (NumChildren())
+    if (NumListChildren())
       should_expand_ = !should_expand_;
   }
 

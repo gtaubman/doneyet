@@ -9,7 +9,8 @@ Task::Task(const string& title,
     : parent_(NULL),
       status_(CREATED),
       title_(title),
-      description_(description) {
+      description_(description),
+      archived_(false) {
   creation_date_.SetToNow();
   start_date_.SetToEmptyTime();
   completion_date_.SetToEmptyTime();
@@ -120,7 +121,7 @@ int Task::NumOffspring() {
   return 1 + sum_from_children;
 }
 
-int Task::Color() {
+int Task::ListColor() {
   int c = 0;
   if (status_ == CREATED) {
     c |= COLOR_PAIR(0);
@@ -133,4 +134,38 @@ int Task::Color() {
   }
 
   return c;
+}
+
+int Task::NumUnarchivedChildren() {
+  int nc = 0;
+  for (int i = 0; i < subtasks_.size(); ++i) {
+    if (!subtasks_[i]->Archived()) {
+      ++nc;
+    }
+  }
+
+  return nc;
+}
+
+Task* Task::UnarchivedChild(int c) {
+  int found = -1;
+  for (int i = 0; i < subtasks_.size(); ++i) {
+    if (!subtasks_[i]->Archived()) {
+      ++found;
+    }
+    if (found == c) {
+      return subtasks_[i];
+    }
+  }
+  return NULL;
+}
+
+vector<Task*> Task::UnarchivedChildren() {
+  vector<Task*> children;
+  for (int i = 0; i < subtasks_.size(); ++i) {
+    if (!subtasks_[i]->Archived()) {
+      children.push_back(subtasks_[i]);
+    }
+  }
+  return children;
 }

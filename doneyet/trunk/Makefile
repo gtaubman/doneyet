@@ -4,7 +4,7 @@ OBJECTS = main project task dialog-box utils hierarchical-list file-manager \
 DEBUGFLAGS = -g
 FASTFLAGS = -O3 -mdynamic-no-pic
 COMPILEFLAGS =$(DEBUGFLAGS) $(FASTFLAGS)
-OFILES =	$(OBJECTS:%=%.o)
+OFILES = $(OBJECTS:%=%.o)
 CCC	= g++
 IFLAGS = -I.
 LFLAGS =
@@ -81,3 +81,4 @@ hierarchical-list.o: /usr/include/machine/_types.h /usr/include/ppc/_types.h
 hierarchical-list.o: /usr/include/unctrl.h /usr/include/curses.h
 hierarchical-list.o: /usr/include/stdarg.h /usr/include/stdbool.h
 date.o: serializer.h
+curses-menu.o: /usr/include/menu.h /usr/include/curses.h /usr/include/eti.h

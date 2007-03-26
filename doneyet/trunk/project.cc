@@ -30,7 +30,7 @@ Project* Project::NewProject() {
 void Project::DrawInWindow(WINDOW* win) {
   window_info info = CursesUtils::get_window_info(win);
   string name = "";
-  list_ = new HierarchicalList(name_,
+  list_ = new HierarchicalList(name,
       info.height,
       info.width,
       0,
@@ -84,6 +84,10 @@ void Project::DrawInWindow(WINDOW* win) {
         break;
       case 'c':
         list_->ToggleExpansionOfSelectedItem();
+        break;
+      case 'R':
+        ArchiveCompletedTasks();
+        list_->Update();
         break;
       case 27: // escape
         list_->SelectNoItem();
@@ -267,4 +271,41 @@ TaskStatus Project::ComputeStatusForTask(Task* t) {
   // Under any other circumstance we're in progress.
   t->SetStatus(IN_PROGRESS);
   return IN_PROGRESS;
+}
+
+int Project::NumUnarchivedRoots() {
+  int nr = 0;
+  for (int i = 0; i < tasks_.size(); ++i) {
+    if (!tasks_[i]->Archived()) {
+      ++nr;
+    }
+  }
+  return nr;
+}
+
+Task* Project::UnarchivedRoot(int r) {
+  int found = -1;
+  for (int i = 0; i < tasks_.size(); ++i) {
+    if (!tasks_[i]->Archived()) {
+      ++found;
+    }
+    if (found == r) {
+      return tasks_[i];
+    }
+  }
+  return NULL;
+}
+
+void Project::ArchiveCompletedTasks() {
+  for (int i = 0; i < tasks_.size(); ++i) {
+    ArchiveTask(tasks_[i]);
+  }
+}
+
+void Project::ArchiveTask(Task* t) {
+  t->SetArchived(t->Status() == COMPLETED);
+  vector<Task*> children = t->UnarchivedChildren();
+  for (int i = 0; i < children.size(); ++i) {
+    ArchiveTask(children[i]);
+  }
 }

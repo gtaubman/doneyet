@@ -40,12 +40,21 @@ class Task : public ListItem {
    void DeleteTask(Task* t);
    void SetStatus(TaskStatus t);
    TaskStatus Status() { return status_; }
+   bool Archived() { return archived_; }
+   void SetArchived(bool a) { archived_ = a; }
 
    // Serializes this task and all of its children.
    void Serialize(Serializer* s);
   
    // Returns the number of tasks below this task.
    int NumOffspring();
+
+   int NumChildren() { return subtasks_.size(); }
+   Task* Child(int i) { return subtasks_[i]; }
+   int NumUnarchivedChildren();
+   Task* UnarchivedChild(int c);
+   vector<Task*> UnarchivedChildren();
+   Task* Parent() { return parent_; }
 
    // Functions required by list item
    const string TextForColumn(const string& c) {
@@ -55,11 +64,11 @@ class Task : public ListItem {
      if (c == "User") return "gtaubman";
      return "UNKNOWN";
    }
-   int Color();
-   int NumChildren() { return subtasks_.size(); }
-   Task* Child(int i) { return subtasks_[i]; }
-   Task* Parent() { return parent_; }
-   void SetText(string& text) { title_ = text; }
+   int ListColor();
+   int NumListChildren() { return NumUnarchivedChildren(); }
+   Task* ListChild(int c) { return UnarchivedChild(c); }
+   Task* ListParent() { return Parent(); }
+   void SetListText(string& text) { title_ = text; }
 
 
  private:
@@ -74,6 +83,7 @@ class Task : public ListItem {
    Date creation_date_;
    Date start_date_;
    Date completion_date_;
+   bool archived_;
 };
 
 #endif

@@ -30,16 +30,23 @@ class Project : HierarchicalListDataSource {
   void DrawInWindow(WINDOW* win);
   Task* AddTaskNamed(const string& name);
   void Serialize(Serializer* s);
+
+  // A count of every item in the tree.
   int NumTasks();
   void DeleteTask(Task* t);
+  void ArchiveCompletedTasks();
+  int NumUnarchivedRoots();
+  int NumTotalRoots() { return tasks_.size(); }
+  Task* UnarchivedRoot(int r);
 
   // Functions required by HierarchicalListDataSource:
-  int NumRoots() { return tasks_.size(); }
-  ListItem* Root(int i) { return static_cast<ListItem*>(tasks_[i]); }
+  int NumRoots() { return NumUnarchivedRoots(); }
+  ListItem* Root(int i) { return static_cast<ListItem*>(UnarchivedRoot(i)); }
   int NumColumns() { return 1; }
 
  private:
   void Rename();
+  void ArchiveTask(Task* t);
   void ComputeNodeStatus();
   TaskStatus ComputeStatusForTask(Task* t);
 

@@ -169,13 +169,13 @@ int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {
 
     // If we're selected reverse the text
     if (node == selected_item_) {
-      int attrs = A_UNDERLINE | node->Color();
+      int attrs = A_UNDERLINE | node->ListColor();
       if (c == selected_column_) {
         attrs |= A_REVERSE;
       }
       wattron(column, attrs);
     } else {
-      wattron(column, node->Color());
+      wattron(column, node->ListColor());
     }
 
     int lines_used = 1;
@@ -196,13 +196,13 @@ int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {
 
     // If we're selected, we're done reversing the text.
     if (node == selected_item_) {
-      int attrs = A_UNDERLINE | node->Color();
+      int attrs = A_UNDERLINE | node->ListColor();
       if (c == selected_column_) {
         attrs |= A_REVERSE;
       }
       wattroff(column, attrs);
     } else {
-      wattroff(column, node->Color());
+      wattroff(column, node->ListColor());
     }
     if (lines_used > max_lines_used) {
       max_lines_used = lines_used;
@@ -211,10 +211,10 @@ int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {
 
   // now that we've drawn ourselves, draw our children:
   if (node->ShouldExpand()) {
-    for (int i = 0; i < node->NumChildren(); ++i) {
+    for (int i = 0; i < node->NumListChildren(); ++i) {
       // We only want to indent the first column's items.
       int ind = indent + indent_;
-      max_lines_used += Draw(node->Child(i), line_num + max_lines_used, ind);
+      max_lines_used += Draw(node->ListChild(i), line_num + max_lines_used, ind);
     }
   }
   return max_lines_used;
@@ -461,7 +461,7 @@ void HierarchicalList::EditSelectedItem() {
       CursesUtils::winheight(win_) / 3);
 
   if (!answer.empty()) {
-    selected_item_->SetText(answer);
+    selected_item_->SetListText(answer);
   }
   UpdateFlattenedItems();
 }
@@ -529,15 +529,15 @@ void HierarchicalList::UpdateFlattenedItems() {
 
 void HierarchicalList::PreOrderAddToList(ListItem* l) {
   flattened_items_.push_back(l);
-  if (l->Parent() != NULL) {
-    l->SetDepth(l->Parent()->Depth() + 1);
+  if (l->ListParent() != NULL) {
+    l->SetDepth(l->ListParent()->Depth() + 1);
   } else {
     l->SetDepth(0);
   }
 
-  for (int i = 0; i < l->NumChildren(); ++i) {
+  for (int i = 0; i < l->NumListChildren(); ++i) {
     if (l->ShouldExpand()) {
-      PreOrderAddToList(l->Child(i));
+      PreOrderAddToList(l->ListChild(i));
     }
   }
 }
