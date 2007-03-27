@@ -10,6 +10,7 @@
 #include "hierarchical-list.h"
 #include "serializer.h"
 #include "date.h"
+#include "filter-predicate.h"
 
 using std::string;
 using std::vector;
@@ -30,16 +31,29 @@ class Task : public ListItem {
    virtual ~Task();
    static Task* NewTaskFromSerializer(Serializer* s);
 
+   string Title() { return title_; }
+   static string TitleWrapper(Task* t) { return t->Title(); }
    void SetTitle(const string& title);
+
+   string Description() { return description_; }
+   static string DescriptionWrapper(Task* t) { return t->Description(); }
    void SetDescription(const string& description);
+   Date CompletionDate() { return completion_date_; }
+   static time_t CompletionDateWrapper(Task* t) {
+     return t->CompletionDate().Time();
+   }
    
+   void ApplyFilter(FilterPredicate<Task>* filter);
    void AddSubTask(Task* subtask);
    void SetParent(Task* p) { parent_ = p; }
    void RemoveSubtaskFromList(Task* t);
    void Delete();
    void DeleteTask(Task* t);
+
    void SetStatus(TaskStatus t);
    TaskStatus Status() { return status_; }
+   static TaskStatus StatusWrapper(Task* t) { return t->Status(); }
+
    bool Archived() { return archived_; }
    void SetArchived(bool a) { archived_ = a; }
 
@@ -48,12 +62,15 @@ class Task : public ListItem {
   
    // Returns the number of tasks below this task.
    int NumOffspring();
+   int NumFilteredOffspring();
+   static int NumFilteredOffspringWrapper(Task* t) {
+     return t->NumFilteredOffspring();
+   }
 
    int NumChildren() { return subtasks_.size(); }
    Task* Child(int i) { return subtasks_[i]; }
-   int NumUnarchivedChildren();
-   Task* UnarchivedChild(int c);
-   vector<Task*> UnarchivedChildren();
+   int NumFilteredChildren();
+   Task* FilteredChild(int c);
    Task* Parent() { return parent_; }
 
    // Functions required by list item
@@ -65,8 +82,8 @@ class Task : public ListItem {
      return "UNKNOWN";
    }
    int ListColor();
-   int NumListChildren() { return NumUnarchivedChildren(); }
-   Task* ListChild(int c) { return UnarchivedChild(c); }
+   int NumListChildren() { return NumFilteredChildren(); }
+   Task* ListChild(int c) { return FilteredChild(c); }
    Task* ListParent() { return Parent(); }
    void SetListText(string& text) { title_ = text; }
 
@@ -78,6 +95,7 @@ class Task : public ListItem {
    Task* parent_;
    TaskStatus status_;
    vector<Task*> subtasks_;
+   vector<Task*> filtered_tasks_;
    string title_;
    string description_;
    Date creation_date_;

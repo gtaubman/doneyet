@@ -12,6 +12,7 @@
 #include <fstream>
 #include "task.h"
 #include "serializer.h"
+#include "filter-predicate.h"
 
 using std::string;
 using std::vector;
@@ -26,6 +27,10 @@ class Project : HierarchicalListDataSource {
   static Project* NewProject();
   static Project* NewProjectFromFile(string path);
 
+  void FilterTasks(FilterPredicate<Task>* filter);
+  void FilterTasks() { FilterTasks(&base_filter_); }
+  void RunSearchFilter(const string& find);
+
   string Name() { return name_; }
   void DrawInWindow(WINDOW* win);
   Task* AddTaskNamed(const string& name);
@@ -34,25 +39,27 @@ class Project : HierarchicalListDataSource {
   // A count of every item in the tree.
   int NumTasks();
   void DeleteTask(Task* t);
+  void ShowAllTasks();
+  void ShowCompletedLastWeek();
   void ArchiveCompletedTasks();
-  int NumUnarchivedRoots();
+  int NumFilteredRoots();
   int NumTotalRoots() { return tasks_.size(); }
-  Task* UnarchivedRoot(int r);
+  Task* FilteredRoot(int r);
 
   // Functions required by HierarchicalListDataSource:
-  int NumRoots() { return NumUnarchivedRoots(); }
-  ListItem* Root(int i) { return static_cast<ListItem*>(UnarchivedRoot(i)); }
-  int NumColumns() { return 1; }
+  int NumRoots() { return NumFilteredRoots(); }
+  ListItem* Root(int i) { return static_cast<ListItem*>(FilteredRoot(i)); }
 
  private:
   void Rename();
-  void ArchiveTask(Task* t);
   void ComputeNodeStatus();
   TaskStatus ComputeStatusForTask(Task* t);
 
   string name_;
   vector<Task*> tasks_;
+  vector<Task*> filtered_tasks_;
   HierarchicalList* list_;
+  AndFilterPredicate<Task> base_filter_;
 };
 
 #endif

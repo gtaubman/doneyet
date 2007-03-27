@@ -52,7 +52,6 @@ class HierarchicalListDataSource {
  public:
   virtual int NumRoots() = 0;
   virtual ListItem* Root(int i) = 0;
-  virtual int NumColumns() = 0;
 };
 
 enum ScrollType {

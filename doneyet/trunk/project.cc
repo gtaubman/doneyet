@@ -11,6 +11,7 @@ using std::endl;
 Project::Project(string name)
   : name_(name),
     list_(NULL) {
+  ShowAllTasks();
 }
 
 Project::~Project() {
@@ -25,6 +26,16 @@ Project* Project::NewProject() {
       "Please Enter a Project Name",
       "Default Project");
   return new Project(answer);
+}
+
+void Project::FilterTasks(FilterPredicate<Task>* filter) {
+  // Filter all the children of the root tasks.
+  for (int i = 0; i < tasks_.size(); ++i) {
+    tasks_[i]->ApplyFilter(filter);
+  }
+
+  // Finally filter the root tasks themselves.
+  filtered_tasks_ = filter->FilterVector(tasks_);
 }
 
 void Project::DrawInWindow(WINDOW* win) {
@@ -45,8 +56,11 @@ void Project::DrawInWindow(WINDOW* win) {
   while (!done && (ch = getch())) {
     Task* si = static_cast<Task*>(list_->SelectedItem());
     switch (ch) {
-      case 'a':
       case 'A':
+        ShowAllTasks();
+        list_->Update();
+        break;
+      case 'a':
         tmp_str = DialogBox::RunMultiLine("Enter New Task",
             "",
             CursesUtils::winwidth(win) / 3,
@@ -60,6 +74,7 @@ void Project::DrawInWindow(WINDOW* win) {
           }
         }
         ComputeNodeStatus();
+        FilterTasks();
         list_->Update();
         break;
       case 'j':
@@ -80,6 +95,7 @@ void Project::DrawInWindow(WINDOW* win) {
         list_->SelectPrevItem();
         DeleteTask(si);
         ComputeNodeStatus();
+        FilterTasks();
         list_->Update();
         break;
       case 'c':
@@ -89,6 +105,22 @@ void Project::DrawInWindow(WINDOW* win) {
         ArchiveCompletedTasks();
         list_->Update();
         break;
+      case 'C':
+        ShowCompletedLastWeek();
+        list_->Update();
+        break;
+      case 'f':
+        {
+          string tmp_str = DialogBox::RunCenteredWithWidth("Enter Search Term:",
+              "",
+              CursesUtils::winwidth(win) / 3);
+          if (!tmp_str.empty()) {
+            RunSearchFilter(tmp_str);
+            list_->Update();
+            beep();
+          }
+          break;
+        }
       case 27: // escape
         list_->SelectNoItem();
         break;
@@ -192,13 +224,14 @@ Project* Project::NewProjectFromFile(string path) {
     }
   }
 
+  p->ShowAllTasks();
   return p;
 }
 
 int Project::NumTasks() {
   int total = 0;
   for (int i = 0; i < tasks_.size(); ++i) {
-    total += tasks_[i]->NumOffspring();
+    total += 1 + tasks_[i]->NumOffspring();
   }
   return total;
 }
@@ -273,39 +306,68 @@ TaskStatus Project::ComputeStatusForTask(Task* t) {
   return IN_PROGRESS;
 }
 
-int Project::NumUnarchivedRoots() {
-  int nr = 0;
-  for (int i = 0; i < tasks_.size(); ++i) {
-    if (!tasks_[i]->Archived()) {
-      ++nr;
-    }
-  }
-  return nr;
+int Project::NumFilteredRoots() {
+  return filtered_tasks_.size();
 }
 
-Task* Project::UnarchivedRoot(int r) {
-  int found = -1;
-  for (int i = 0; i < tasks_.size(); ++i) {
-    if (!tasks_[i]->Archived()) {
-      ++found;
-    }
-    if (found == r) {
-      return tasks_[i];
-    }
-  }
-  return NULL;
+Task* Project::FilteredRoot(int r) {
+  return filtered_tasks_[r];
+}
+
+void Project::ShowAllTasks() {
+  GTFilterPredicate<Task, time_t>* gtfp =
+    new GTFilterPredicate<Task, time_t>(-1, Task::CompletionDateWrapper);
+  base_filter_.Clear();
+  base_filter_.AddChild(gtfp);
+  FilterTasks();
 }
 
 void Project::ArchiveCompletedTasks() {
-  for (int i = 0; i < tasks_.size(); ++i) {
-    ArchiveTask(tasks_[i]);
-  }
+  EqualityFilterPredicate<Task, TaskStatus>* efp =
+    new EqualityFilterPredicate<Task, TaskStatus>(COMPLETED, Task::StatusWrapper);
+  efp->SetIsNot(true);
+  base_filter_.Clear();
+  base_filter_.AddChild(efp);
+  FilterTasks();
 }
 
-void Project::ArchiveTask(Task* t) {
-  t->SetArchived(t->Status() == COMPLETED);
-  vector<Task*> children = t->UnarchivedChildren();
-  for (int i = 0; i < children.size(); ++i) {
-    ArchiveTask(children[i]);
-  }
+void Project::ShowCompletedLastWeek() {
+  // We check if their completion date is > one week ago.
+  time_t week_ago;
+  std::time(&week_ago);
+  week_ago -= 60 * 60 * 24 * 7;
+  GTFilterPredicate<Task, time_t>* gtfp =
+    new GTFilterPredicate<Task, time_t>(week_ago, Task::CompletionDateWrapper);
+  GTFilterPredicate<Task, int>* has_filtered_child =
+    new GTFilterPredicate<Task, int>(0, Task::NumFilteredOffspringWrapper);
+  OrFilterPredicate<Task>* or_filter = new OrFilterPredicate<Task>();
+  or_filter->AddChild(gtfp);
+  or_filter->AddChild(has_filtered_child);
+  base_filter_.Clear();
+  base_filter_.AddChild(or_filter);
+  FilterTasks();
+}
+
+void Project::RunSearchFilter(const string& needle) {
+  // Clear the current filters.
+  base_filter_.Clear();
+
+  // Create the search filters.  Right now it only searches on the text and
+  // description of the tasks.
+  StringContainsFilterPredicate<Task>* title_filter =
+    new StringContainsFilterPredicate<Task>(needle, Task::TitleWrapper);
+
+  StringContainsFilterPredicate<Task>* description_filter =
+    new StringContainsFilterPredicate<Task>(needle, Task::DescriptionWrapper);
+
+  GTFilterPredicate<Task, int>* has_filtered_child =
+    new GTFilterPredicate<Task, int>(0, Task::NumFilteredOffspringWrapper);
+
+  OrFilterPredicate<Task>* or_filter = new OrFilterPredicate<Task>();
+  or_filter->AddChild(title_filter);
+  or_filter->AddChild(description_filter);
+  or_filter->AddChild(has_filtered_child);
+
+  base_filter_.AddChild(or_filter);
+  FilterTasks();
 }

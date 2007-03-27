@@ -16,6 +16,10 @@ void Date::SetToEmptyTime() {
   time_ = 0;
 }
 
+bool Date::IsCloserToNowThan(Date* d) {
+  return time_ > d->Time();
+}
+
 string Date::ToString() {
   return string(ctime(&time_));
 }

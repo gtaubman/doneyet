@@ -15,6 +15,8 @@ class Date {
 
   void SetToNow();
   void SetToEmptyTime();
+  bool IsCloserToNowThan(Date* d);
+  time_t Time() { return time_; }
 
   void Serialize(Serializer* s);
   void ReadFromSerializer(Serializer* s);

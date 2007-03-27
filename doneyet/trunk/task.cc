@@ -30,6 +30,16 @@ Task* Task::NewTaskFromSerializer(Serializer* s) {
   return t;
 }
 
+void Task::ApplyFilter(FilterPredicate<Task>* filter) {
+  // It's important that we filter ourselves after our children because often
+  // filters have an OrPredicate of "Has any filtered children" which wouldn't
+  // if we filtered ourselves before our children.
+  for (int i = 0; i < NumChildren(); ++i) {
+    Child(i)->ApplyFilter(filter);
+  }
+  filtered_tasks_ = filter->FilterVector(subtasks_);
+}
+
 void Task::AddSubTask(Task* subtask) {
   subtask->SetParent(this);
   subtasks_.push_back(subtask);
@@ -115,10 +125,18 @@ void Task::SetStatus(TaskStatus t) {
 int Task::NumOffspring() {
   int sum_from_children = 0;
   for (int i = 0; i < subtasks_.size(); ++i) {
-    sum_from_children += subtasks_[i]->NumOffspring();
+    sum_from_children += 1 + subtasks_[i]->NumOffspring();
   }
 
-  return 1 + sum_from_children;
+  return sum_from_children;
+}
+
+int Task::NumFilteredOffspring() {
+  int sum_from_children = 0;
+  for (int i = 0; i < filtered_tasks_.size(); ++i) {
+    sum_from_children += 1 + filtered_tasks_[i]->NumFilteredOffspring();
+  }
+  return sum_from_children;
 }
 
 int Task::ListColor() {
@@ -136,36 +154,10 @@ int Task::ListColor() {
   return c;
 }
 
-int Task::NumUnarchivedChildren() {
-  int nc = 0;
-  for (int i = 0; i < subtasks_.size(); ++i) {
-    if (!subtasks_[i]->Archived()) {
-      ++nc;
-    }
-  }
-
-  return nc;
+int Task::NumFilteredChildren() {
+  return filtered_tasks_.size();
 }
 
-Task* Task::UnarchivedChild(int c) {
-  int found = -1;
-  for (int i = 0; i < subtasks_.size(); ++i) {
-    if (!subtasks_[i]->Archived()) {
-      ++found;
-    }
-    if (found == c) {
-      return subtasks_[i];
-    }
-  }
-  return NULL;
-}
-
-vector<Task*> Task::UnarchivedChildren() {
-  vector<Task*> children;
-  for (int i = 0; i < subtasks_.size(); ++i) {
-    if (!subtasks_[i]->Archived()) {
-      children.push_back(subtasks_[i]);
-    }
-  }
-  return children;
+Task* Task::FilteredChild(int c) {
+  return filtered_tasks_[c];
 }

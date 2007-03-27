@@ -1,6 +1,6 @@
 EXECUTABLE=todo
 OBJECTS = main project task dialog-box utils hierarchical-list file-manager \
-          serializer date
+          serializer date filter-predicate
 DEBUGFLAGS = -g
 FASTFLAGS = -O3 -mdynamic-no-pic
 COMPILEFLAGS =$(DEBUGFLAGS) $(FASTFLAGS)
@@ -54,7 +54,7 @@ project.o: /usr/include/sys/_types.h /usr/include/sys/cdefs.h
 project.o: /usr/include/machine/_types.h /usr/include/ppc/_types.h
 project.o: /usr/include/unctrl.h /usr/include/curses.h /usr/include/stdarg.h
 project.o: /usr/include/stdbool.h /usr/include/panel.h task.h
-project.o: hierarchical-list.h serializer.h date.h
+project.o: hierarchical-list.h serializer.h date.h filter-predicate.h
 task.o: /usr/include/ncurses.h /usr/include/ncurses_dll.h
 task.o: /usr/include/stdio.h /usr/include/_types.h /usr/include/sys/_types.h
 task.o: /usr/include/sys/cdefs.h /usr/include/machine/_types.h
@@ -81,4 +81,3 @@ hierarchical-list.o: /usr/include/machine/_types.h /usr/include/ppc/_types.h
 hierarchical-list.o: /usr/include/unctrl.h /usr/include/curses.h
 hierarchical-list.o: /usr/include/stdarg.h /usr/include/stdbool.h
 date.o: serializer.h
-curses-menu.o: /usr/include/menu.h /usr/include/curses.h /usr/include/eti.h
