@@ -324,6 +324,20 @@ void HierarchicalList::SelectNextLine() {
   selected_item_ = item;
 }
 
+void HierarchicalList::ScrollToTop() {
+  if (flattened_items_.size()) {
+    SelectItem(0, SCROLL_TOP);
+    SelectNoItem();
+  }
+}
+
+void HierarchicalList::ScrollToBottom() {
+  if (flattened_items_.size()) {
+    SelectItem(flattened_items_.size() - 1);
+    SelectNoItem();
+  }
+}
+
 int HierarchicalList::NumLinesDownInList(ListItem* item) {
   int d = 0;
   for (int i = 0; i < flattened_items_.size(); ++i) {

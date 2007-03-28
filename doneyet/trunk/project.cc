@@ -60,6 +60,7 @@ void Project::DrawInWindow(WINDOW* win) {
       case 'A':
         ShowAllTasks();
         list_->Update();
+        list_->ScrollToTop();
         break;
       case 'a':
         tmp_str = DialogBox::RunMultiLine("Enter New Task",
@@ -105,10 +106,12 @@ void Project::DrawInWindow(WINDOW* win) {
       case 'R':
         ArchiveCompletedTasks();
         list_->Update();
+        list_->ScrollToTop();
         break;
       case 'C':
         ShowCompletedLastWeek();
         list_->Update();
+        list_->ScrollToTop();
         break;
       case 'f':
         {
@@ -118,7 +121,7 @@ void Project::DrawInWindow(WINDOW* win) {
           if (!tmp_str.empty()) {
             RunSearchFilter(tmp_str);
             list_->Update();
-            beep();
+            list_->ScrollToTop();
           }
           break;
         }
