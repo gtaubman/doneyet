@@ -5,16 +5,28 @@
 #include <string>
 #include <vector>
 
-// The column spec is comprised of as many characters as columns.  It controls
-// column sizing and naming.  Each column is defined by a pair consisting of a
-// name and percent of the total width you want this column to be.  An example:
-// "Column One:88,Column Two:12"
-// The final column is allowed to have a width of X which will give it any
-// unused space such as:
-// "One:20,Two:24,Three:X"
+// The column spec consists of one or more <column name>:<column width> pairs.
+// The width can also be an X or an x which will give that column an even share
+// of any free space left over after all columns with specified width have been
+// created.  If in_percents isn't set the column width is assumed to be in
+// characters.  If it's set to true, it is assumed to mean a percentage of the
+// available window width.  Some examples:
+//   "Column One:88,Column Two:12"
+// with in_percent set to true would give two columns.
+// If we want one big column, one 8 character wide column, and another big
+// column, the following will achieve that with in_percent set to false:
+//   "Column One:X,Column Two:8,Column Three:X"
 
 using std::string;
 using std::vector;
+
+struct ColumnSpec {
+  ColumnSpec(const string& s, bool is_percent)
+    : spec(s),
+      in_percents(is_percent) { }
+ string spec;
+ bool in_percents;
+};
 
 class ListItem {
  public:
@@ -62,8 +74,8 @@ enum ScrollType {
 
 class HierarchicalList {
  public:
-  HierarchicalList(string& name, int height, int width, int y, int x, const
-      string& column_spec);
+  HierarchicalList(string& name, int height, int width, int y, int x,
+      const ColumnSpec& column_spec);
   virtual ~HierarchicalList();
 
   void SetDatasource(HierarchicalListDataSource* d);
@@ -93,7 +105,7 @@ class HierarchicalList {
   int NumLinesDownInList(ListItem* item);
   void SelectItem(int item_index);
   void SelectItem(int item_index, ScrollType type);
-  bool ParseColumnSpec(const string& spec);
+  bool ParseColumnSpec(const ColumnSpec& spec);
 
   // Convenience methods:
   int NumRoots() { return datasource_->NumRoots(); }

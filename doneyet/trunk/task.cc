@@ -9,8 +9,7 @@ Task::Task(const string& title,
     : parent_(NULL),
       status_(CREATED),
       title_(title),
-      description_(description),
-      archived_(false) {
+      description_(description) {
   creation_date_.SetToNow();
   start_date_.SetToEmptyTime();
   completion_date_.SetToEmptyTime();

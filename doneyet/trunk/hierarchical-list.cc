@@ -19,7 +19,7 @@ HierarchicalList::HierarchicalList(string& name,
     int width,
     int y,
     int x,
-    const string& column_spec) {
+    const ColumnSpec& spec) {
   // Create the frills window
   height_ = height;
   width_ = width;
@@ -37,7 +37,7 @@ HierarchicalList::HierarchicalList(string& name,
   draw_column_headers_ = true;
   prepend_size_ = prepend_.length();
 
-  ParseColumnSpec(column_spec);
+  ParseColumnSpec(spec);
 }
 
 HierarchicalList::~HierarchicalList() {
@@ -108,14 +108,12 @@ void HierarchicalList::Draw() {
   }
   
   // Draw the lines between columns:
-  if (columns_.size() > 1) {
-    int draw_at = 1;
-    for (int c = 0; c < columns_.size(); ++c) {
-      draw_at += CursesUtils::winwidth(columns_[c]);
-      mvwvline(win_, sbstart - (draw_column_headers_ ? 2 : 0), draw_at, ACS_VLINE,
-          column_height_ + (draw_column_headers_ ? 2 : 0));
-      ++draw_at;
-    }
+  int draw_at = 1;
+  for (int c = 0; c < columns_.size(); ++c) {
+    draw_at += CursesUtils::winwidth(columns_[c]);
+    mvwvline(win_, sbstart - (draw_column_headers_ ? 2 : 0), draw_at, ACS_VLINE,
+        column_height_ + (draw_column_headers_ ? 2 : 0));
+    ++draw_at;
   }
   
   if (!name_.empty()) {
@@ -388,8 +386,8 @@ void HierarchicalList::SelectItem(int item_index) {
   }
 }
 
-bool HierarchicalList::ParseColumnSpec(const string& spec) {
-  if (spec.empty())
+bool HierarchicalList::ParseColumnSpec(const ColumnSpec& spec) {
+  if (spec.spec.empty())
     return false;
 
   int top_offset = 1;              // Account for the top border.
@@ -403,14 +401,16 @@ bool HierarchicalList::ParseColumnSpec(const string& spec) {
 
   // First we need to split things on commas:
   vector<string> column_specs;
-  StrUtils::SplitStringUsing(",", spec, &column_specs);
+  StrUtils::SplitStringUsing(",", spec.spec, &column_specs);
 
   // Now that we know how many columns we have, we need to update the
   // usable_width variable to take into account the lines drawn between columns.
-  usable_width -= (column_specs.size() - 1);
+  usable_width -= column_specs.size();
 
-  // Next for each column we have to create the window that will hold its text.
-  int percent_width_used = 0;
+  // Now, compute the widths of any columns that had specified widths:
+  vector<int> column_widths;
+  int num_exes = 0;
+  int used = 0;
   for (int i = 0; i < column_specs.size(); ++i) {
     vector<string> column_info;
     StrUtils::SplitStringUsing(":", column_specs[i], &column_info);
@@ -419,28 +419,41 @@ bool HierarchicalList::ParseColumnSpec(const string& spec) {
         column_info[1].empty()) {
       return false;
     }
+    column_names_.push_back(column_info[0]);
 
-    // Figure out how wide to make this column.
-    int width = -1;
     if (column_info[1] == "X" ||
         column_info[1] == "x") {
-      if (i != column_specs.size() - 1) {
-        // If we're not the last column to be made, bail out.
-        for (int j = 0; j < columns_.size(); ++j) {
-          delwin(columns_[j]);
-        }
-        return false;
-      } else {
-        width = usable_width * ((100 - percent_width_used) / 100.0);
-      }
+      column_widths.push_back(-1);
+      ++num_exes;
     } else {
-      int w = atoi(column_info[1].c_str());
-      percent_width_used += w;
-      width = usable_width * (w / 100.0);
+      if (!spec.in_percents) {
+        column_widths.push_back(atoi(column_info[1].c_str()));
+      } else {
+        column_widths.push_back(usable_width * atoi(column_info[1].c_str()) /
+            100.0);
+      }
+      // Allow room for the title
+      column_widths[i] = std::max(column_widths[i], (int) column_names_[i].length());
+      used += column_widths.back();
     }
+  }
 
+  // Fill in any unspecified columns.  If there is more than one, they split the
+  // remaining free space evenly.
+  if (num_exes) {
+    int free_col_width = floor((usable_width - used) / num_exes);
+    for (int i = 0; i < column_widths.size(); ++i) {
+      if (column_widths[i] == -1) {
+        column_widths[i] = free_col_width;
+      }
+    }
+  }
+  
+
+  // Next for each column we have to create the window that will hold its text.
+  for (int i = 0; i < column_widths.size(); ++i) {
     // Create the column:
-    column_names_.push_back(column_info[0]);
+    int width = column_widths[i];
     WINDOW* col = derwin(win_, usable_height, width, top_offset, left_offset);
     columns_.push_back(col);
 

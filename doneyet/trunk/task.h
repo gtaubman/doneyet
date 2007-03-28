@@ -54,9 +54,6 @@ class Task : public ListItem {
    TaskStatus Status() { return status_; }
    static TaskStatus StatusWrapper(Task* t) { return t->Status(); }
 
-   bool Archived() { return archived_; }
-   void SetArchived(bool a) { archived_ = a; }
-
    // Serializes this task and all of its children.
    void Serialize(Serializer* s);
   
@@ -101,7 +98,6 @@ class Task : public ListItem {
    Date creation_date_;
    Date start_date_;
    Date completion_date_;
-   bool archived_;
 };
 
 #endif
