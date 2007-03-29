@@ -4,16 +4,15 @@
 #include <vector>
 #include <string>
 
-// TODO:  Make inheritance actually work so I can put the "is_not_" into the
-// base class.
-
 using std::vector;
 using std::string;
 
 // Filter Predicate
 template <class T> class FilterPredicate {
  public:
-  FilterPredicate() {}
+  FilterPredicate() {
+    is_not_ = false;
+  }
   virtual ~FilterPredicate() {}
   virtual bool ObjectPasses(T* t)=0;
   virtual vector<T*> FilterVector(const vector<T*>& list) {
@@ -25,26 +24,31 @@ template <class T> class FilterPredicate {
     }
     return out;
   }
+
+  void SetIsNot(bool n) { is_not_ = n; }
+  bool IsNot() { return is_not_; }
+
+ protected:
+  bool is_not_;
 };
 
 template <class T> class BooleanFilterPredicate : public FilterPredicate<T> {
  public:
   BooleanFilterPredicate(bool (*bool_getter_function)(T*)) {
     bool_getter_function_ = bool_getter_function;
-    is_not_ = false;
   }
 
   virtual ~BooleanFilterPredicate() { }
 
   bool ObjectPasses(T* t) {
-    return !is_not_ && bool_getter_function_(t);
+    if (this->is_not_) {
+      return !bool_getter_function_(t);
+    }
+    return bool_getter_function_(t);
   }
-
-  void SetIsNot(bool n) { is_not_ = n; }
 
  private:
   bool (*bool_getter_function_)(T*);
-  bool is_not_;
 };
 
 // Equality Filter Predicate
@@ -57,16 +61,15 @@ template <class T1, class T2> class EqualityFilterPredicate : public FilterPredi
   virtual ~EqualityFilterPredicate() {}
 
   bool ObjectPasses(T1* t) {
-    if (is_not_) {
+    if (this->is_not_) {
       return value_getter_function_(t) != val_;
     }
     return value_getter_function_(t) == val_;
   }
-  void SetIsNot(bool n) { is_not_ = n; }
+
  private:
   T2 val_;
   T2 (*value_getter_function_)(T1*);
-  bool is_not_;
 };
 
 // Greater Than Filter Predicate.  Takes two types.  The first type is the type
@@ -85,6 +88,9 @@ template <class T1, class T2> class GTFilterPredicate : public FilterPredicate<T
   virtual ~GTFilterPredicate() {}
 
   bool ObjectPasses(T1* t) {
+    if (this->is_not_) {
+      return value_getter_function_(t) <= val_;
+    }
     return value_getter_function_(t) > val_;
   }
  private:
@@ -102,6 +108,9 @@ template <class T1, class T2> class LTFilterPredicate : public FilterPredicate<T
   virtual ~LTFilterPredicate() {}
 
   bool ObjectPasses(T1* t) {
+    if (this->is_not_) {
+      return value_getter_function_(t) >= val_;
+    }
     return value_getter_function_(t) < val_;
   }
  private:
@@ -121,6 +130,9 @@ template <class T> class StringContainsFilterPredicate : public FilterPredicate<
 
   virtual bool ObjectPasses(T* t) {
     const string text = text_getter_function_(t);
+    if (this->is_not_) {
+      return (text.find(needle_) == string::npos);
+    }
     return (text.find(needle_) != string::npos);
   }
 
@@ -140,12 +152,17 @@ template <class T> class AndFilterPredicate : public FilterPredicate<T> {
   }
 
   virtual bool ObjectPasses(T* t) {
-    // Since it's an AND filter, we go through and if any are false all are false.
     for (int i = 0; i < children_.size(); ++i) {
       if (!children_[i]->ObjectPasses(t)) {
-        return false;
+        if (this->is_not_) {
+          return true;
+        } else {
+          return false;
+        }
       }
     }
+    if (this->is_not_)
+      return false;
     return true;
   }
 
@@ -174,13 +191,17 @@ template <class T> class OrFilterPredicate : public FilterPredicate<T> {
   }
 
   virtual bool ObjectPasses(T* t) {
-    // Since it's an OR filter, we go through our children and if any pass they
-    // all pass.
     for (int i = 0; i < children_.size(); ++i) {
       if (children_[i]->ObjectPasses(t)) {
-        return true;
+        if (this->is_not_) {
+          return false;
+        } else {
+          return true;
+        }
       }
     }
+    if (this->is_not_)
+      return true;
     return false;
   }
 

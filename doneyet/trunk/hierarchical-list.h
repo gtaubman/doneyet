@@ -91,8 +91,7 @@ class HierarchicalList {
   void ScrollToTop();
   void ScrollToBottom();
   void SelectNoItem() { SelectItem(-1); }
-  void SelectNextColumn() { selected_column_ = (selected_column_ + 1) %
-    columns_.size(); }
+  void SelectNextColumn() { ++selected_column_ %= columns_.size(); }
 
   void EditSelectedItem();
   ListItem* SelectedItem() { return selected_item_; }

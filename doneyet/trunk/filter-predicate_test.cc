@@ -8,7 +8,7 @@ using namespace std;
 static int errors = 0;
 
 void ERROR(const string& error) {
-  cout << error << endl;;
+  cout << "ERROR: " <<  error << endl;;
   ++errors;
 }
 
@@ -37,7 +37,8 @@ class TestObj {
   string str_;
 };
 
-void TestBooleanFilterPredicate() {
+bool TestBooleanFilterPredicate() {
+  bool success = true;
   cout << "Testing BooleanFilterPredicate" << endl;
 
   // Create test objects
@@ -49,12 +50,21 @@ void TestBooleanFilterPredicate() {
   BooleanFilterPredicate<TestObj> bfp(TestObj::AliveWrapper);
   vector<TestObj*> filtered = bfp.FilterVector(test_objects);
   for (int i = 0; i < filtered.size(); ++i) {
-    assert(filtered[i]->Alive());
+    if (!filtered[i]->Alive()) {
+      ERROR("All filtered items should have Alive() == true.");
+      success = false;
+    }
   }
+  for (int i = 0; i < test_objects.size(); ++i) {
+    delete test_objects[i];
+  }
+  return success;
 }
 
-void TestGTFilterPredicate() {
+bool TestGTFilterPredicate() {
+  bool success = true;
   cout << "Testing GTFilterPredicate" << endl;
+
   // Create test objects
   vector<TestObj*> test_objects;
   for (int i = 0; i < 20; ++i) {
@@ -67,16 +77,22 @@ void TestGTFilterPredicate() {
   vector<TestObj*> filtered = gtfp.FilterVector(test_objects);
   for (int i = 0; i < filtered.size(); ++i) {
     cout << "Filtered[" << i << "] = " << filtered[i]->Val() << endl;
-    assert(filtered[i]->Val() > val);
+    if (filtered[i]->Val() <= val) {
+      ERROR("filtered[i] wasn't > val.");
+      success = false;
+    }
   }
 
   for (int i = 0; i < test_objects.size(); ++i) {
     delete test_objects[i];
   }
+  return success;
 }
 
-void TestLTFilterPredicate() {
+bool TestLTFilterPredicate() {
+  bool success = true;
   cout << "Testing LTFilterPredicate" << endl;
+
   // Create test objects
   vector<TestObj*> test_objects;
   for (int i = 0; i < 20; ++i) {
@@ -89,16 +105,22 @@ void TestLTFilterPredicate() {
   vector<TestObj*> filtered = ltfp.FilterVector(test_objects);
   for (int i = 0; i < filtered.size(); ++i) {
     cout << "Filtered[" << i << "] = " << filtered[i]->Val() << endl;
-    assert(filtered[i]->Val() < val);
+    if (filtered[i]->Val() >= val) {
+      ERROR("filtered[i] wasn't < val.");
+      success = false;
+    }
   }
 
   for (int i = 0; i < test_objects.size(); ++i) {
     delete test_objects[i];
   }
+  return success;
 }
 
-void TestORFilterPredicate() {
+bool TestORFilterPredicate() {
+  bool success = true;
   cout << "Testing OrFilterPredicate" << endl;
+
   // Create test objects
   vector<TestObj*> test_objects;
   for (int i = 0; i < 20; ++i) {
@@ -122,16 +144,22 @@ void TestORFilterPredicate() {
   vector<TestObj*> filtered = or_filter.FilterVector(test_objects);
   for (int i = 0; i < filtered.size(); ++i) {
     cout << "Filtered[" << i << "] = " << filtered[i]->Val() << endl;
-    assert(filtered[i]->Val() > val1 || filtered[i]->Val() < val2);
+    if (filtered[i]->Val() <= val1 && filtered[i]->Val() >= val2) {
+      ERROR("Filtered[i] wasn't > val1 or < val2.");
+      success = false;
+    }
   }
 
   for (int i = 0; i < test_objects.size(); ++i) {
     delete test_objects[i];
   }
+  return success;
 }
 
-void TestANDFilterPredicate() {
+bool TestANDFilterPredicate() {
+  bool success = true;
   cout << "Testing AndFilterPredicate" << endl;
+
   // Create test objects
   vector<TestObj*> test_objects;
   for (int i = 0; i < 20; ++i) {
@@ -155,16 +183,22 @@ void TestANDFilterPredicate() {
   vector<TestObj*> filtered = and_filter.FilterVector(test_objects);
   for (int i = 0; i < filtered.size(); ++i) {
     cout << "Filtered[" << i << "] = " << filtered[i]->Val() << endl;
-    assert(filtered[i]->Val() > val1 && filtered[i]->Val() > val2);
+    if (!(filtered[i]->Val() > val1 && filtered[i]->Val() > val2)) {
+      ERROR("Filtered[i] wasn't > val1 and > val2.");
+      success = false;
+    }
   }
 
   for (int i = 0; i < test_objects.size(); ++i) {
     delete test_objects[i];
   }
+  return success;
 }
 
-void TestStringContainsFilterPredicate() {
+bool TestStringContainsFilterPredicate() {
+  bool success = true;
   cout << "Testing StringContainsFilterPredicate" << endl;
+
   // Create test objects
   vector<TestObj*> test_objects;
   for (int i = 0; i < 20; ++i) {
@@ -181,18 +215,27 @@ void TestStringContainsFilterPredicate() {
   vector<TestObj*> filtered = filter.FilterVector(test_objects);
   for (int i = 0; i < filtered.size(); ++i) {
     string str = filtered[i]->Str();
-    assert(str.find("gabe") != string::npos);
-    cout << "Filtere[" << i << "] = " << str << endl;
+    cout << "Filtered[" << i << "] = " << str << endl;
+    if (str.find("gabe") == string::npos) {
+      ERROR("Filtered[i] didn't contain \"gabe\"");
+      success = false;
+    }
   }
   assert(filtered.size() == 3);
+  return success;
+}
+
+bool RunTests() {
+  return TestBooleanFilterPredicate() &&
+    TestGTFilterPredicate() &&
+    TestLTFilterPredicate() &&
+    TestORFilterPredicate() &&
+    TestANDFilterPredicate() &&
+    TestStringContainsFilterPredicate();
 }
 
 int main() {
-  TestBooleanFilterPredicate();
-  TestGTFilterPredicate();
-  TestLTFilterPredicate();
-  TestORFilterPredicate();
-  TestANDFilterPredicate();
-  TestStringContainsFilterPredicate();
-  return 0;
+  bool success = RunTests();
+  cout  << errors << " errors." << endl;
+  return success;
 }
