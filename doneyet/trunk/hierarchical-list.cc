@@ -75,8 +75,8 @@ void HierarchicalList::Draw() {
       col_height += 2;
     for (int i = 0; i < columns_.size(); ++i) {
       int col_width = CursesUtils::winwidth(columns_[i]);
-      int xstart = col_start + floor(col_width / 2) -
-        ceil(strlen(column_names_[i].c_str()) / 2);
+      int xstart = col_start + (int) floor(col_width / 2) -
+        (int) ceil(strlen(column_names_[i].c_str()) / 2);
       mvwprintw(win_, col_height, xstart, "%s", column_names_[i].c_str());
 
       col_start += CursesUtils::winwidth(columns_[i]) + 1;
@@ -443,8 +443,7 @@ bool HierarchicalList::ParseColumnSpec(const ColumnSpec& spec) {
       if (!spec.in_percents) {
         column_widths.push_back(atoi(column_info[1].c_str()));
       } else {
-        column_widths.push_back(usable_width * atoi(column_info[1].c_str()) /
-            100.0);
+        column_widths.push_back(usable_width * static_cast<int>(atoi(column_info[1].c_str()) / 100.0));
       }
       // Allow room for the title
       column_widths[i] = std::max(column_widths[i], (int) column_names_[i].length());
@@ -455,7 +454,7 @@ bool HierarchicalList::ParseColumnSpec(const ColumnSpec& spec) {
   // Fill in any unspecified columns.  If there is more than one, they split the
   // remaining free space evenly.
   if (num_exes) {
-    int free_col_width = floor((usable_width - used) / num_exes);
+    int free_col_width = static_cast<int>(floor((usable_width - used) / num_exes));
     for (int i = 0; i < column_widths.size(); ++i) {
       if (column_widths[i] == -1) {
         column_widths[i] = free_col_width;
