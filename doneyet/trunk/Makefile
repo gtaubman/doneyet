@@ -1,8 +1,8 @@
 EXECUTABLE=todo
 OBJECTS = main project task dialog-box utils hierarchical-list file-manager \
-          serializer date filter-predicate
+          serializer date filter-predicate list-chooser
 DEBUGFLAGS = -g
-FASTFLAGS = -O3 -mdynamic-no-pic
+FASTFLAGS = -O3
 COMPILEFLAGS =$(DEBUGFLAGS) $(FASTFLAGS)
 OFILES = $(OBJECTS:%=%.o)
 CCC	= g++
