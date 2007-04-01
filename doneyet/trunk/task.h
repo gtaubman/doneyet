@@ -11,6 +11,7 @@
 #include "serializer.h"
 #include "date.h"
 #include "filter-predicate.h"
+#include "note.h"
 
 using std::string;
 using std::vector;
@@ -30,6 +31,9 @@ class Task : public ListItem {
         const string& description);
    virtual ~Task();
    static Task* NewTaskFromSerializer(Serializer* s);
+
+   void AddNote(const string& note);
+   vector<string> Notes();
 
    string Title() { return title_; }
    static string TitleWrapper(Task* t) { return t->Title(); }
@@ -98,6 +102,7 @@ class Task : public ListItem {
    Date creation_date_;
    Date start_date_;
    Date completion_date_;
+   vector<Note*> notes_;
 };
 
 #endif

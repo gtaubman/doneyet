@@ -125,7 +125,6 @@ string DialogBox::RunMultiLine(const string& title,
   delwin(subwindow);
   delwin(form_win);
 
-  redrawwin(stdscr);
   if (hit_escape) {
     // Clear out whatever was in the box if they hit escape.
     answer = "";

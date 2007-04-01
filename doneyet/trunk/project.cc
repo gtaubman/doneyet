@@ -3,6 +3,8 @@
 #include "dialog-box.h"
 #include "hierarchical-list.h"
 #include "utils.h"
+#include "list-chooser.h"
+#include "file-versions.h"
 
 using std::map;
 using std::cout;
@@ -78,6 +80,20 @@ void Project::DrawInWindow(WINDOW* win) {
         ComputeNodeStatus();
         FilterTasks();
         list_->Update();
+        break;
+      case 'n':
+        if (si) {
+          tmp_str = DialogBox::RunCenteredWithWidth("Add Note",
+              "",
+              CursesUtils::winwidth(stdscr) / 3);
+          if (!tmp_str.empty()) {
+            si->AddNote(tmp_str);
+          }
+        }
+        break;
+      case 'v':
+        if (si) 
+          ListChooser::GetChoice(si->Notes());
         break;
       case 'j':
       case KEY_DOWN:
@@ -164,7 +180,7 @@ Task* Project::AddTaskNamed(const string& name) {
 
 void Project::Serialize(Serializer* s) {
   // Write a serialization version.
-  s->WriteInt64(0);
+  s->WriteInt64(NOTES_VERSION);
 
   // Write our project name to the file.
   s->WriteString(name_);
@@ -189,6 +205,7 @@ Project* Project::NewProjectFromFile(string path) {
   
   // Read the file version
   uint64 file_version = s.ReadUint64();
+  s.SetVersion(file_version);
   
   // Find the project's name
   string project_name = s.ReadString();

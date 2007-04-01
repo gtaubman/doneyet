@@ -37,6 +37,7 @@ Serializer::Serializer(const string& inpath,
       okay_ = false;
     }
   }
+  version_ = 0;
 }
 
 Serializer::~Serializer() {

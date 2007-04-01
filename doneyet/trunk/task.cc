@@ -1,6 +1,7 @@
 #include <string>
 #include "task.h"
 #include "utils.h"
+#include "file-versions.h"
 
 using std::string;
 
@@ -27,6 +28,19 @@ Task* Task::NewTaskFromSerializer(Serializer* s) {
   Task* t = new Task(title, description);
   t->UnSerializeFromSerializer(s);
   return t;
+}
+
+void Task::AddNote(const string& note) {
+  notes_.push_back(new Note(note));
+}
+
+vector<string> Task::Notes() {
+  vector<string> notes;
+  for (int i = 0; i < notes_.size(); ++i) {
+    beep();
+    notes.push_back(notes_[i]->Text());
+  }
+  return notes;
 }
 
 void Task::ApplyFilter(FilterPredicate<Task>* filter) {
@@ -88,13 +102,27 @@ void Task::SetDescription(const string& description) {
 }
 
 void Task::Serialize(Serializer* s) {
+  // Initially we store a unique identifier to ourselves that will help with
+  // reading in the tasks and assembling the tree.
   s->WriteUint64((uint64)this);
+
+  // Data about this task.
   s->WriteString(title_);
   s->WriteString(description_);
   s->WriteInt32(static_cast<int32>(status_));
+
+  // Various dates.
   creation_date_.Serialize(s);
   start_date_.Serialize(s);
   completion_date_.Serialize(s);
+
+  // The notes associated with this task.
+  s->WriteInt32(notes_.size());
+  for (int i = 0; i < notes_.size(); ++i) {
+    notes_[i]->Serialize(s);
+  }
+
+  // Finally our parent pointer and then we move onto the children.
   s->WriteUint64((uint64)parent_);
   for (int i = 0; i < subtasks_.size(); ++i) {
     subtasks_[i]->Serialize(s);
@@ -106,6 +134,15 @@ void Task::UnSerializeFromSerializer(Serializer* s) {
   creation_date_.ReadFromSerializer(s);
   start_date_.ReadFromSerializer(s);
   completion_date_.ReadFromSerializer(s);
+
+  if (s->Version() >= NOTES_VERSION) {
+    int num_notes = s->ReadInt32();
+    for (int i = 0; i < num_notes; ++i) {
+      Note* n = new Note("");
+      n->ReadFromSerializer(s);
+      notes_.push_back(n);
+    }
+  }
 }
 
 void Task::SetStatus(TaskStatus t) {

@@ -1,4 +1,5 @@
 #include "date.h"
+#include "utils.h"
 
 Date::Date() {
   std::time(&time_);
@@ -21,7 +22,14 @@ bool Date::IsCloserToNowThan(Date* d) {
 }
 
 string Date::ToString() {
-  return string(ctime(&time_));
+  // For some reason, ctime and its friends output the strings with a newline in
+  // them:
+  // Thu Nov 24 18:22:48 1986\n\0
+  // So, we turn the newline into a NULL
+  char buf[26];
+  ctime_r(&time_, buf);
+  buf[24] = '\0';
+  return string(buf);
 }
 
 void Date::Serialize(Serializer* s) {

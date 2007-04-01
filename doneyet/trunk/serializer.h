@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include "file-types.h"
 
 using std::string;
 using std::ostream;
@@ -11,18 +12,6 @@ using std::ifstream;
 using std::ofstream;
 using std::istream;
 
-// Unsigned
-typedef unsigned long long uint64;
-typedef unsigned int uint32;
-typedef unsigned short uint16;
-typedef unsigned char uint8;
-
-// Signed
-typedef long long int64;
-typedef int int32;
-typedef short int16;
-typedef char int8;
-  
 class Serializer {
  public:
   Serializer(const string& inpath, const string& outpath);
@@ -52,6 +41,9 @@ class Serializer {
   double ReadDouble();
   string ReadString();
 
+  int Version() { return version_; }
+  void SetVersion(int v) { version_ = v; }
+  
   void CloseAll();
   bool Okay() { return okay_; }
   bool Done() { return done_; }
@@ -64,6 +56,9 @@ class Serializer {
 
   bool okay_;
   bool done_;
+
+  // This is user set data to aid in passing around a file version.
+  uint64 version_;
 };
 
 #endif

@@ -32,6 +32,8 @@ int main(int argc, char** argv) {
       init_pair(5, COLOR_CYAN,    COLOR_BLACK);
       init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
       init_pair(7, COLOR_WHITE,   COLOR_BLACK);
+      init_pair(8, COLOR_YELLOW,   COLOR_BLUE);
+      init_pair(9, COLOR_YELLOW,   COLOR_BLUE);
     }
 
     box(stdscr, 0, 0);

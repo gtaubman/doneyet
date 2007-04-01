@@ -7,6 +7,9 @@ string ListChooser::GetChoiceWithOptions(const vector<string>& choices,
     int yloc,
     bool border,
     string mark) {
+  if (!choices.size()) {
+    return "";
+  }
 
   // Create the menu and its items:
   ITEM** items = (ITEM**) malloc((1 + choices.size()) * sizeof(ITEM*));
@@ -23,6 +26,12 @@ string ListChooser::GetChoiceWithOptions(const vector<string>& choices,
   // Create the windows to hold it:
   int rows, cols;
   scale_menu(menu, &rows, &cols);
+  if (rows > CursesUtils::winheight(stdscr)) {
+    rows = CursesUtils::winheight(stdscr) - 4 - 2 * border;
+  }
+  if (cols > CursesUtils::winwidth(stdscr)) {
+    cols = CursesUtils::winwidth(stdscr) - 4 - 2 * border;
+  }
 
   // Figure out the size of the window depending on whether or not we're drawing
   // a border:
@@ -35,6 +44,7 @@ string ListChooser::GetChoiceWithOptions(const vector<string>& choices,
     xloc = info.width / 2 - (cols + spacing) / 2;
     yloc = info.height / 2 - (rows + spacing) / 2;
   }
+  
   WINDOW* frill_window = newwin(rows + spacing, cols + spacing, yloc, xloc);
   keypad(frill_window, true);
   WINDOW* text_window = derwin(frill_window, rows, cols, border, border);
