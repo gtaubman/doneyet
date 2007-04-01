@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "file-types.h"
+#include "basic-types.h"
 
 using std::string;
 using std::ostream;
