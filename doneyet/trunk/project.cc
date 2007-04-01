@@ -43,7 +43,7 @@ void Project::FilterTasks(FilterPredicate<Task>* filter) {
 void Project::DrawInWindow(WINDOW* win) {
   window_info info = CursesUtils::get_window_info(win);
   string name = "";
-  ColumnSpec spec("Task:X,Created:25,Completed:25,User:8,Duration:7", false);
+  ColumnSpec spec("Task:X,Created:24,Completed:24", false);
   list_ = new HierarchicalList(name,
       info.height,
       info.width,
@@ -80,6 +80,26 @@ void Project::DrawInWindow(WINDOW* win) {
         ComputeNodeStatus();
         FilterTasks();
         list_->Update();
+        break;
+      case 'm':
+        {
+          if (si) {
+            // Get another character to see if they want to move up or down:
+            ch = getch();
+            switch (ch) {
+              case 'u':
+                si->MoveUp();
+                FilterTasks();
+                list_->Update();
+                break;
+              case 'd':
+                si->MoveDown();
+                FilterTasks();
+                list_->Update();
+                break;
+            }
+          }
+        }
         break;
       case 'n':
         if (si) {

@@ -1,6 +1,9 @@
 #ifndef __TASK_H__
 #define __TASK_H__
 
+// TODO: Swap(Task*, Task*) is still a bit flakey if the tasks are in the
+// "wrong" order.  Fix that.
+
 #include <ncurses.h>
 #include <string>
 #include <vector>
@@ -53,6 +56,11 @@ class Task : public ListItem {
    void RemoveSubtaskFromList(Task* t);
    void Delete();
    void DeleteTask(Task* t);
+   void SwapTasks(Task* a, Task* b);
+   void MoveTaskUp(Task* t);
+   void MoveTaskDown(Task* t);
+   void MoveUp();
+   void MoveDown();
 
    void SetStatus(TaskStatus t);
    TaskStatus Status() { return status_; }
@@ -79,7 +87,6 @@ class Task : public ListItem {
      if (c == "Task") return title_;
      if (c == "Created") return creation_date_.ToString();
      if (c == "Completed") return completion_date_.ToString();
-     if (c == "User") return "gtaubman";
      return "UNKNOWN";
    }
    int ListColor();

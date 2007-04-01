@@ -93,6 +93,74 @@ void Task::Delete() {
   delete this;
 }
 
+void Task::SwapTasks(Task* a, Task* b) {
+  if (a == b) {
+    return;
+  }
+  
+  // Find the indices of a and b.
+  vector<Task*>::iterator ait = find(subtasks_.begin(), subtasks_.end(), a);
+  vector<Task*>::iterator bit = find(subtasks_.begin(), subtasks_.end(), b);
+
+  if (ait == subtasks_.end() ||
+      bit == subtasks_.end()) {
+    return;
+  }
+
+  int ai = ait - subtasks_.begin();
+  int bi = bit - subtasks_.begin();
+
+  // Remove B from the vector.
+  subtasks_.erase(bit);
+
+  // Place B before A.
+  subtasks_.insert(subtasks_.begin() + ai, b);
+
+  // Remove A from the vector (A is now one further forward because B was added)
+  subtasks_.erase(subtasks_.begin() + ai + 1);
+
+  // Place A where B used to be
+  subtasks_.insert(subtasks_.begin() + bi, a);
+}
+
+void Task::MoveTaskUp(Task* t) {
+  // We can't move up the first task.
+  if (t == filtered_tasks_[0]) {
+    return;
+  }
+
+  // Find the task in our filtered list:
+  vector<Task*>::iterator it = find(filtered_tasks_.begin(),
+                                    filtered_tasks_.end(),
+                                    t);
+  SwapTasks(*(--it), t);
+}
+
+void Task::MoveTaskDown(Task* t) {
+  // We can't move down the last task.
+  if (t == filtered_tasks_[filtered_tasks_.size() - 1]) {
+    return;
+  }
+
+  // Find the task in our filtered list:
+  vector<Task*>::iterator it = find(filtered_tasks_.begin(),
+                                    filtered_tasks_.end(),
+                                    t);
+  SwapTasks(t, *(++it));
+}
+
+void Task::MoveUp() {
+  if (Parent()) {
+    Parent()->MoveTaskUp(this);
+  }
+}
+
+void Task::MoveDown() {
+  if (Parent()) {
+    Parent()->MoveTaskDown(this);
+  }
+}
+
 void Task::SetTitle(const string& title) {
   title_ = title;
 }
