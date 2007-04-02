@@ -14,12 +14,25 @@ Project::Project(string name)
   : name_(name),
     list_(NULL) {
   ShowAllTasks();
+  menubar_ = new MenuBar();
+  Menu* m = menubar_->AddMenu("File");
+  m->AddMenuItem("New");
+  m->AddMenuItem("Open");
+  m->AddMenuItem("Save");
+  m->AddMenuItem("Quit");
+
+  m = menubar_->AddMenu("View");
+  m->AddMenuItem("Find...");
+  m->AddMenuItem("All Tasks");
+  m->AddMenuItem("Completed Tasks");
+  m->AddMenuItem("Incomplete Tasks");
 }
 
 Project::~Project() {
   for (int i = 0; i < tasks_.size(); ++i) {
     tasks_[i]->Delete();
   }
+  delete menubar_;
 }
 
 Project* Project::NewProject() {
@@ -81,23 +94,64 @@ void Project::DrawInWindow(WINDOW* win) {
         FilterTasks();
         list_->Update();
         break;
-      case 'm':
+      case 'M':
         {
-          if (si) {
-            // Get another character to see if they want to move up or down:
+          menubar_->ShowNextMenu();
+          string answer;
+          bool mdone = false;
+          while (!mdone) {
             ch = getch();
             switch (ch) {
-              case 'u':
-                si->MoveUp();
-                FilterTasks();
-                list_->Update();
+              case KEY_UP:
+              case 'j':
+                menubar_->SendEventToMenu(REQ_DOWN_ITEM);
                 break;
-              case 'd':
-                si->MoveDown();
-                FilterTasks();
-                list_->Update();
+              case KEY_DOWN:
+              case 'k':
+                menubar_->SendEventToMenu(REQ_UP_ITEM);
+                break;
+              case KEY_RIGHT:
+              case 'l':
+                list_->Draw();
+                menubar_->ShowNextMenu();
+                break;
+              case KEY_LEFT:
+              case 'h':
+                list_->Draw();
+                menubar_->ShowPreviousMenu();
+                break;
+              case '\r':
+                answer = menubar_->SelectedItem();
+                mdone = true;
+                break;
+              case 27:  // escape
+                answer = "";
                 break;
             }
+          }
+          if (!answer.empty())
+            HandleMenuInput(answer);
+          if (answer == "Quit") {
+            beep();
+            done = true;
+          }
+        }
+        break;
+      case 'm':
+        if (si) {
+          // Get another character to see if they want to move up or down:
+          ch = getch();
+          switch (ch) {
+            case 'u':
+              si->MoveUp();
+              FilterTasks();
+              list_->Update();
+              break;
+            case 'd':
+              si->MoveDown();
+              FilterTasks();
+              list_->Update();
+              break;
           }
         }
         break;
@@ -185,8 +239,8 @@ void Project::DrawInWindow(WINDOW* win) {
         list_->SelectNextColumn();
         break;
       case '\r':
+      case 'q':
         done = true;
-        return;
     }
     list_->Draw();
   }
@@ -411,4 +465,26 @@ void Project::RunSearchFilter(const string& needle) {
 
   base_filter_.AddChild(or_filter);
   FilterTasks();
+}
+
+void Project::HandleMenuInput(const string& input) {
+  if (input == "All Tasks") {
+    ShowAllTasks();
+    list_->Update();
+  } else if (input == "Completed Tasks") {
+    ShowCompletedLastWeek();
+    list_->Update();
+  } else if (input == "Incomplete Tasks") {
+    ArchiveCompletedTasks();
+    list_->Update();
+  } else if (input == "Find...") {
+    string tmp_str = DialogBox::RunCenteredWithWidth("Enter Search Term:",
+        "",
+        CursesUtils::winwidth(stdscr) / 3);
+    if (!tmp_str.empty()) {
+      RunSearchFilter(tmp_str);
+      list_->Update();
+      list_->ScrollToTop();
+    }
+  }
 }

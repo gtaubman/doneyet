@@ -13,6 +13,7 @@
 #include "task.h"
 #include "serializer.h"
 #include "filter-predicate.h"
+#include "curses-menu.h"
 
 using std::string;
 using std::vector;
@@ -50,6 +51,7 @@ class Project : HierarchicalListDataSource {
   int NumRoots() { return NumFilteredRoots(); }
   ListItem* Root(int i) { return static_cast<ListItem*>(FilteredRoot(i)); }
 
+  void HandleMenuInput(const string& input);
  private:
   void Rename();
   void ComputeNodeStatus();
@@ -60,6 +62,7 @@ class Project : HierarchicalListDataSource {
   vector<Task*> filtered_tasks_;
   HierarchicalList* list_;
   AndFilterPredicate<Task> base_filter_;
+  MenuBar* menubar_;
 };
 
 #endif

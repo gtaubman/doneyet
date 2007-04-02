@@ -1,6 +1,6 @@
 EXECUTABLE=todo
 OBJECTS = main project task dialog-box utils hierarchical-list file-manager \
-          serializer date filter-predicate list-chooser note
+          serializer date filter-predicate list-chooser note curses-menu
 DEBUGFLAGS = -g
 FASTFLAGS = -O3
 COMPILEFLAGS =$(DEBUGFLAGS) $(FASTFLAGS)
