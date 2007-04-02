@@ -126,6 +126,7 @@ void Project::DrawInWindow(WINDOW* win) {
                 break;
               case 27:  // escape
                 answer = "";
+                mdone = true;
                 break;
             }
           }
