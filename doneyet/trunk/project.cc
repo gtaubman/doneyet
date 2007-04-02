@@ -56,7 +56,7 @@ void Project::FilterTasks(FilterPredicate<Task>* filter) {
 void Project::DrawInWindow(WINDOW* win) {
   window_info info = CursesUtils::get_window_info(win);
   string name = "";
-  ColumnSpec spec("Task:X,Created:24,Completed:24", false);
+  ColumnSpec spec("Task:X,N:1,Created:24,Completed:24", false);
   list_ = new HierarchicalList(name,
       info.height,
       info.width,

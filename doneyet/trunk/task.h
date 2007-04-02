@@ -87,6 +87,7 @@ class Task : public ListItem {
      if (c == "Task") return title_;
      if (c == "Created") return creation_date_.ToString();
      if (c == "Completed") return completion_date_.ToString();
+     if (c == "N") return (notes_.size() ? "X" : "");
      return "UNKNOWN";
    }
    int ListColor();

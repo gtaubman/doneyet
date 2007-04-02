@@ -217,9 +217,9 @@ void Task::SetStatus(TaskStatus t) {
   if (status_ == CREATED && t == IN_PROGRESS) {
     // We were set to in progress for the first time.
     start_date_.SetToNow();
-  } else if (t == COMPLETED) {
+  } else if (t == COMPLETED && status_ != COMPLETED) {
     completion_date_.SetToNow();
-  } else if (t == PAUSED) {
+  } else if (t == PAUSED && status_ != PAUSED) {
     completion_date_.SetToEmptyTime();
   }
 
