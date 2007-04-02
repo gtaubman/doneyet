@@ -222,6 +222,8 @@ void Task::SetStatus(TaskStatus t) {
   } else if (t == PAUSED && status_ != PAUSED) {
     completion_date_.SetToEmptyTime();
   }
+  if (t == IN_PROGRESS)
+    completion_date_.SetToEmptyTime();
 
   status_ = t;
 }

@@ -86,7 +86,11 @@ class Task : public ListItem {
    const string TextForColumn(const string& c) {
      if (c == "Task") return title_;
      if (c == "Created") return creation_date_.ToString();
-     if (c == "Completed") return completion_date_.ToString();
+     if (c == "Completed") {
+       if (completion_date_.Time() == 0)
+         return "";
+       return completion_date_.ToString();
+     }
      if (c == "N") return (notes_.size() ? "X" : "");
      return "UNKNOWN";
    }
