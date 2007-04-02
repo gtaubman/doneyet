@@ -102,11 +102,11 @@ void Project::DrawInWindow(WINDOW* win) {
           while (!mdone) {
             ch = getch();
             switch (ch) {
-              case KEY_UP:
+              case KEY_DOWN:
               case 'j':
                 menubar_->SendEventToMenu(REQ_DOWN_ITEM);
                 break;
-              case KEY_DOWN:
+              case KEY_UP:
               case 'k':
                 menubar_->SendEventToMenu(REQ_UP_ITEM);
                 break;
