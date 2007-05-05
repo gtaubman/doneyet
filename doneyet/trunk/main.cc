@@ -2,17 +2,13 @@
 #include <menu.h>
 #include <iostream>
 #include <fstream>
-#include "project.h"
-#include "dialog-box.h"
-#include "file-manager.h"
-#include "serializer.h"
+#include "workspace.h"
 
 using std::ofstream;
 using std::iostream;
 
 int main(int argc, char** argv) {
   bool curses = true;
-  FileManager* fm = FileManager::DefaultFileManager();
   if (curses) {
     initscr();  // Create the standard window.
     keypad(stdscr, true);        // Enable keyboard mappings
@@ -35,31 +31,12 @@ int main(int argc, char** argv) {
       init_pair(8, COLOR_YELLOW,   COLOR_BLUE);
       init_pair(9, COLOR_YELLOW,   COLOR_BLUE);
     }
-
-    box(stdscr, 0, 0);
-  }
-
-  Project* p = NULL;
-  if (fm->NumSavedProjects() == 1) {
-    printf("There was one saved project.\n");
-    p = Project::NewProjectFromFile(fm->ProjectDir() + fm->SavedProjectNames()[0]);
-  } else {
-    p = Project::NewProject();
   }
 
   if (curses) {
-    if (p) {
-      p->DrawInWindow(stdscr);
-      refresh();
-    } else {
-      printf("hit escape\n");
-    }
+    Workspace w;
     endwin();
   }
 
-  std::string filename = fm->ProjectDir() + p->Name();  
-  Serializer s("", filename);
-  p->Serialize(&s);
-  s.CloseAll();
   return 0;
 }

@@ -102,25 +102,15 @@ void Task::SwapTasks(Task* a, Task* b) {
   vector<Task*>::iterator ait = find(subtasks_.begin(), subtasks_.end(), a);
   vector<Task*>::iterator bit = find(subtasks_.begin(), subtasks_.end(), b);
 
-  if (ait == subtasks_.end() ||
-      bit == subtasks_.end()) {
-    return;
-  }
+  assert(ait != subtasks_.end() || bit != subtasks_.end());
 
   int ai = ait - subtasks_.begin();
   int bi = bit - subtasks_.begin();
 
-  // Remove B from the vector.
-  subtasks_.erase(bit);
-
-  // Place B before A.
-  subtasks_.insert(subtasks_.begin() + ai, b);
-
-  // Remove A from the vector (A is now one further forward because B was added)
-  subtasks_.erase(subtasks_.begin() + ai + 1);
-
-  // Place A where B used to be
-  subtasks_.insert(subtasks_.begin() + bi, a);
+  Task* tmp = a;
+  subtasks_[ai] = b;
+  subtasks_[bi] = tmp;
+  return;
 }
 
 void Task::MoveTaskUp(Task* t) {
@@ -133,7 +123,8 @@ void Task::MoveTaskUp(Task* t) {
   vector<Task*>::iterator it = find(filtered_tasks_.begin(),
                                     filtered_tasks_.end(),
                                     t);
-  SwapTasks(*(--it), t);
+  --it;
+  SwapTasks(*it, t);
 }
 
 void Task::MoveTaskDown(Task* t) {
@@ -146,7 +137,8 @@ void Task::MoveTaskDown(Task* t) {
   vector<Task*>::iterator it = find(filtered_tasks_.begin(),
                                     filtered_tasks_.end(),
                                     t);
-  SwapTasks(t, *(++it));
+  ++it;
+  SwapTasks(t, *it);
 }
 
 void Task::MoveUp() {

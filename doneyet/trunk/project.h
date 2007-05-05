@@ -4,8 +4,6 @@
 #ifndef __PROJECT_H__
 #define __PROJECT_H__
 
-#include <ncurses.h>
-#include <panel.h>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -13,19 +11,17 @@
 #include "task.h"
 #include "serializer.h"
 #include "filter-predicate.h"
-#include "curses-menu.h"
 
 using std::string;
 using std::vector;
 using std::ofstream;
 using std::ifstream;
 
-class Project : HierarchicalListDataSource {
+class Project : public HierarchicalListDataSource {
  public:
   explicit Project(string name);
   virtual ~Project();
 
-  static Project* NewProject();
   static Project* NewProjectFromFile(string path);
 
   void FilterTasks(FilterPredicate<Task>* filter);
@@ -33,7 +29,6 @@ class Project : HierarchicalListDataSource {
   void RunSearchFilter(const string& find);
 
   string Name() { return name_; }
-  void DrawInWindow(WINDOW* win);
   Task* AddTaskNamed(const string& name);
   void Serialize(Serializer* s);
 
@@ -51,18 +46,14 @@ class Project : HierarchicalListDataSource {
   int NumRoots() { return NumFilteredRoots(); }
   ListItem* Root(int i) { return static_cast<ListItem*>(FilteredRoot(i)); }
 
-  void HandleMenuInput(const string& input);
+  void RecomputeNodeStatus();
  private:
-  void Rename();
-  void ComputeNodeStatus();
   TaskStatus ComputeStatusForTask(Task* t);
 
   string name_;
   vector<Task*> tasks_;
   vector<Task*> filtered_tasks_;
-  HierarchicalList* list_;
   AndFilterPredicate<Task> base_filter_;
-  MenuBar* menubar_;
 };
 
 #endif

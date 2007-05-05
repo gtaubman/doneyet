@@ -24,6 +24,8 @@ class CursesUtils {
       const char *string,
       chtype color);
 
+  static int winheight() { return winheight(stdscr); }
+  static int winwidth() { return winwidth(stdscr); }
   static int winheight(WINDOW* win);
   static int winwidth(WINDOW* win);
 };

@@ -1,9 +1,7 @@
 #include "project.h"
 #include <map>
-#include "dialog-box.h"
 #include "hierarchical-list.h"
 #include "utils.h"
-#include "list-chooser.h"
 #include "file-versions.h"
 
 using std::map;
@@ -11,36 +9,14 @@ using std::cout;
 using std::endl;
 
 Project::Project(string name)
-  : name_(name),
-    list_(NULL) {
+  : name_(name) {
   ShowAllTasks();
-  menubar_ = new MenuBar();
-  Menu* m = menubar_->AddMenu("File");
-  m->AddMenuItem("New");
-  m->AddMenuItem("Open");
-  m->AddMenuItem("Save");
-  m->AddMenuItem("Quit");
-
-  m = menubar_->AddMenu("View");
-  m->AddMenuItem("Find...");
-  m->AddMenuItem("All Tasks");
-  m->AddMenuItem("Completed Tasks");
-  m->AddMenuItem("Incomplete Tasks");
 }
 
 Project::~Project() {
   for (int i = 0; i < tasks_.size(); ++i) {
     tasks_[i]->Delete();
   }
-  delete menubar_;
-}
-
-Project* Project::NewProject() {
-  // Ask for a project name
-  string answer = DialogBox::RunCentered(
-      "Please Enter a Project Name",
-      "Default Project");
-  return new Project(answer);
 }
 
 void Project::FilterTasks(FilterPredicate<Task>* filter) {
@@ -51,200 +27,6 @@ void Project::FilterTasks(FilterPredicate<Task>* filter) {
 
   // Finally filter the root tasks themselves.
   filtered_tasks_ = filter->FilterVector(tasks_);
-}
-
-void Project::DrawInWindow(WINDOW* win) {
-  window_info info = CursesUtils::get_window_info(win);
-  string name = "";
-  ColumnSpec spec("Task:X,N:1,Created:24,Completed:24", false);
-  list_ = new HierarchicalList(name,
-      info.height,
-      info.width,
-      0,
-      0,
-      spec);
-  list_->SetDatasource(this);
-  list_->Draw();
-
-  int ch;
-  bool done = false;
-  string tmp_str;
-  while (!done && (ch = getch())) {
-    Task* si = static_cast<Task*>(list_->SelectedItem());
-    switch (ch) {
-      case 'A':
-        ShowAllTasks();
-        list_->Update();
-        list_->ScrollToTop();
-        break;
-      case 'a':
-        tmp_str = DialogBox::RunMultiLine("Enter New Task",
-            "",
-            CursesUtils::winwidth(win) / 3,
-            CursesUtils::winheight(win) / 3);
-        if (!tmp_str.empty()) {
-          Task* t = new Task(tmp_str, "");
-          if (si == NULL) {
-            tasks_.push_back(t);
-          } else {
-            si->AddSubTask(t);
-          }
-        }
-        ComputeNodeStatus();
-        FilterTasks();
-        list_->Update();
-        break;
-      case 'M':
-        {
-          menubar_->ShowNextMenu();
-          string answer;
-          bool mdone = false;
-          while (!mdone) {
-            ch = getch();
-            switch (ch) {
-              case KEY_DOWN:
-              case 'j':
-                menubar_->SendEventToMenu(REQ_DOWN_ITEM);
-                break;
-              case KEY_UP:
-              case 'k':
-                menubar_->SendEventToMenu(REQ_UP_ITEM);
-                break;
-              case KEY_RIGHT:
-              case 'l':
-                list_->Draw();
-                menubar_->ShowNextMenu();
-                break;
-              case KEY_LEFT:
-              case 'h':
-                list_->Draw();
-                menubar_->ShowPreviousMenu();
-                break;
-              case '\r':
-                answer = menubar_->SelectedItem();
-                mdone = true;
-                break;
-              case 27:  // escape
-                answer = "";
-                mdone = true;
-                break;
-            }
-          }
-          if (!answer.empty())
-            HandleMenuInput(answer);
-          if (answer == "Quit") {
-            beep();
-            done = true;
-          }
-        }
-        break;
-      case 'm':
-        if (si) {
-          // Get another character to see if they want to move up or down:
-          ch = getch();
-          switch (ch) {
-            case 'u':
-              si->MoveUp();
-              FilterTasks();
-              list_->Update();
-              break;
-            case 'd':
-              si->MoveDown();
-              FilterTasks();
-              list_->Update();
-              break;
-          }
-        }
-        break;
-      case 'n':
-        if (si) {
-          tmp_str = DialogBox::RunCenteredWithWidth("Add Note",
-              "",
-              CursesUtils::winwidth(stdscr) / 3);
-          if (!tmp_str.empty()) {
-            si->AddNote(tmp_str);
-          }
-        }
-        break;
-      case 'v':
-        if (si) 
-          ListChooser::GetChoice(si->Notes());
-        break;
-      case 'j':
-      case KEY_DOWN:
-        list_->SelectNextItem();
-        break;
-      case KEY_UP:
-      case 'k':
-        list_->SelectPrevItem();
-        break;
-      case 'r':
-        Rename();
-        break;
-      case 'e':
-        list_->EditSelectedItem();
-        break;
-      case 'd':
-        list_->SelectPrevItem();
-        DeleteTask(si);
-        ComputeNodeStatus();
-        FilterTasks();
-        list_->Update();
-        break;
-      case 'c':
-        list_->ToggleExpansionOfSelectedItem();
-        break;
-      case 'R':
-        ArchiveCompletedTasks();
-        list_->Update();
-        list_->ScrollToTop();
-        break;
-      case 'C':
-        ShowCompletedLastWeek();
-        list_->Update();
-        list_->ScrollToTop();
-        break;
-      case 'f':
-        {
-          string tmp_str = DialogBox::RunCenteredWithWidth("Enter Search Term:",
-              "",
-              CursesUtils::winwidth(win) / 3);
-          if (!tmp_str.empty()) {
-            RunSearchFilter(tmp_str);
-            list_->Update();
-            list_->ScrollToTop();
-          }
-          break;
-        }
-      case 27: // escape
-        list_->SelectNoItem();
-        break;
-      case 32: // space
-        if (si && !si->NumChildren()) {
-          switch (si->Status()) {
-            case CREATED:
-            case PAUSED:
-              si->SetStatus(IN_PROGRESS);
-              break;
-            case IN_PROGRESS:
-              si->SetStatus(COMPLETED);
-              break;
-            case COMPLETED:
-              si->SetStatus(PAUSED);
-              break;
-          }
-          ComputeNodeStatus();
-        }
-        break;
-      case '\t':
-        list_->SelectNextColumn();
-        break;
-      case '\r':
-      case 'q':
-        done = true;
-    }
-    list_->Draw();
-  }
 }
 
 Task* Project::AddTaskNamed(const string& name) {
@@ -312,10 +94,10 @@ Project* Project::NewProjectFromFile(string path) {
   for (int i = 0; i < tasks.size(); ++i) {
     Task* t = tasks[i];
     if (tasks_parents[t] == 0) {
-      // We have a root task.  Add it to the root list_.
+      // We have a root task.  Add it to the root list.
       p->tasks_.push_back(tasks[i]);
     } else {
-      // We have a child task.  Add it to its parent's list_.
+      // We have a child task.  Add it to its parent's list.
       task_map[tasks_parents[t]]->AddSubTask(tasks[i]);
     }
   }
@@ -349,20 +131,11 @@ void Project::DeleteTask(Task* t) {
   }
 }
 
-void Project::Rename() {
-  string answer = DialogBox::RunCenteredWithWidth(
-      "Rename Project",
-      name_,
-      20);
-  if (!answer.empty())
-    name_ = answer;
-}
-
 // Compute the status of all nodes.  Nodes which have children have their status
 // for them (hence the need for this function).  A node with any IN_PROGRESS
 // child is itself IN_PROGRESS.  If all of a node's children are PAUSED, the
 // node is PAUSED.
-void Project::ComputeNodeStatus() {
+void Project::RecomputeNodeStatus() {
   for (int i = 0; i < tasks_.size(); ++i) {
     ComputeStatusForTask(tasks_[i]);
   }
@@ -466,26 +239,4 @@ void Project::RunSearchFilter(const string& needle) {
 
   base_filter_.AddChild(or_filter);
   FilterTasks();
-}
-
-void Project::HandleMenuInput(const string& input) {
-  if (input == "All Tasks") {
-    ShowAllTasks();
-    list_->Update();
-  } else if (input == "Completed Tasks") {
-    ShowCompletedLastWeek();
-    list_->Update();
-  } else if (input == "Incomplete Tasks") {
-    ArchiveCompletedTasks();
-    list_->Update();
-  } else if (input == "Find...") {
-    string tmp_str = DialogBox::RunCenteredWithWidth("Enter Search Term:",
-        "",
-        CursesUtils::winwidth(stdscr) / 3);
-    if (!tmp_str.empty()) {
-      RunSearchFilter(tmp_str);
-      list_->Update();
-      list_->ScrollToTop();
-    }
-  }
 }

@@ -1,7 +1,8 @@
 EXECUTABLE=todo
 OBJECTS = main project task dialog-box utils hierarchical-list file-manager \
-          serializer date filter-predicate list-chooser note curses-menu
-DEBUGFLAGS = -g
+          serializer date filter-predicate list-chooser note curses-menu \
+          workspace
+DEBUGFLAGS = -g #-fprofile-arcs -ftest-coverage
 FASTFLAGS = -O3
 COMPILEFLAGS =$(DEBUGFLAGS) $(FASTFLAGS)
 OFILES = $(OBJECTS:%=%.o)
