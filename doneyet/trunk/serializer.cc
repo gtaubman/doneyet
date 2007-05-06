@@ -169,7 +169,7 @@ string Serializer::ReadString() {
   // First read the size of the string
   uint32 str_size = ReadUint32();
 
-  char data[1000] = {0};
+  char data[1000000] = {0};
   in_->read(data, str_size);
   
   return string(data);
