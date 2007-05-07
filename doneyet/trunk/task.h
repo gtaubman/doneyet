@@ -100,7 +100,7 @@ class Task : public ListItem {
    Task* ListParent() { return Parent(); }
    void SetListText(string& text) { title_ = text; }
 
-
+   void ToStream(ostream& out, int depth);
  private:
    friend class Project;
    void UnSerializeFromSerializer(Serializer* s);

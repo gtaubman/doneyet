@@ -47,6 +47,7 @@ class Project : public HierarchicalListDataSource {
   ListItem* Root(int i) { return static_cast<ListItem*>(FilteredRoot(i)); }
 
   void RecomputeNodeStatus();
+  friend ostream& operator <<(ostream& out, Project& project);
  private:
   TaskStatus ComputeStatusForTask(Task* t);
 

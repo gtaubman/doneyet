@@ -1,4 +1,6 @@
 #include <ncurses.h>
+#include <iostream>
+#include <fstream>
 #include "utils.h"
 #include "dialog-box.h"
 #include "workspace.h"
@@ -78,6 +80,7 @@ Workspace::~Workspace() {
 // \r: Quit.
 void Workspace::Run() {
   list_->Draw();
+  doupdate();
 
   int ch;
   Task* selected_task;
@@ -89,17 +92,13 @@ void Workspace::Run() {
         AddTask(selected_task);
         break;
       case 'A':  // Show all tasks
-        project_->ShowAllTasks();
-        list_->Update();
-        list_->ScrollToTop();
+        ShowAllTasks();
         break;
       case 'c':  // Toggle collapsed state
         list_->ToggleExpansionOfSelectedItem();
         break;
       case 'C':  // Show weekly completed tasks
-        project_->ShowCompletedLastWeek();
-        list_->Update();
-        list_->ScrollToTop();
+        ShowTasksCompletedLastWeek();
         break;
       case 'd':  // Deleted selected task
         list_->SelectPrevItem();
@@ -130,9 +129,7 @@ void Workspace::Run() {
         AddNote(selected_task);
         break;
       case 'R':  // Show unfinished tasks
-        project_->ArchiveCompletedTasks();
-        list_->Update();
-        list_->ScrollToTop();
+        ShowUnfinishedTasks();
         break;
       case 'v':
         ViewNotes(selected_task);
@@ -148,6 +145,7 @@ void Workspace::Run() {
         break;
     }
     list_->Draw();
+    doupdate();
   }
 }
 
@@ -214,6 +212,7 @@ void Workspace::MoveTask(Task* t) {
     project_->FilterTasks();
     list_->Update();
     list_->Draw();
+    doupdate();
   }
 }
 
@@ -252,6 +251,7 @@ void Workspace::ShowMenuBar(Task* t) {
         done = true;
         break;
     }
+    doupdate();
   }
 
   HandleMenuInput(menu_answer);
@@ -286,16 +286,26 @@ void Workspace::HandleMenuInput(const string& input) {
     SaveCurrentProject();
     Quit();
   } else if (input == "All Tasks") {
-    project_->ShowAllTasks();
-    list_->Update();
+    ShowAllTasks();
   } else if (input == "Completed Tasks") {
-    project_->ShowCompletedLastWeek();
-    list_->Update();
+    ShowTasksCompletedLastWeek();
   } else if (input == "Incomplete Tasks") {
-    project_->ArchiveCompletedTasks();
-    list_->Update();
+    ShowUnfinishedTasks();
   } else if (input == "Find...") {
     RunFind();
+    list_->ScrollToTop();
+  } else if (input == "Plain Text") {
+    const char* path = "/tmp/snippet.txt";
+    std::ofstream out(path, std::ios::out);
+    if (out.fail()) {
+      beep();
+    } else {
+      out << (*project_);
+      endwin();
+      system("less /tmp/snippet.txt");
+      list_->Draw();
+      doupdate();
+    }
   }
 }
 
@@ -373,7 +383,7 @@ void Workspace::PerformFullListUpdate() {
 
 void Workspace::InitializeMenuBar() {
   menubar_ = new MenuBar();
-  Menu* m = menubar_->AddMenu("File");
+  Menu* m = menubar_->AddMenu("Project");
   m->AddMenuItem("New");
   m->AddMenuItem("Open");
   m->AddMenuItem("Save");
@@ -384,6 +394,9 @@ void Workspace::InitializeMenuBar() {
   m->AddMenuItem("All Tasks");
   m->AddMenuItem("Completed Tasks");
   m->AddMenuItem("Incomplete Tasks");
+
+  m = menubar_->AddMenu("Generate");
+  m->AddMenuItem("Plain Text");
 }
 
 void Workspace::Quit() {
@@ -399,4 +412,22 @@ Project* Workspace::CreateNewProject() {
     return new Project(answer);
   }
   return NULL;
+}
+
+void Workspace::ShowAllTasks() {
+  project_->ShowAllTasks();
+  list_->Update();
+  list_->ScrollToTop();
+}
+
+void Workspace::ShowTasksCompletedLastWeek() {
+  project_->ShowCompletedLastWeek();
+  list_->Update();
+  list_->ScrollToTop();
+}
+
+void Workspace::ShowUnfinishedTasks() {
+  project_->ArchiveCompletedTasks();
+  list_->Update();
+  list_->ScrollToTop();
 }

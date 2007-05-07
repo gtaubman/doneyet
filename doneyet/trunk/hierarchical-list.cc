@@ -148,8 +148,9 @@ void HierarchicalList::Draw() {
   
   mvwaddch(columns_[0], win_rel_selected_line_, 0, '%');
   
-  refresh();
-  wrefresh(win_);
+  // Paint us to the virtual screen.  A subsequent call to doupdate() is needed
+  // to paint the virtual screen to the real screen.
+  wnoutrefresh(win_);
 }
 
 int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {

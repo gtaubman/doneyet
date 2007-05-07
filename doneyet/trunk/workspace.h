@@ -34,6 +34,11 @@ class Workspace {
   // Initialization Helper Functions
   void InitializeMenuBar();
   Project* CreateNewProject();
+
+  // Filter Helpers
+  void ShowAllTasks();
+  void ShowTasksCompletedLastWeek();
+  void ShowUnfinishedTasks();
   
   MenuBar* menubar_;
   Project* project_;

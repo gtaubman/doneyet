@@ -240,3 +240,10 @@ void Project::RunSearchFilter(const string& needle) {
   base_filter_.AddChild(or_filter);
   FilterTasks();
 }
+
+ostream& operator <<(ostream& out, Project& project) {
+  for (int i = 0; i < project.NumFilteredRoots(); ++i) {
+    project.FilteredRoot(i)->ToStream(out, 0);
+  }
+  return out;
+}

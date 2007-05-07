@@ -259,3 +259,32 @@ int Task::NumFilteredChildren() {
 Task* Task::FilteredChild(int c) {
   return filtered_tasks_[c];
 }
+
+void Task::ToStream(ostream& out, int depth) {
+  const string marker = "- ";
+  for (int i = 0; i < depth; ++i) {
+    out << " ";
+  }
+  vector<string> words;
+  StrUtils::SplitStringUsing(" ", title_, &words);
+
+  out << marker;
+  int line_length = depth + marker.length();
+  for (int i = 0; i < words.size(); ++i) {
+    if (line_length + words[i].length() > 80) {
+      out << std::endl;
+      for (int s = 0; s < depth + marker.length(); ++s) {
+        out << " ";
+      }
+      line_length = depth + marker.length();
+    }
+    out << words[i];
+    out << " ";
+    line_length += words[i].length() + 1;
+  }
+  out << std::endl;
+
+  for (int i = 0; i < NumFilteredChildren(); ++i) {
+    FilteredChild(i)->ToStream(out, depth + 2);
+  }
+}
