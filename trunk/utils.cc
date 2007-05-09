@@ -1,6 +1,7 @@
+#include <assert.h>
 #include <string.h>
-#include "utils.h"
 #include <stdio.h>
+#include "utils.h"
 
 // Returns the origin and dimensions of an ncurses window.
 window_info CursesUtils::get_window_info(WINDOW* win) {
