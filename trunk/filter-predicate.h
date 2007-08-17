@@ -1,6 +1,19 @@
 #ifndef __FILTER_PREDICATE__
 #define __FILTER_PREDICATE__
 
+// This class provides a filter predicate tree to support filtering vectors
+// with arbitrary function calls via the FilterVector() function.  A sample use case:
+//
+//  vector<TestObj*> test_objects;
+//  BooleanFilterPredicate<TestObj> bfp(TestObj::AliveWrapper);
+//  vector<TestObj*> filtered = bfp.FilterVector(test_objects);
+//  for (int i = 0; i < filtered.size(); ++i) {
+//    if (!filtered[i]->Alive()) {
+//      ERROR("All filtered items should have Alive() == true.");
+//      success = false;
+//    }
+//  }
+
 #include <vector>
 #include <string>
 
@@ -154,11 +167,7 @@ template <class T> class AndFilterPredicate : public FilterPredicate<T> {
   virtual bool ObjectPasses(T* t) {
     for (int i = 0; i < children_.size(); ++i) {
       if (!children_[i]->ObjectPasses(t)) {
-        if (this->is_not_) {
-          return true;
-        } else {
-          return false;
-        }
+        return this->is_not_ ? true : false;
       }
     }
     if (this->is_not_)
@@ -193,11 +202,7 @@ template <class T> class OrFilterPredicate : public FilterPredicate<T> {
   virtual bool ObjectPasses(T* t) {
     for (int i = 0; i < children_.size(); ++i) {
       if (children_[i]->ObjectPasses(t)) {
-        if (this->is_not_) {
-          return false;
-        } else {
-          return true;
-        }
+        return this->is_not_ ? false : true;
       }
     }
     if (this->is_not_)
