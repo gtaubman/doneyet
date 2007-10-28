@@ -35,9 +35,12 @@ class Project : public HierarchicalListDataSource {
   // A count of every item in the tree.
   int NumTasks();
   void DeleteTask(Task* t);
+
+  // Various Common Filters
   void ShowAllTasks();
   void ShowCompletedLastWeek();
   void ArchiveCompletedTasks();
+
   int NumFilteredRoots();
   int NumTotalRoots() { return tasks_.size(); }
   Task* FilteredRoot(int r);

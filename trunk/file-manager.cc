@@ -50,11 +50,6 @@ bool FileManager::Initialize() {
     cout << "Error getting contents of project directory." << endl;
     return false;
   }
-
-  cout << "Found " << projects.size() << " projects:" << endl;
-  for (int i = 0; i < projects.size(); ++i) {
-    cout << "  " << projects[i] << endl;
-  }
 }
 
 bool FileManager::DirectoryContents(const string& dir,
