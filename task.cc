@@ -1,5 +1,4 @@
 #include <string>
-#include <assert.h>
 #include "task.h"
 #include "utils.h"
 #include "file-versions.h"

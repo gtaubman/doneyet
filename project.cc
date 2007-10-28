@@ -5,8 +5,6 @@
 #include "file-versions.h"
 
 using std::map;
-using std::cout;
-using std::endl;
 
 Project::Project(string name)
   : name_(name) {
@@ -53,10 +51,8 @@ void Project::Serialize(Serializer* s) {
 
 Project* Project::NewProjectFromFile(string path) {
   // Create the serializer
-  printf("Going to open \"%s\"\n", path.c_str());
   Serializer s(path, "");
   if (!s.Okay()) {
-    cout << "Error opening saved project: \"" << path << "\"" << endl;
     return NULL;
   }
   
@@ -66,12 +62,10 @@ Project* Project::NewProjectFromFile(string path) {
   
   // Find the project's name
   string project_name = s.ReadString();
-  printf("PROJECT NAME: %s\n", project_name.c_str());
   Project* p = new Project(project_name);
 
   // Find how many tasks there are.
   int num_tasks = s.ReadInt32();
-  cout << "There are " << num_tasks << " tasks." << endl;
   
   // First read in every task in the file.
   int task_identifier;

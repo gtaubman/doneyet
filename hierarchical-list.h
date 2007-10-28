@@ -96,6 +96,8 @@ class HierarchicalList {
   void EditSelectedItem();
   ListItem* SelectedItem() { return selected_item_; }
 
+  void SetPrependText(string p) { prepend_ = p; prepend_size_ = p.length(); }
+
   void ToggleExpansionOfSelectedItem();
 
  private:

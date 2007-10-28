@@ -16,14 +16,24 @@ Workspace::Workspace() :
 
   // Figure out the layout of the screen:
   window_info info = CursesUtils::get_window_info(stdscr);
+  const int notes_width = 40;
   string name = "";
   ColumnSpec spec("Task:X,N:1,Created:24,Completed:24", false);
   list_ = new HierarchicalList(name,
       info.height,
-      info.width,
+      info.width - notes_width,
       0,
       0,
       spec);
+
+  ColumnSpec notes_spec("Notes:X", false);
+  notes_list_ = new HierarchicalList(name,
+      info.height,
+      notes_width,
+      0,
+      info.width - notes_width,
+      notes_spec);
+  notes_list_->SetDatasource(&notes_source_);
 
   // Initialize the menu bar.
   InitializeMenuBar();
@@ -52,6 +62,7 @@ Workspace::~Workspace() {
   delete project_;
   delete menubar_;
   delete list_;
+  delete notes_list_;
 }
 
 // A: Show all tasks.
@@ -80,6 +91,7 @@ Workspace::~Workspace() {
 // \r: Quit.
 void Workspace::Run() {
   list_->Draw();
+  notes_list_->Draw();
   doupdate();
 
   int ch;
@@ -143,13 +155,10 @@ void Workspace::Run() {
       case 'q':
         Quit();
         break;
-      case KEY_CLEAR:
-      case KEY_EOS:
-        redrawwin(stdscr);
-        beep();
-        break;
     }
+    DisplayNotes(static_cast<Task*>(list_->SelectedItem()));
     list_->Draw();
+    notes_list_->Draw();
     doupdate();
   }
 }
@@ -174,7 +183,7 @@ void Workspace::AddTask(Task* t) {
 }
 
 void Workspace::MoveTask(Task* t) {
-  if (t == NULL)
+  if (t == NULL || t->Parent() == NULL)
     return;
 
   // Now we get characters until they hit return.
@@ -312,6 +321,7 @@ void Workspace::HandleMenuInput(const string& input) {
       doupdate();
     }
   }
+  list_->ScrollToTop();
 }
 
 void Workspace::RunFind() {
@@ -384,6 +394,14 @@ void Workspace::PerformFullListUpdate() {
   project_->RecomputeNodeStatus();
   project_->FilterTasks();
   list_->Update();
+}
+
+void Workspace::DisplayNotes(Task* t) {
+  if (t == NULL) {
+    notes_source_.Clear();
+  } else {
+    notes_source_.SetVector(t->Notes());
+  }
 }
 
 void Workspace::InitializeMenuBar() {
