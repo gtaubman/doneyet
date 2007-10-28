@@ -143,6 +143,11 @@ void Workspace::Run() {
       case 'q':
         Quit();
         break;
+      case KEY_CLEAR:
+      case KEY_EOS:
+        redrawwin(stdscr);
+        beep();
+        break;
     }
     list_->Draw();
     doupdate();
