@@ -1,6 +1,3 @@
-// Copyright 2007 Google Inc. All Rights Reserved.
-// Author: gtaubman@google.com (Gabriel Taubman)
-
 #ifndef __PROJECT_H__
 #define __PROJECT_H__
 
