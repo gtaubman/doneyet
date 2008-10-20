@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <string>
 #include "task.h"
 #include "utils.h"

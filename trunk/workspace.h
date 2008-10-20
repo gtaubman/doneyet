@@ -1,6 +1,7 @@
 #ifndef __WORKSPACE__
 #define __WORKSPACE__
 
+#include <assert.h>
 #include <vector>
 #include <string>
 #include "curses-menu.h"
