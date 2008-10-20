@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <string.h>
 #include "utils.h"
 #include <stdio.h>

@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "serializer.h"
 #include <iostream>
 #include <fstream>
