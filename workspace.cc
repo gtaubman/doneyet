@@ -339,7 +339,6 @@ void Workspace::ToggleStatus(Task* t) {
   if (t != NULL && !t->NumChildren()) {
     switch (t->Status()) {
       case CREATED:
-      case PAUSED:
         t->SetStatus(IN_PROGRESS);
         break;
       case IN_PROGRESS:
@@ -347,6 +346,9 @@ void Workspace::ToggleStatus(Task* t) {
         break;
       case COMPLETED:
         t->SetStatus(PAUSED);
+        break;
+      case PAUSED:
+        t->SetStatus(CREATED);
         break;
     }
     project_->RecomputeNodeStatus();
