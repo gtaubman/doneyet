@@ -37,7 +37,6 @@ void Task::AddNote(const string& note) {
 vector<string> Task::Notes() {
   vector<string> notes;
   for (int i = 0; i < notes_.size(); ++i) {
-    beep();
     notes.push_back(notes_[i]->Text());
   }
   return notes;
