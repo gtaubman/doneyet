@@ -1,6 +1,7 @@
 #include <ncurses.h>
 #include <iostream>
 #include <fstream>
+#include "constants.h"
 #include "utils.h"
 #include "dialog-box.h"
 #include "workspace.h"
@@ -16,7 +17,11 @@ Workspace::Workspace() :
 
   // Figure out the layout of the screen:
   window_info info = CursesUtils::get_window_info(stdscr);
-  const int notes_width = 40;
+
+  // If the window is too small, don't show the notes panel.
+  int notes_width = info.width < Constants::kMinWidthForNotesView ?
+      0 : Constants::kNoteViewSize;
+
   string name = "";
   ColumnSpec spec("Task:X,N:1,Created:24,Completed:24", false);
   list_ = new HierarchicalList(name,
@@ -26,14 +31,18 @@ Workspace::Workspace() :
       0,
       spec);
 
-  ColumnSpec notes_spec("Notes:X", false);
-  notes_list_ = new HierarchicalList(name,
-      info.height,
-      notes_width,
-      0,
-      info.width - notes_width,
-      notes_spec);
-  notes_list_->SetDatasource(&notes_source_);
+  if (notes_width > 0) {
+    ColumnSpec notes_spec("Notes:X", false);
+    notes_list_ = new HierarchicalList(name,
+                                       info.height,
+                                       notes_width,
+                                       0,
+                                       info.width - notes_width,
+                                       notes_spec);
+    notes_list_->SetDatasource(&notes_source_);
+  } else {
+    notes_list_ = NULL;
+  }
 
   // Initialize the menu bar.
   InitializeMenuBar();
@@ -91,7 +100,9 @@ Workspace::~Workspace() {
 // \r: Quit.
 void Workspace::Run() {
   list_->Draw();
-  notes_list_->Draw();
+  if (notes_list_ != NULL) {
+    notes_list_->Draw();
+  }
   doupdate();
 
   int ch;
@@ -114,7 +125,9 @@ void Workspace::Run() {
         break;
       case 'd':  // Deleted selected task
         list_->SelectPrevItem();
-        project_->DeleteTask(selected_task);
+        if (selected_task != NULL) {
+          project_->DeleteTask(selected_task);
+        }
         PerformFullListUpdate();
         break;
       case 'e':  // Edit selected task
@@ -158,7 +171,9 @@ void Workspace::Run() {
     }
     DisplayNotes(static_cast<Task*>(list_->SelectedItem()));
     list_->Draw();
-    notes_list_->Draw();
+    if (notes_list_ != NULL) {
+      notes_list_->Draw();
+    }
     doupdate();
   }
 }

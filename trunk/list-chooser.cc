@@ -73,11 +73,11 @@ string ListChooser::GetChoiceWithOptions(const vector<string>& choices,
         hit_escape = true;
         done = true;
         break;
-      case KEY_UP:
+      case KEY_DOWN:
       case 'j':
         menu_driver(menu, REQ_DOWN_ITEM);
         break;
-      case KEY_DOWN:
+      case KEY_UP:
       case 'k':
         menu_driver(menu, REQ_UP_ITEM);
         break;
