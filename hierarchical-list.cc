@@ -1,4 +1,6 @@
 #include <math.h>
+#include <string.h>
+#include <stdlib.h>
 #include "hierarchical-list.h"
 #include "dialog-box.h"
 #include "utils.h"
