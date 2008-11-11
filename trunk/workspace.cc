@@ -9,40 +9,12 @@
 #include "serializer.h"
 #include "list-chooser.h"
 
+static bool do_resize;
+
 Workspace::Workspace() :
   menubar_(NULL),
   project_(NULL),
-  list_(NULL),
   done_(false) {
-
-  // Figure out the layout of the screen:
-  window_info info = CursesUtils::get_window_info(stdscr);
-
-  // If the window is too small, don't show the notes panel.
-  int notes_width = info.width < Constants::kMinWidthForNotesView ?
-      0 : Constants::kNoteViewSize;
-
-  string name = "";
-  ColumnSpec spec("Task:X,N:1,Created:24,Completed:24", false);
-  list_ = new HierarchicalList(name,
-      info.height,
-      info.width - notes_width,
-      0,
-      0,
-      spec);
-
-  if (notes_width > 0) {
-    ColumnSpec notes_spec("Notes:X", false);
-    notes_list_ = new HierarchicalList(name,
-                                       info.height,
-                                       notes_width,
-                                       0,
-                                       info.width - notes_width,
-                                       notes_spec);
-    notes_list_->SetDatasource(&notes_source_);
-  } else {
-    notes_list_ = NULL;
-  }
 
   // Initialize the menu bar.
   InitializeMenuBar();
@@ -60,9 +32,17 @@ Workspace::Workspace() :
     project_ = CreateNewProject();
   }
 
+  InitializeLists();
+
   // Unserialize our project.
   if (project_)
     list_->SetDatasource(project_);
+
+  // Enable catching sigwinch.
+  struct sigaction sa;
+  sa.sa_sigaction = SigWinchHandler;
+  sigemptyset(&sa.sa_mask);
+  sigaction(SIGWINCH, &sa, NULL);
 
   Run();
 }
@@ -108,6 +88,23 @@ void Workspace::Run() {
   int ch;
   Task* selected_task;
   while (!done_ && (ch = getch())) {
+    if (do_resize) {
+      delete list_;
+      delete notes_list_;
+      list_ = NULL;
+      notes_list_ = NULL;
+
+      // End our window and refresh to get the new terminal size.
+      endwin();
+      refresh();
+
+      // Construct our new lists.
+      InitializeLists();
+
+      doupdate();
+      do_resize = false;
+      continue;
+    }
     // Get the selected task in the list.
     selected_task = static_cast<Task*>(list_->SelectedItem());
     switch (ch) {
@@ -175,6 +172,43 @@ void Workspace::Run() {
       notes_list_->Draw();
     }
     doupdate();
+  }
+}
+
+void Workspace::SigWinchHandler(int signal,
+                                siginfo_t* siginfo,
+                                void* signal_ucontext) {
+  do_resize = true;
+}
+
+void Workspace::InitializeLists() {
+  window_info info = CursesUtils::get_window_info(stdscr);
+
+  // If the window is too small, don't show the notes panel.
+  int notes_width = info.width < Constants::kMinWidthForNotesView ?
+      0 : Constants::kNoteViewSize;
+
+  string name = "";
+  ColumnSpec spec("Task:X,N:1,Created:24,Completed:24", false);
+  list_ = new HierarchicalList(name,
+                               info.height,
+                               info.width - notes_width,
+                               0,
+                               0,
+                               spec);
+  list_->SetDatasource(project_);
+
+  if (notes_width) {
+    ColumnSpec notes_spec("Notes:X", false);
+    notes_list_ = new HierarchicalList(name,
+                                       info.height,
+                                       notes_width,
+                                       0,
+                                       info.width - notes_width,
+                                       notes_spec);
+    notes_list_->SetDatasource(&notes_source_);
+  } else {
+    notes_list_ = NULL;
   }
 }
 

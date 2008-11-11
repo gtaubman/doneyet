@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <vector>
 #include <string>
+#include <signal.h>
 #include "curses-menu.h"
 #include "project.h"
 #include "hierarchical-list.h"
@@ -71,6 +72,8 @@ class Workspace {
   void OpenProject();
   void SaveCurrentProject();
 
+  void InitializeLists();
+
   // UI Actions
   void AddTask(Task* t);
   void MoveTask(Task* t);
@@ -93,6 +96,10 @@ class Workspace {
   void ShowAllTasks();
   void ShowTasksCompletedLastWeek();
   void ShowUnfinishedTasks();
+
+  static void SigWinchHandler(int signal,
+                              siginfo_t* siginfo,
+                              void* signal_ucontext);
   
   MenuBar* menubar_;
   Project* project_;
