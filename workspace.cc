@@ -1,6 +1,7 @@
 #include <ncurses.h>
 #include <iostream>
 #include <fstream>
+#include <stdlib.h>
 #include "constants.h"
 #include "utils.h"
 #include "dialog-box.h"
