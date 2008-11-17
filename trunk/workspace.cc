@@ -7,6 +7,7 @@
 #include "dialog-box.h"
 #include "workspace.h"
 #include "file-manager.h"
+#include "file-versions.h"
 #include "serializer.h"
 #include "list-chooser.h"
 
@@ -438,6 +439,7 @@ void Workspace::SaveCurrentProject() {
   string filename = FileManager::DefaultFileManager()->ProjectDir() +
     project_->Name();
   Serializer s("", filename);
+  s.SetVersion(NOTES_VERSION);
   project_->Serialize(&s);
   s.CloseAll();
 }

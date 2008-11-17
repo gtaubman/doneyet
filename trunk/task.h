@@ -115,6 +115,16 @@ class Task : public ListItem {
    Date start_date_;
    Date completion_date_;
    vector<Note*> notes_;
+
+   // Keep track of any changes to the status of a task.
+   struct StatusChange {
+     StatusChange(const Date& d,
+                  int s)
+         : date(d), status(static_cast<TaskStatus>(s)) { }
+     Date date;
+     TaskStatus status;
+   };
+   vector<StatusChange> status_changes_;
 };
 
 #endif

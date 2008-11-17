@@ -2,7 +2,6 @@
 #include <map>
 #include "hierarchical-list.h"
 #include "utils.h"
-#include "file-versions.h"
 
 using std::map;
 
@@ -35,7 +34,7 @@ Task* Project::AddTaskNamed(const string& name) {
 
 void Project::Serialize(Serializer* s) {
   // Write a serialization version.
-  s->WriteInt64(NOTES_VERSION);
+  s->WriteInt64(s->Version());
 
   // Write our project name to the file.
   s->WriteString(name_);

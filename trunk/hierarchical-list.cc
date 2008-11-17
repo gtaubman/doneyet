@@ -443,13 +443,16 @@ bool HierarchicalList::ParseColumnSpec(const ColumnSpec& spec) {
       column_widths.push_back(-1);
       ++num_exes;
     } else {
+      int column_width = atoi(column_info[1].c_str());
       if (!spec.in_percents) {
-        column_widths.push_back(atoi(column_info[1].c_str()));
+        column_widths.push_back(column_width);
       } else {
-        column_widths.push_back(usable_width * static_cast<int>(atoi(column_info[1].c_str()) / 100.0));
+        column_widths.push_back(usable_width *
+                                static_cast<int>(column_width / 100.0));
       }
       // Allow room for the title
-      column_widths[i] = std::max(column_widths[i], (int) column_names_[i].length());
+      column_widths[i] = std::max(column_widths[i],
+                                  static_cast<int>(column_names_[i].length()));
       used += column_widths.back();
     }
   }
@@ -481,8 +484,9 @@ bool HierarchicalList::ParseColumnSpec(const ColumnSpec& spec) {
 }
 
 void HierarchicalList::EditSelectedItem() {
-  if (selected_item_ == NULL)
+  if (selected_item_ == NULL) {
     return;
+  }
 
   string answer = DialogBox::RunMultiLine("Please Edit Task",
       selected_item_->TextForColumn(column_names_[0]),
