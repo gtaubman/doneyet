@@ -178,9 +178,20 @@ void Task::Serialize(Serializer* s) {
   completion_date_.Serialize(s);
 
   // The notes associated with this task.
-  s->WriteInt32(notes_.size());
-  for (int i = 0; i < notes_.size(); ++i) {
-    notes_[i]->Serialize(s);
+  if (s->Version() >= NOTES_VERSION) {
+    s->WriteInt32(notes_.size());
+    for (int i = 0; i < notes_.size(); ++i) {
+      notes_[i]->Serialize(s);
+    }
+  }
+
+  // Task status changes.
+  if (s->Version() >= TASK_STATUS_VERSION) {
+    s->WriteInt32(status_changes_.size());
+    for (int i = 0; i < status_changes_.size(); ++i) {
+      status_changes_[i].date.Serialize(s);
+      s->WriteInt32(status_changes_[i].status);
+    }
   }
 
   // Finally our parent pointer and then we move onto the children.
@@ -204,6 +215,16 @@ void Task::UnSerializeFromSerializer(Serializer* s) {
       notes_.push_back(n);
     }
   }
+
+  if (s->Version() >= TASK_STATUS_VERSION) {
+    int num_status_changes = s->ReadInt32();
+    for (int i = 0; i < num_status_changes; ++i) {
+      Date d;
+      d.ReadFromSerializer(s);
+      int status = s->ReadInt32();
+      status_changes_.push_back(StatusChange(d, status));
+    }
+  }
 }
 
 void Task::SetStatus(TaskStatus t) {
@@ -215,10 +236,15 @@ void Task::SetStatus(TaskStatus t) {
   } else if (t == PAUSED && status_ != PAUSED) {
     completion_date_.SetToEmptyTime();
   }
-  if (t == IN_PROGRESS)
+
+  if (t == IN_PROGRESS) {
     completion_date_.SetToEmptyTime();
+  }
 
   status_ = t;
+
+  // Update the status record for this task.
+  status_changes_.push_back(StatusChange(Date(), status_));
 }
 
 int Task::NumOffspring() {

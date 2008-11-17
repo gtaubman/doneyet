@@ -106,11 +106,9 @@ void StrUtils::SplitStringUsing(const string splitter,
   }
 }
 
-int StrUtils::HeightOfTextInWidth(int width, const string& text, int
-    non_first_line_indent) {
-  if (width == 107) {
-    assert(non_first_line_indent == 2);
-  }
+int StrUtils::HeightOfTextInWidth(int width,
+                                  const string& text,
+                                  int non_first_line_indent) {
   int lines_used = 1;
   int curx = 0;
   for (int i = 0; i < text.size(); ++i) {
