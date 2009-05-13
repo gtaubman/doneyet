@@ -96,7 +96,7 @@ void StrUtils::SplitStringUsing(const string splitter,
   }
 
   int start_pos = 0;
-  int find_pos = string::npos;
+  size_t find_pos = string::npos;
   while ((find_pos = str.find(splitter, start_pos)) != string::npos) {
     vec->push_back(str.substr(start_pos, find_pos - start_pos));
     start_pos = find_pos + splitter.size();
