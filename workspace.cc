@@ -122,13 +122,24 @@ void Workspace::Run() {
       case 'C':  // Show weekly completed tasks
         ShowTasksCompletedLastWeek();
         break;
-      case 'd':  // Deleted selected task
-        list_->SelectPrevItem();
-        if (selected_task != NULL) {
-          project_->DeleteTask(selected_task);
+      case 'd': { // Deleted selected task
+        if (selected_task == NULL) {
+          break;
         }
+        bool first_task_selected = selected_task == project_->Root(0);
+
+        list_->SelectPrevItem();
+        project_->DeleteTask(selected_task);
         PerformFullListUpdate();
+        if (first_task_selected) {
+          // If the top task was the one that we deleted, then the
+          // list_->SelectPrevItem() won't have actually done anything, leaving
+          // the list with the deleted item still selected.  So, we manually
+          // select the new top task.
+          list_->ScrollToTop();
+        }
         break;
+      }
       case 'e':  // Edit selected task
         list_->EditSelectedItem();
         break;
