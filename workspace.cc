@@ -169,6 +169,9 @@ void Workspace::Run() {
       case 'v':
         ViewNotes(selected_task);
         break;
+      case 'S':  // Save project.
+        SaveCurrentProject();
+        break;
       case ' ':  // Toggle task status
         ToggleStatus(selected_task);
         break;
