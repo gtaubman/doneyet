@@ -43,14 +43,14 @@ class Serializer {
 
   int Version() { return version_; }
   void SetVersion(int v) { version_ = v; }
-  
+
   void CloseAll();
   bool Okay() { return okay_; }
   bool Done() { return done_; }
 
  private:
   inline void ChangeToStdBytes(char* data, long unsigned int bytes);
-  
+
   ofstream* out_;
   ifstream* in_;
 

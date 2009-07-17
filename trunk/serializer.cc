@@ -1,4 +1,4 @@
-#include <assert.h>
+include <assert.h>
 #include "serializer.h"
 #include <string.h>
 #include <iostream>
@@ -173,7 +173,7 @@ string Serializer::ReadString() {
 
   char data[1000000] = {0};
   in_->read(data, str_size);
-  
+
   return string(data);
 }
 
@@ -184,7 +184,7 @@ void Serializer::ChangeToStdBytes(char* data, long unsigned int bytes) {
   char tmp[bytes];
   for (int i = 0; i < bytes; ++i) {
     tmp[i] = data[bytes - i - 1];
-  } 
+  }
   memcpy(data, tmp, bytes);
   #endif
 }
