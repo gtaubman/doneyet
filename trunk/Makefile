@@ -16,7 +16,7 @@ all	: $(EXECUTABLE)
 # the executable depends on all of the o-files being up-to-date
 $(EXECUTABLE): $(OFILES)
 	@echo Linking...
-	$(CCC) -o $(EXECUTABLE) $(COMPILEFLAGS) $(OFILES) $(LIBS) $(IFLAGS) 
+	$(CCC) -o $(EXECUTABLE) $(COMPILEFLAGS) $(OFILES) $(LIBS) $(LFLAGS) 
 
 #Define a rule for building .o from .C files
 # the o-files depend on the respectively-named C-file
