@@ -3,12 +3,20 @@
 #include <iostream>
 #include <fstream>
 #include "workspace.h"
+#include "doneyet-config.h"
 
 using std::ofstream;
 using std::iostream;
 
 int main(int argc, char** argv) {
   bool curses = true;
+
+  DoneyetConfig config;
+  if (!config.Parse()) {
+    fprintf(stderr, "Unable to parse config file.\n");
+    return 1;
+  }
+
   if (curses) {
     initscr();  // Create the standard window.
     keypad(stdscr, true);        // Enable keyboard mappings
@@ -20,14 +28,23 @@ int main(int argc, char** argv) {
     if (has_colors()) {
       start_color();
 
+      if (assume_default_colors(config.ForegroundColor(),
+                                config.BackgroundColor()) != OK) {
+        fprintf(stderr, "Unable to set default colors.\n");
+        endwin();
+        return 1;
+      }
+
       // Make some color pairs
-      init_pair(1, COLOR_RED,     COLOR_BLACK);
-      init_pair(2, COLOR_GREEN,   COLOR_BLACK);
-      init_pair(3, COLOR_YELLOW,  COLOR_BLACK);
-      init_pair(4, COLOR_BLUE,    COLOR_BLACK);
-      init_pair(5, COLOR_CYAN,    COLOR_BLACK);
-      init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
-      init_pair(7, COLOR_WHITE,   COLOR_BLACK);
+      // TODO: Make the task drawing know which color pairs to use.
+      short background_color = config.BackgroundColor();
+      init_pair(1, COLOR_RED,     background_color);
+      init_pair(2, COLOR_GREEN,   background_color);
+      init_pair(3, COLOR_YELLOW,  background_color);
+      init_pair(4, COLOR_BLUE,    background_color);
+      init_pair(5, COLOR_CYAN,    background_color);
+      init_pair(6, COLOR_MAGENTA, background_color);
+      init_pair(7, COLOR_WHITE,   background_color);
       init_pair(8, COLOR_YELLOW,   COLOR_BLUE);
       init_pair(9, COLOR_YELLOW,   COLOR_BLUE);
     }
