@@ -2,8 +2,33 @@
 
 = Introduction =
 
-DoneYet supports several runtime configuration options.  They are changeable via a text file named "config" placed in the user's .todo directory.
+DoneYet supports several runtime configuration options.  They are changeable via a text file named "config" placed in the user's .todo directory.  Configuration sections are preceded by `[SECTION_NAME]`.
 
 = Details =
 
-TODO:Describe the options.
+==General Options==
+The following options can be found under the `GENERAL` section.
+
+===Colors===
+All color options have the following potential values:
+  * black
+  * red
+  * green
+  * yellow
+  * blue
+  * magenta
+  * cyan
+  * white
+  * terminal - This is the terminal's default color.
+
+The following options are available:
+  * `foreground_color`
+  * `background_color`
+
+= Example Configuration =
+The following configuration file would set the foreground color to green, and the background color to whatever color the terminal is currently set to.
+{{{
+[GENERAL]
+foreground_color = green
+background_color = terminal
+}}}
