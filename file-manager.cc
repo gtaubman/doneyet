@@ -28,7 +28,6 @@ bool FileManager::Initialize() {
   }
 
   home_dir_ += "/";
-  cout << "Home Directory: \"" << home_dir_ << "\"" << endl;
 
   // Try and make the .todo directory.  This is also how we determine if it
   // already exists.
@@ -51,6 +50,14 @@ bool FileManager::Initialize() {
     cout << "Error getting contents of project directory." << endl;
     return false;
   }
+
+  // Check for a config file.
+  config_file_path_ = data_dir_ + "/config";
+  if (!FileExists(config_file_path_)) {
+    config_file_path_ = "";
+  }
+
+  return true;
 }
 
 bool FileManager::DirectoryContents(const string& dir,
@@ -74,19 +81,6 @@ bool FileManager::DirectoryContents(const string& dir,
   return true;
 }
 
-bool FileManager::CheckDir(const string& dir) {
-  int edir = mkdir(dir.c_str(), 0755);
-  if (edir == 0) {
-    cout << "Created directory \"" << dir << "\"" << endl;
-  } else if (errno == EEXIST) {
-    cout << "Found directory \"" << dir << "\"" << endl;
-  } else {
-    cout << "Error creating or reading directory \"" << dir << "\"" << endl;
-    return false;
-  }
-  return true;
-}
-
 int FileManager::NumSavedProjects() {
   vector<string> projects;
   DirectoryContents(ProjectDir(), &projects);
@@ -97,4 +91,21 @@ vector<string> FileManager::SavedProjectNames() {
   vector<string> projects;
   DirectoryContents(ProjectDir(), &projects);
   return projects;
+}
+
+bool FileManager::CheckDir(const string& dir) {
+  int edir = mkdir(dir.c_str(), 0755);
+  if (edir != 0 && errno != EEXIST) {
+    cout << "Error creating or reading directory \"" << dir << "\"" << endl;
+    return false;
+  }
+  return true;
+}
+
+bool FileManager::FileExists(const string& file_path) {
+  struct stat file_stat;
+  if (stat(file_path.c_str(), &file_stat) != 0) {
+    return false;
+  }
+  return true;
 }
