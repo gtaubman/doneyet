@@ -1,0 +1,9 @@
+#summary Information about the configurable options.
+
+= Introduction =
+
+DoneYet supports several runtime configuration options.  They are changeable via a text file named "config" placed in the user's .todo directory.
+
+= Details =
+
+TODO:Describe the options.
