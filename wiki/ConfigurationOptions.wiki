@@ -6,9 +6,6 @@ DoneYet supports several runtime configuration options.  They are changeable via
 
 = Details =
 
-==General Options==
-The following options can be found under the `GENERAL` section.
-
 ===Colors===
 All color options have the following potential values:
   * black
@@ -21,9 +18,24 @@ All color options have the following potential values:
   * white
   * terminal - This is the terminal's default color.
 
-The following options are available:
+==General Options==
+The following options can be found under the `GENERAL` section.
   * `foreground_color`
   * `background_color`
+
+==Task Options==
+The following options can be found under the `TASKS` section.
+  * `unstarted_color` - The color of an unstarted task.
+  * `in_progress_color` - The color of a task in progress.
+  * `paused_color` - The color of a paused task.
+  * `finished_color` - The color of a completed task.
+
+==Menu Options==
+The following options can be found under the `MENUS` section.
+  * `unselected_foreground_color`
+  * `unselected_background_color`
+  * `selected_foreground_color`
+  * `selected_background_color`
 
 = Example Configuration =
 The following configuration file would set the foreground color to green, and the background color to whatever color the terminal is currently set to.
