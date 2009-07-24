@@ -16,6 +16,16 @@ static const char* kInProgressColor = "in_progress_color";
 static const char* kPausedColor = "paused_color";
 static const char* kFinishedColor = "finished_color";
 
+static const char* kMenusSection = "MENUS";
+static const char* kUnselectedMenuItemForegroundColor =
+    "unselected_foreground_color";
+static const char* kUnselectedMenuItemBackgroundColor =
+    "unselected_background_color";
+static const char* kSelectedMenuItemForegroundColor =
+    "selected_foreground_color";
+static const char* kSelectedMenuItemBackgroundColor =
+    "selected_background_color";
+
 bool DoneyetConfig::Parse() {
   FileManager* file_manager = FileManager::DefaultFileManager();
 
@@ -30,17 +40,21 @@ bool DoneyetConfig::Parse() {
   tasks[kPausedColor] = "red";
   tasks[kFinishedColor] = "blue";
 
+  map<string, string>& menus = config_[kMenusSection];
+  menus[kUnselectedMenuItemForegroundColor] = "yellow";
+  menus[kUnselectedMenuItemBackgroundColor] = "blue";
+  menus[kSelectedMenuItemForegroundColor] = "yellow";
+  menus[kSelectedMenuItemBackgroundColor] = "blue";
+
   if (file_manager->ConfigFilePath().length() &&
       !ConfigParser::ParseConfig(file_manager->ConfigFilePath(),
                                  &config_)) {
     return false;
   }
 
-  if (!ParseColors()) {
-    return false;
-  }
-
-  return true;
+  return ParseGeneralOptions() &&
+      ParseTaskOptions() &&
+      ParseMenuOptions();
 }
 
 static short ColorForString(string s) {
@@ -72,22 +86,47 @@ static short ColorForString(string s) {
   return kColorError;
 }
 
-bool DoneyetConfig::ParseColors() {
+bool DoneyetConfig::ParseColor(map<string, string>& config,
+                               const string& color_name,
+                               short* var_to_set) {
+  *var_to_set = ColorForString(config[color_name]);
+  if (*var_to_set == kColorError) {
+    fprintf(stderr,
+            "'%s' is not a valid color for config option %s.\n",
+            config[color_name].c_str(),
+            color_name.c_str());
+    return false;
+  }
+
+  return true;
+}
+
+bool DoneyetConfig::ParseGeneralOptions() {
   // Get the general section.
   map<string, string>& general = config_[kGeneralSection]; 
 
-  foreground_color_ = ColorForString(general[kForegroundColor]);
-  if (foreground_color_ == kColorError) {
-    fprintf(stderr, "Unable to load foreground color from config file.\n");
-    return false;
-  }
+  return ParseColor(general, kForegroundColor, &foreground_color_) &&
+      ParseColor(general, kBackgroundColor, &background_color_);
+}
 
-  background_color_ = ColorForString(general[kBackgroundColor]);
-  if (background_color_ == kColorError) {
-    fprintf(stderr, "Unable to load background color from config file.\n");
-    return false;
-  }
+bool DoneyetConfig::ParseTaskOptions() {
+  map<string, string>& task = config_[kTasksSection];
 
-  fprintf(stderr, "Successfully loaded colors.\n");
-  return true;
+  return ParseColor(task, kUnstartedTaskColor, &unstarted_task_color_) &&
+      ParseColor(task, kInProgressColor, &in_progress_task_color_) &&
+      ParseColor(task, kPausedColor, &paused_task_color_) &&
+      ParseColor(task, kFinishedColor, &finished_task_color_);
+}
+
+bool DoneyetConfig::ParseMenuOptions() {
+  map<string, string>& menu = config_[kMenusSection];
+
+  return ParseColor(menu, kUnselectedMenuItemForegroundColor,
+                    &unselected_menu_foreground_color_) &&
+      ParseColor(menu, kUnselectedMenuItemBackgroundColor,
+                 &unselected_menu_background_color_) &&
+      ParseColor(menu, kSelectedMenuItemForegroundColor,
+                 &selected_menu_foreground_color_) &&
+      ParseColor(menu, kSelectedMenuItemBackgroundColor,
+                 &selected_menu_background_color_);
 }
