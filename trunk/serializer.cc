@@ -7,16 +7,6 @@
 using std::cout;
 using std::endl;
 
-static void Print(char v) {
-  for (int i = 7; i >= 0; --i) {
-    if (v & (1 << i)) {
-      printf("1");
-    } else {
-      printf("0");
-    }
-  }
-}
-
 Serializer::Serializer(const string& inpath,
                        const string& outpath)
   : out_(NULL), in_(NULL), okay_(true), done_(false) {

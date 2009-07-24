@@ -415,6 +415,8 @@ void Workspace::ToggleStatus(Task* t) {
       case PAUSED:
         t->SetStatus(CREATED);
         break;
+      case NUM_STATUSES:  // Here to appease the compiler.
+        break;
     }
     project_->RecomputeNodeStatus();
   }
