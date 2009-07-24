@@ -1,10 +1,9 @@
 #summary Information about the configurable options.
+<wiki:toc max_depth="2" />
 
 = Introduction =
 
 DoneYet supports several runtime configuration options.  They are changeable via a text file named "config" placed in the user's .todo directory.  Configuration sections are preceded by `[SECTION_NAME]`.
-
-<wiki:toc max_depth="2" />
 
 ==Colors==
 All color options have the following potential values:
