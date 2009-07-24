@@ -62,6 +62,7 @@ class ListItem {
 // It supports multiple table columns, each with a separate title.
 class HierarchicalListDataSource {
  public:
+  virtual ~HierarchicalListDataSource() { }
   virtual int NumRoots() = 0;
   virtual ListItem* Root(int i) = 0;
 };

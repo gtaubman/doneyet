@@ -55,10 +55,6 @@ void HierarchicalList::SetDatasource(HierarchicalListDataSource* d) {
 }
 
 void HierarchicalList::Draw() {
-  // First figure out how big our sub-window is:
-  int swidth = usable_width_;
-  int sheight = column_height_;
-
   // Clear all of the columns
   for (int i = 0; i < columns_.size(); ++i) {
     wclear(columns_[i]);
@@ -404,8 +400,9 @@ void HierarchicalList::SelectItem(int item_index) {
 }
 
 bool HierarchicalList::ParseColumnSpec(const ColumnSpec& spec) {
-  if (spec.spec.empty())
+  if (spec.spec.empty()) {
     return false;
+  }
 
   int top_offset = 1;              // Account for the top border.
   if (!name_.empty())
@@ -481,6 +478,8 @@ bool HierarchicalList::ParseColumnSpec(const ColumnSpec& spec) {
   }
   usable_width_ = usable_width;
   column_height_ = usable_height;
+
+  return true;
 }
 
 void HierarchicalList::EditSelectedItem() {

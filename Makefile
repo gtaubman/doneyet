@@ -2,7 +2,7 @@ EXECUTABLE=doneyet
 OBJECTS = main project task dialog-box utils hierarchical-list file-manager \
           serializer date filter-predicate list-chooser note curses-menu \
           workspace config-parser doneyet-config
-DEBUGFLAGS = -g -Wall #-fprofile-arcs -ftest-coverage
+DEBUGFLAGS = -g -Wall -Wno-sign-compare #-fprofile-arcs -ftest-coverage
 FASTFLAGS = -O3
 COMPILEFLAGS =$(DEBUGFLAGS) $(FASTFLAGS)
 OFILES = $(OBJECTS:%=%.o)

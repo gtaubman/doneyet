@@ -69,7 +69,7 @@ bool FileManager::DirectoryContents(const string& dir,
   }
 
   dirent* dr;
-  while (dr = readdir(dir_ptr)) {
+  while ((dr = readdir(dir_ptr))) {
     if (strcmp(dr->d_name, ".") != 0 &&
         strcmp(dr->d_name, "..") != 0 &&
         dr->d_name[0] != '.') {
