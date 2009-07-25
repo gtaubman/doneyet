@@ -138,6 +138,12 @@ void Workspace::Run() {
           // select the new top task.
           list_->ScrollToTop();
         }
+
+        // Also, this could have been the last task.  If it was, make sure no
+        // task is selected now.
+        if (project_->NumTasks() == 0) {
+          list_->SelectNoItem();
+        }
         break;
       }
       case 'e':  // Edit selected task
