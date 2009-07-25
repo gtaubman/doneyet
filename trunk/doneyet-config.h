@@ -1,6 +1,11 @@
 #ifndef _DONEYET_CONFIG_H_
 #define _DONEYET_CONFIG_H_
 
+// This class is used to wrap the parsing and validation of all configuration
+// options.  These options can be accessed directly, or (in the case of colors,
+// for example) can be further wrapped before handing off to the rest of the
+// system.
+
 #include <map>
 #include <string>
 
@@ -11,9 +16,21 @@ class DoneyetConfig {
  public:
   bool Parse();
 
-  // Color related configuration.
-  short ForegroundColor() { return foreground_color_; }
-  short BackgroundColor() { return background_color_; }
+  // General related configuration.
+  short ForegroundColor();
+  short BackgroundColor();
+
+  // Task related configuration.
+  short UnstartedTaskColor();
+  short InProgressTaskColor();
+  short PausedTaskColor();
+  short FinishedTaskColor();
+
+  // Menu related configuration.
+  short UnselectedMenuForegroundColor();
+  short UnselectedMenuBackgroundColor();
+  short SelectedMenuForegroundColor();
+  short SelectedMenuBackgroundColor();
 
  private:
   map<string, map<string, string> > config_;
