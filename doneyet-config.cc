@@ -57,6 +57,46 @@ bool DoneyetConfig::Parse() {
       ParseMenuOptions();
 }
 
+short DoneyetConfig::ForegroundColor() {
+  return foreground_color_;
+}
+
+short DoneyetConfig::BackgroundColor() {
+  return background_color_;
+}
+
+short DoneyetConfig::UnstartedTaskColor() {
+  return unstarted_task_color_;
+}
+
+short DoneyetConfig::InProgressTaskColor() {
+  return in_progress_task_color_;
+}
+
+short DoneyetConfig::PausedTaskColor() {
+  return paused_task_color_;
+}
+
+short DoneyetConfig::FinishedTaskColor() {
+  return finished_task_color_;
+}
+
+short DoneyetConfig::UnselectedMenuForegroundColor() {
+  return unselected_menu_foreground_color_;
+}
+
+short DoneyetConfig::UnselectedMenuBackgroundColor() {
+  return unselected_menu_background_color_;
+}
+
+short DoneyetConfig::SelectedMenuForegroundColor() {
+  return selected_menu_foreground_color_;
+}
+
+short DoneyetConfig::SelectedMenuBackgroundColor() {
+  return selected_menu_background_color_;
+}
+
 static short ColorForString(string s) {
   // First lowercase.
   for (int i = 0; i < s.length(); ++i) {
