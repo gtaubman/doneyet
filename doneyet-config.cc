@@ -9,6 +9,7 @@ static const short kColorError = -2;
 static const char* kGeneralSection = "GENERAL";
 static const char* kForegroundColor = "foreground_color";
 static const char* kBackgroundColor = "background_color";
+static const char* kHeaderTextColor = "header_text_color";
 
 static const char* kTasksSection = "TASKS";
 static const char* kUnstartedTaskColor = "unstarted_color";
@@ -33,6 +34,7 @@ bool DoneyetConfig::Parse() {
   map<string, string>& general = config_[kGeneralSection];
   general[kForegroundColor] = "white";
   general[kBackgroundColor] = "black";
+  general[kHeaderTextColor] = "red";
 
   map<string, string>& tasks = config_[kTasksSection];
   tasks[kUnstartedTaskColor] = "default";
@@ -63,6 +65,10 @@ short DoneyetConfig::ForegroundColor() {
 
 short DoneyetConfig::BackgroundColor() {
   return background_color_;
+}
+
+short DoneyetConfig::HeaderTextColor() {
+  return header_text_color_;
 }
 
 short DoneyetConfig::UnstartedTaskColor() {
@@ -146,7 +152,8 @@ bool DoneyetConfig::ParseGeneralOptions() {
   map<string, string>& general = config_[kGeneralSection]; 
 
   return ParseColor(general, kForegroundColor, &foreground_color_) &&
-      ParseColor(general, kBackgroundColor, &background_color_);
+      ParseColor(general, kBackgroundColor, &background_color_) &&
+      ParseColor(general, kHeaderTextColor, &header_text_color_);
 }
 
 bool DoneyetConfig::ParseTaskOptions() {
