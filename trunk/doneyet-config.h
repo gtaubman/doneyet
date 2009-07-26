@@ -19,6 +19,7 @@ class DoneyetConfig {
   // General related configuration.
   short ForegroundColor();
   short BackgroundColor();
+  short HeaderTextColor();
 
   // Task related configuration.
   short UnstartedTaskColor();
@@ -44,6 +45,7 @@ class DoneyetConfig {
   bool ParseGeneralOptions();
   short foreground_color_;
   short background_color_;
+  short header_text_color_;
 
   bool ParseTaskOptions();
   short unstarted_task_color_;

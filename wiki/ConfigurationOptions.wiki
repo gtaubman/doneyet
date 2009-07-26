@@ -22,6 +22,7 @@ All color options have the following potential values:
 The following options can be found under the `GENERAL` section.
   * `foreground_color`
   * `background_color`
+  * `header_text_color` - The color for column headers and text input box headers.
 
 ==Task Options==
 The following options can be found under the `TASKS` section.
