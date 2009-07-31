@@ -21,13 +21,13 @@ static const char* kMenusSection = "MENUS";
 static const char* kMenubarForegroundColor = "bar_foreground_color";
 static const char* kMenubarBackgroundColor = "bar_background_color";
 static const char* kUnselectedMenuItemForegroundColor =
-    "unselected_foreground_color";
+    "unselected_item_foreground_color";
 static const char* kUnselectedMenuItemBackgroundColor =
-    "unselected_background_color";
+    "unselected_item_background_color";
 static const char* kSelectedMenuItemForegroundColor =
-    "selected_foreground_color";
+    "selected_item_foreground_color";
 static const char* kSelectedMenuItemBackgroundColor =
-    "selected_background_color";
+    "selected_item_background_color";
 
 bool DoneyetConfig::Parse() {
   FileManager* file_manager = FileManager::DefaultFileManager();

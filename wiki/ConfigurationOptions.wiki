@@ -1,4 +1,4 @@
-#summary Information about the configurable options.
+﻿#summary Information about the configurable options.
 <wiki:toc max_depth="2" />
 
 = Introduction =
@@ -33,10 +33,12 @@ The following options can be found under the `TASKS` section.
 
 ==Menu Options==
 The following options can be found under the `MENUS` section.
-  * `unselected_foreground_color`
-  * `unselected_background_color`
-  * `selected_foreground_color`
-  * `selected_background_color`
+  * `bar_foreground_color`
+  * `bar_background_color`
+  * `unselected_item_foreground_color`
+  * `unselected_item_background_color`
+  * `selected_item_foreground_color`
+  * `selected_item_background_color`
 
 = Example Configuration =
 The following configuration file would set the foreground color to green, and the background color to whatever color the terminal is currently set to.
