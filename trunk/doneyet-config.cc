@@ -18,6 +18,8 @@ static const char* kPausedColor = "paused_color";
 static const char* kFinishedColor = "finished_color";
 
 static const char* kMenusSection = "MENUS";
+static const char* kMenubarForegroundColor = "bar_foreground_color";
+static const char* kMenubarBackgroundColor = "bar_background_color";
 static const char* kUnselectedMenuItemForegroundColor =
     "unselected_foreground_color";
 static const char* kUnselectedMenuItemBackgroundColor =
@@ -43,6 +45,8 @@ bool DoneyetConfig::Parse() {
   tasks[kFinishedColor] = "blue";
 
   map<string, string>& menus = config_[kMenusSection];
+  menus[kMenubarForegroundColor] = "black";
+  menus[kMenubarBackgroundColor] = "yellow";
   menus[kUnselectedMenuItemForegroundColor] = "yellow";
   menus[kUnselectedMenuItemBackgroundColor] = "blue";
   menus[kSelectedMenuItemForegroundColor] = "yellow";
@@ -85,6 +89,14 @@ short DoneyetConfig::PausedTaskColor() {
 
 short DoneyetConfig::FinishedTaskColor() {
   return finished_task_color_;
+}
+
+short DoneyetConfig::MenubarForegroundColor() {
+  return menubar_foreground_color_;
+}
+
+short DoneyetConfig::MenubarBackgroundColor() {
+  return menubar_background_color_;
 }
 
 short DoneyetConfig::UnselectedMenuForegroundColor() {
@@ -168,7 +180,11 @@ bool DoneyetConfig::ParseTaskOptions() {
 bool DoneyetConfig::ParseMenuOptions() {
   map<string, string>& menu = config_[kMenusSection];
 
-  return ParseColor(menu, kUnselectedMenuItemForegroundColor,
+  return ParseColor(menu, kMenubarForegroundColor,
+                    &menubar_foreground_color_) &&
+      ParseColor(menu, kMenubarBackgroundColor,
+                 &menubar_background_color_) &&
+      ParseColor(menu, kUnselectedMenuItemForegroundColor,
                     &unselected_menu_foreground_color_) &&
       ParseColor(menu, kUnselectedMenuItemBackgroundColor,
                  &unselected_menu_background_color_) &&

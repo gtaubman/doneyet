@@ -11,8 +11,8 @@ using std::iostream;
 int main(int argc, char** argv) {
   bool curses = true;
 
-  DoneyetConfig config;
-  if (!config.Parse()) {
+  DoneyetConfig* config = DoneyetConfig::GlobalConfig();
+  if (config == NULL) {
     fprintf(stderr, "Unable to parse config file.\n");
     return 1;
   }
@@ -28,8 +28,8 @@ int main(int argc, char** argv) {
     if (has_colors()) {
       start_color();
 
-      if (assume_default_colors(config.ForegroundColor(),
-                                config.BackgroundColor()) != OK) {
+      if (assume_default_colors(config->ForegroundColor(),
+                                config->BackgroundColor()) != OK) {
         fprintf(stderr, "Unable to set default colors.\n");
         endwin();
         return 1;
@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
 
       // Make some color pairs
       // TODO: Make the task drawing know which color pairs to use.
-      short background_color = config.BackgroundColor();
+      short background_color = config->BackgroundColor();
       init_pair(1, COLOR_RED,     background_color);
       init_pair(2, COLOR_GREEN,   background_color);
       init_pair(3, COLOR_YELLOW,  background_color);
@@ -55,5 +55,6 @@ int main(int argc, char** argv) {
     endwin();
   }
 
+  delete config;
   return 0;
 }
