@@ -46,7 +46,7 @@ string DialogBox::RunMultiLine(const string& title,
       form_win_cols,
       info.height / 2 - form_win_rows / 2,
       info.width / 2 - form_win_cols / 2);
-  
+
   // Enable the arrow keys in our new window
   keypad(form_win, true);
 
@@ -60,7 +60,7 @@ string DialogBox::RunMultiLine(const string& title,
   // Draw a box around our form's window
   //wborder(form_win, '|', '|', '-', '-', '+', '+', '+', '+');
   box(form_win, 0, 0);
-  
+
   // Draw the label text
   CursesUtils::print_in_middle(form_win,
       1,

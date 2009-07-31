@@ -2,12 +2,13 @@
 #include <stdlib.h>
 
 string ListChooser::GetChoiceWithOptions(const vector<string>& choices,
-    int fg_color,
-    int bg_color,
-    int xloc,
-    int yloc,
-    bool border,
-    string mark) {
+                                         const string& message,
+                                         int fg_color,
+                                         int bg_color,
+                                         int xloc,
+                                         int yloc,
+                                         bool border,
+                                         string mark) {
   if (!choices.size()) {
     return "";
   }
@@ -40,15 +41,23 @@ string ListChooser::GetChoiceWithOptions(const vector<string>& choices,
   if (border) {
     spacing += 2;
   }
+
+  // If there's a message to be displayed, then add an extra line to allow for it.
+  int message_padding = message.size() ? 1 : 0;
+
   if (xloc == -1 && yloc == -1) {
     window_info info = CursesUtils::get_window_info(stdscr);
     xloc = info.width / 2 - (cols + spacing) / 2;
     yloc = info.height / 2 - (rows + spacing) / 2;
   }
-  
-  WINDOW* frill_window = newwin(rows + spacing, cols + spacing, yloc, xloc);
+
+  WINDOW* frill_window = newwin(rows + spacing + message_padding,
+                                cols + spacing + message.size(),
+                                yloc,
+                                xloc);
   keypad(frill_window, true);
-  WINDOW* text_window = derwin(frill_window, rows, cols, border, border);
+  WINDOW* text_window = derwin(frill_window, rows,
+                               cols, border + message_padding, border);
   set_menu_win(menu, frill_window);
   set_menu_sub(menu, text_window);
 
@@ -59,6 +68,16 @@ string ListChooser::GetChoiceWithOptions(const vector<string>& choices,
   if (border) {
     box(frill_window, 0, 0);
   }
+
+  // If we have a message, draw it.
+  if (message.size()) {
+    if (border) {
+      mvwprintw(frill_window, 1, 1, "%s", message.c_str());
+    } else {
+      mvwprintw(frill_window, 0, 0, "%s", message.c_str());
+    }
+  }
+
   refresh();
 
   post_menu(menu);
@@ -106,12 +125,33 @@ string ListChooser::GetChoiceWithOptions(const vector<string>& choices,
   return answer;
 }
 
+bool ListChooser::GetYesNo(const string& message, bool default_yes) {
+  vector<string> choices;
+  if (default_yes) {
+    choices.push_back("Yes");
+    choices.push_back("No");
+  } else {
+    choices.push_back("No");
+    choices.push_back("Yes");
+  }
+
+  return ListChooser::GetChoiceWithOptions(choices,
+                                           message,
+                                           COLOR_PAIR(0) | A_REVERSE,
+                                           COLOR_PAIR(0),
+                                           -1,
+                                           -1,
+                                           true,
+                                           ">") == "Yes";
+}
+
 string ListChooser::GetChoice(const vector<string>& choices) {
   return GetChoiceWithOptions(choices,
-      COLOR_PAIR(0) | A_REVERSE,
-      COLOR_PAIR(0),
-      -1,
-      -1,
-      true,
-      " ");
+                              "",
+                              COLOR_PAIR(0) | A_REVERSE,
+                              COLOR_PAIR(0),
+                              -1,
+                              -1,
+                              true,
+                              " ");
 }

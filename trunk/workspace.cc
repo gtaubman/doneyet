@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "utils.h"
 #include "dialog-box.h"
+#include "doneyet-config.h"
 #include "workspace.h"
 #include "file-manager.h"
 #include "file-versions.h"
@@ -123,6 +124,17 @@ void Workspace::Run() {
         ShowTasksCompletedLastWeek();
         break;
       case 'd': { // Deleted selected task
+        // First things first, potentially make sure they really want to delete
+        // this task.
+        DoneyetConfig* config = DoneyetConfig::GlobalConfig();
+        assert(config != NULL);
+        if (config->PromptOnDeleteTask()) {
+          if (!ListChooser::GetYesNo("Are you sure you want to delete this task?",
+                                     false)) {
+            break;
+          }
+        }
+
         if (selected_task == NULL) {
           break;
         }

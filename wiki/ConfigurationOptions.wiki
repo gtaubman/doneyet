@@ -30,6 +30,7 @@ The following options can be found under the `TASKS` section.
   * `in_progress_color` - The color of a task in progress.
   * `paused_color` - The color of a paused task.
   * `finished_color` - The color of a completed task.
+  * `prompt_on_delete` - Whether or not to prompt for confirmation when deleting a task.
 
 ==Menu Options==
 The following options can be found under the `MENUS` section.
