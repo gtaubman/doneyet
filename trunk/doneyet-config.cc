@@ -37,7 +37,7 @@ bool DoneyetConfig::Parse() {
   general[kHeaderTextColor] = "red";
 
   map<string, string>& tasks = config_[kTasksSection];
-  tasks[kUnstartedTaskColor] = "default";
+  tasks[kUnstartedTaskColor] = "terminal";
   tasks[kInProgressColor] = "green";
   tasks[kPausedColor] = "red";
   tasks[kFinishedColor] = "blue";
