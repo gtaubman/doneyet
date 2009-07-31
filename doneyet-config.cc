@@ -16,6 +16,7 @@ static const char* kUnstartedTaskColor = "unstarted_color";
 static const char* kInProgressColor = "in_progress_color";
 static const char* kPausedColor = "paused_color";
 static const char* kFinishedColor = "finished_color";
+static const char* kPromptOnDeleteTask = "prompt_on_delete";
 
 static const char* kMenusSection = "MENUS";
 static const char* kMenubarForegroundColor = "bar_foreground_color";
@@ -43,6 +44,7 @@ bool DoneyetConfig::Parse() {
   tasks[kInProgressColor] = "green";
   tasks[kPausedColor] = "red";
   tasks[kFinishedColor] = "blue";
+  tasks[kPromptOnDeleteTask] = "true";
 
   map<string, string>& menus = config_[kMenusSection];
   menus[kMenubarForegroundColor] = "black";
@@ -89,6 +91,10 @@ short DoneyetConfig::PausedTaskColor() {
 
 short DoneyetConfig::FinishedTaskColor() {
   return finished_task_color_;
+}
+
+bool DoneyetConfig::PromptOnDeleteTask() {
+  return prompt_on_delete_task_;
 }
 
 short DoneyetConfig::MenubarForegroundColor() {
@@ -159,9 +165,25 @@ bool DoneyetConfig::ParseColor(map<string, string>& config,
   return true;
 }
 
+bool DoneyetConfig::ParseBool(map<string, string>& config,
+                              const string& to_parse,
+                              bool* value) {
+  const string& param = config[to_parse];
+  if (param == "true" || param == "yes") {
+    *value = true;
+  } else if (param == "false" || param == "no") {
+    *value = false;
+  } else {
+    fprintf(stderr, "'%s' is not a valid boolean option.", param.c_str());
+    return false;
+  }
+
+  return true;
+}
+
 bool DoneyetConfig::ParseGeneralOptions() {
   // Get the general section.
-  map<string, string>& general = config_[kGeneralSection]; 
+  map<string, string>& general = config_[kGeneralSection];
 
   return ParseColor(general, kForegroundColor, &foreground_color_) &&
       ParseColor(general, kBackgroundColor, &background_color_) &&
@@ -174,7 +196,8 @@ bool DoneyetConfig::ParseTaskOptions() {
   return ParseColor(task, kUnstartedTaskColor, &unstarted_task_color_) &&
       ParseColor(task, kInProgressColor, &in_progress_task_color_) &&
       ParseColor(task, kPausedColor, &paused_task_color_) &&
-      ParseColor(task, kFinishedColor, &finished_task_color_);
+      ParseColor(task, kFinishedColor, &finished_task_color_) &&
+      ParseBool(task, kPromptOnDeleteTask, &prompt_on_delete_task_);
 }
 
 bool DoneyetConfig::ParseMenuOptions() {

@@ -84,7 +84,7 @@ void HierarchicalList::Draw() {
     // Draw an underline
     mvwhline(win_, col_height + 1, 1, ACS_HLINE, CursesUtils::winwidth(win_) - 2);
   }
-  
+
   // Now that we're done drawing text, draw the frills:
   window_info info = CursesUtils::get_window_info(win_);
   int width = info.width;

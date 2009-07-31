@@ -42,6 +42,7 @@ class DoneyetConfig {
   short InProgressTaskColor();
   short PausedTaskColor();
   short FinishedTaskColor();
+  bool PromptOnDeleteTask();
 
   // Menu related configuration.
   short MenubarForegroundColor();
@@ -61,11 +62,15 @@ class DoneyetConfig {
   bool ParseColor(map<string, string>& config,
                   const string& color_name,
                   short* var_to_set);
+  bool ParseBool(map<string, string>& config,
+                 const string& to_parse,
+                 bool* value);
 
   bool ParseGeneralOptions();
   short foreground_color_;
   short background_color_;
   short header_text_color_;
+  bool prompt_on_delete_task_;
 
   bool ParseTaskOptions();
   short unstarted_task_color_;
