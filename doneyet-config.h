@@ -12,8 +12,24 @@
 using std::map;
 using std::string;
 
+class DoneyetConfig;
+
+static DoneyetConfig* global_config = NULL;
+
 class DoneyetConfig {
  public:
+  static DoneyetConfig* GlobalConfig() {
+    if (global_config == NULL) {
+      global_config = new DoneyetConfig();
+      if (!global_config->Parse()) {
+        delete global_config;
+        global_config = NULL;
+        return NULL;
+      }
+    }
+    return global_config;
+  }
+
   bool Parse();
 
   // General related configuration.
@@ -28,12 +44,16 @@ class DoneyetConfig {
   short FinishedTaskColor();
 
   // Menu related configuration.
+  short MenubarForegroundColor();
+  short MenubarBackgroundColor();
   short UnselectedMenuForegroundColor();
   short UnselectedMenuBackgroundColor();
   short SelectedMenuForegroundColor();
   short SelectedMenuBackgroundColor();
 
  private:
+  DoneyetConfig() { }
+
   map<string, map<string, string> > config_;
 
   // Attempts to convert config[color_name] into a color, and set var_to_set to
@@ -54,6 +74,8 @@ class DoneyetConfig {
   short finished_task_color_;
 
   bool ParseMenuOptions();
+  short menubar_foreground_color_;
+  short menubar_background_color_;
   short unselected_menu_foreground_color_;
   short unselected_menu_background_color_;
   short selected_menu_foreground_color_;
