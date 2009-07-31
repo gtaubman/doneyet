@@ -1,4 +1,5 @@
 ﻿#summary Information about the configurable options.
+#labels Featured
 <wiki:toc max_depth="2" />
 
 = Introduction =
