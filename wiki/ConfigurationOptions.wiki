@@ -21,9 +21,10 @@ All color options have the following potential values:
 =Configuration Sections=
 ==General Options==
 The following options can be found under the `GENERAL` section.
-  * `foreground_color`
-  * `background_color`
-  * `header_text_color` - The color for column headers and text input box headers.
+|| *Option* || *Default* || *Description* ||
+|| `foreground_color` || white || The color used for standard drawing. ||
+|| `background_color` || black || The background color. ||
+|| `header_text_color`|| red || The color for column headers and text input box headers. ||
 
 ==Task Options==
 The following options can be found under the `TASKS` section.
