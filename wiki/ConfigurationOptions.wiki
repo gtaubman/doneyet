@@ -40,10 +40,10 @@ The following options can be found under the `MENUS` section.
 || *Option* || *Default* || *Description* ||
 || `bar_foreground_color` || black || The text color for the menu bar.||
 || `bar_background_color` || yellow || The background menubar color. ||
-|| `unselected_item_foreground_color` || yellow ||
-|| `unselected_item_background_color` || blue ||
-|| `selected_item_foreground_color` || yellow ||
-|| `selected_item_background_color` || blue ||
+|| `unselected_item_foreground_color` || yellow || The text color for unselected menu items. ||
+|| `unselected_item_background_color` || blue || The background color for unselected menu items. ||
+|| `selected_item_foreground_color` || yellow || The text color for selected menu items. ||
+|| `selected_item_background_color` || blue || The background color for selected menu items. ||
 
 = Example Configuration =
 The following configuration file would set the foreground color to green, and the background color to whatever color the terminal is currently set to.
