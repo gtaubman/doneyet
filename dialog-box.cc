@@ -96,6 +96,7 @@ string DialogBox::RunMultiLine(const string& title,
         form_driver(form, REQ_NEXT_LINE);
         break;
       case 263: // delete
+      case 127: // also delete
         form_driver(form,REQ_DEL_PREV);
         break;
       case '\r':
