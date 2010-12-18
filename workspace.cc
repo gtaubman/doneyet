@@ -17,6 +17,7 @@ static bool do_resize;
 Workspace::Workspace() :
   menubar_(NULL),
   project_(NULL),
+  list_(NULL),
   done_(false) {
 
   // Initialize the menu bar.
@@ -27,12 +28,15 @@ Workspace::Workspace() :
   if (fm->NumSavedProjects()) {
     string project_name = ListChooser::GetChoice(fm->SavedProjectNames());
     if (project_name.empty()) {
-      Quit();
+      return;
     } else {
       project_ = Project::NewProjectFromFile(fm->ProjectDir() + project_name);
     }
   } else {
     project_ = CreateNewProject();
+    if (project_ == NULL) {
+      return;
+    }
   }
 
   InitializeLists();
