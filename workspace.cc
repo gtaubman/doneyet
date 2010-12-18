@@ -128,6 +128,11 @@ void Workspace::Run() {
         ShowTasksCompletedLastWeek();
         break;
       case 'd': { // Deleted selected task
+        // If nothing is selected there's nothing to delete.
+        if (selected_task == NULL) {
+          break;
+        }
+
         // First things first, potentially make sure they really want to delete
         // this task.
         DoneyetConfig* config = DoneyetConfig::GlobalConfig();
@@ -139,9 +144,6 @@ void Workspace::Run() {
           }
         }
 
-        if (selected_task == NULL) {
-          break;
-        }
         bool first_task_selected = selected_task == project_->Root(0);
 
         list_->SelectPrevItem();
