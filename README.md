@@ -1,3 +1,4 @@
+#Doneyet
 Doneyet is an ncurses based hierarchical todo list manager written in C++. If you give it a whirl let me know! I'd be happy to hear who's using it and any feature requests! Mostly, I use it for:
 
 * Keeping track of things you need to do.
@@ -31,23 +32,23 @@ Doneyet is used primarily through key commands. There is a menu system in place 
   * j/d/Down Arrow - Move selected task down.
   * Return - Place task at current position.
   * Escape - Place task to where it was originally.
-n - Add a note to the selected task.
-v - View the notes of the selected task.
-j - Selected next task.
-k - Select previous task.
-Escape - Select no task.
-e - Edit selected task.
-d - Delete selected task.
-c - Toggle collapsed state of selected task.
-R - Apply the Show Uncompleted Tasks filter.
-C - Apply the Show Completed Tasks filter.
-f - Apply the Find Tasks filter.
-S - Save the project.
-Space - Toggle the status of the selected item. White is unstarted, green is in progress, blue is completed and red is paused.
-q - Quit.
+* n - Add a note to the selected task.
+* v - View the notes of the selected task.
+* j - Selected next task.
+* k - Select previous task.
+* Escape - Select no task.
+* e - Edit selected task.
+* d - Delete selected task.
+* c - Toggle collapsed state of selected task.
+* R - Apply the Show Uncompleted Tasks filter.
+* C - Apply the Show Completed Tasks filter.
+* f - Apply the Find Tasks filter.
+* S - Save the project.
+* Space - Toggle the status of the selected item. White is unstarted, green is in progress, blue is completed and red is paused.
+* q - Quit.
 
 #Menu System
 The menu system also contains the 'Plain Text' menu item in the 'Generate' menu. This creates a text file of whatever is currently filtered in /tmp/snippet.txt and then calls less on that file. A potential use of this is reporting weekly progress in email. Copying directly out of the ncurses window is difficult and time consuming. This however generates a plain text version with no borders.
 
 #Screenshots
-
+![Screenshot](http://www.gabetaubman.com/external_images/doneyet1.png)
