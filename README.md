@@ -21,7 +21,7 @@ Doneyet will save on quit, or when choosing 'Save' from the 'Project' menu.
 Doneyet is used primarily through key commands. There is a menu system in place but not everything can be achieved through it. The key commands are as follows:
 
 * A - Apply the Show All Tasks filter.
-* a - If a task is selected, add a new subtask of that task. If no task is selected add a root level task.
+* a - Create a new task (or a subtask if pressed while a task is selected).
 * M - Show the menu bar.
   * j and k - Change menu item.
   * l and h - Change menu.
