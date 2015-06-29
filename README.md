@@ -1,4 +1,6 @@
 #Doneyet
+![Screenshot](http://www.gabetaubman.com/external_images/doneyet1.png)
+
 Doneyet is an ncurses based hierarchical todo list manager written in C++. If you give it a whirl let me know! I'd be happy to hear who's using it and any feature requests! Mostly, I use it for:
 
 * Keeping track of things you need to do.
@@ -49,6 +51,3 @@ Doneyet is used primarily through key commands. There is a menu system in place 
 
 #Menu System
 The menu system also contains the 'Plain Text' menu item in the 'Generate' menu. This creates a text file of whatever is currently filtered in /tmp/snippet.txt and then calls less on that file. A potential use of this is reporting weekly progress in email. Copying directly out of the ncurses window is difficult and time consuming. This however generates a plain text version with no borders.
-
-#Screenshots
-![Screenshot](http://www.gabetaubman.com/external_images/doneyet1.png)
