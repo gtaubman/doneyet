@@ -372,7 +372,22 @@ void Workspace::AddNote(Task* t) {
 
 void Workspace::ViewNotes(Task* t) {
   if (t != NULL) {
-    ListChooser::GetChoice(t->Notes());
+    string selected_note = ListChooser::GetChoice(t->Notes());
+	if (strcmp(selected_note.c_str(), "") != 0 ) { //user selected item (Abort with ESC)
+		string answer = DialogBox::RunMultiLine("Please Edit Note",
+												selected_note,
+												CursesUtils::winwidth() / 3,
+												CursesUtils::winheight() / 3);
+		if (strcmp(answer.c_str(),"") == 0 ) { 
+			t->DeleteNote(selected_note);
+  		}
+		else if (strcmp(answer.c_str(),selected_note.c_str()) != 0) {
+			//note altered
+			t->DeleteNote(selected_note);
+		    t->AddNote(answer);
+		}
+		//else nothing changed
+	 }
   }
 }
 

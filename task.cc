@@ -36,6 +36,21 @@ void Task::AddNote(const string& note) {
   notes_.push_back(new Note(note));
 }
 
+void Task::DeleteNote(const string& note) {
+	std::vector<Note*>::iterator delete_it;
+	bool found = false;
+	
+	for (vector<Note*>::iterator it = notes_.begin(); it != notes_.end(); it++) {
+		    if (strcmp((*it)->Text().c_str(), note.c_str()) == 0) {
+				found=true;
+				delete_it = it;
+			}
+	}
+	if (found) {
+				notes_.erase(delete_it);
+	}
+}
+
 vector<string> Task::Notes() {
   vector<string> notes;
   for (int i = 0; i < notes_.size(); ++i) {
