@@ -401,7 +401,6 @@ void Workspace::HandleMenuInput(const string& input) {
   } else if (input == "Save") {
     SaveCurrentProject();
   } else if (input == "Quit") {
-    SaveCurrentProject();
     Quit();
   } else if (input == "All Tasks") {
     ShowAllTasks();
