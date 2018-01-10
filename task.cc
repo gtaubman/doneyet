@@ -41,7 +41,7 @@ void Task::DeleteNote(const string& note) {
 	bool found = false;
 	
 	for (vector<Note*>::iterator it = notes_.begin(); it != notes_.end(); it++) {
-		    if (strcmp((*it)->Text().c_str(), note.c_str()) == 0) {
+		    if ((*it)->Text().compare(note) == 0) {
 				found=true;
 				delete_it = it;
 			}
