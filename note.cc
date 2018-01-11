@@ -13,6 +13,10 @@ string Note::Text() {
   return date_.ToString() + ": " + text_;
 }
 
+string Note::GetText() {
+  return text_;
+}
+
 void Note::Serialize(Serializer* s) {
   s->WriteString(text_);
   date_.Serialize(s);

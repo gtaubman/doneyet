@@ -155,3 +155,24 @@ string ListChooser::GetChoice(const vector<string>& choices) {
                               true,
                               " ");
 }
+
+string ListChooser::GetMappedChoice(const map<string,string>& mappedChoices) {
+	vector<string> displayedChoices;
+	for (map<string,string>::const_iterator it=mappedChoices.begin(); it!=mappedChoices.end(); ++it) {
+		    displayedChoices.push_back(it->first);
+	}
+  string displayedSelection=GetChoiceWithOptions(displayedChoices,
+                              "",
+                              COLOR_PAIR(0) | A_REVERSE,
+                              COLOR_PAIR(0),
+                              -1,
+                              -1,
+                              true,
+                              " ");
+  string answer="";
+  if(!displayedSelection.empty()){
+    map<string, string>::const_iterator item=mappedChoices.find(displayedSelection);
+    answer=item->second;
+	}
+  return answer;
+}

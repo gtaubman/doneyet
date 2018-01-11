@@ -36,12 +36,16 @@ void Task::AddNote(const string& note) {
   notes_.push_back(new Note(note));
 }
 
+bool Task::HasNotes() {
+  return !notes_.empty();
+}
+
 void Task::DeleteNote(const string& note) {
 	std::vector<Note*>::iterator delete_it;
 	bool found = false;
 	
 	for (vector<Note*>::iterator it = notes_.begin(); it != notes_.end(); it++) {
-		    if ((*it)->Text().compare(note) == 0) {
+		    if ((*it)->GetText().compare(note) == 0) {
 				found=true;
 				delete_it = it;
 			}
@@ -54,9 +58,17 @@ void Task::DeleteNote(const string& note) {
 vector<string> Task::Notes() {
   vector<string> notes;
   for (int i = 0; i < notes_.size(); ++i) {
-    notes.push_back(notes_[i]->Text());
+    notes.push_back(notes_[i]->GetText());
   }
   return notes;
+}
+	
+map<string, string> Task::MappedNotes() {
+  map<string, string> mappedNotes;
+  for (int i = 0; i < notes_.size(); ++i) {
+	mappedNotes[notes_[i]->Text()]=notes_[i]->GetText();
+  }
+  return mappedNotes;
 }
 
 void Task::ApplyFilter(FilterPredicate<Task>* filter) {

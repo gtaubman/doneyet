@@ -372,22 +372,24 @@ void Workspace::AddNote(Task* t) {
 
 void Workspace::ViewNotes(Task* t) {
   if (t != NULL) {
-    string selected_note = ListChooser::GetChoice(t->Notes());
-	if (!selected_note.empty() ) { //user selected item (Abort with ESC)
-		string answer = DialogBox::RunMultiLine("Please Edit Note",
-												selected_note,
-												CursesUtils::winwidth() / 3,
-												CursesUtils::winheight() / 3);
-		if (answer.empty() ) {
-			t->DeleteNote(selected_note);
-  		}
-		else if (answer.compare(selected_note) != 0) {
-			//note altered
-			t->DeleteNote(selected_note);
-		    t->AddNote(answer);
-		}
-		//else nothing changed
-	 }
+    if (t->HasNotes() ) {
+      string selected_note = ListChooser::GetMappedChoice(t->MappedNotes()); // use MappedNotes here
+      if (!selected_note.empty() ) { //user selected item (Abort with ESC)
+        string answer = DialogBox::RunMultiLine("Please Edit Note",
+            selected_note,
+            CursesUtils::winwidth() / 3,
+            CursesUtils::winheight() / 3);
+        if (answer.empty() ) {
+          t->DeleteNote(selected_note);
+        }
+        else if (answer.compare(selected_note) != 0) {
+          //note altered
+          t->DeleteNote(selected_note);
+          t->AddNote(answer);
+        }
+        //else nothing changed
+      }
+    }
   }
 }
 
