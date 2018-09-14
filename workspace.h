@@ -106,7 +106,6 @@ class Workspace {
   HierarchicalList* list_;
   HierarchicalList* notes_list_;
   StringVectorSource notes_source_;
-  Task* currently_selected_task_;
   bool done_;
 };
 
