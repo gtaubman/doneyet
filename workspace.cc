@@ -18,6 +18,7 @@ Workspace::Workspace() :
   menubar_(NULL),
   project_(NULL),
   list_(NULL),
+  notes_list_(NULL),
   done_(false) {
 
   // Initialize the menu bar.
@@ -58,7 +59,9 @@ Workspace::~Workspace() {
   delete project_;
   delete menubar_;
   delete list_;
-  delete notes_list_;
+  if (notes_list_ != NULL) {
+	  delete notes_list_;
+  }
 }
 
 // A: Show all tasks.
