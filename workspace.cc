@@ -84,6 +84,7 @@ Workspace::~Workspace() {
 // R: Show only uncompleted tasks.
 // C: Show only tasks completed in the last week.
 // f: Search tasks.
+// h: display help. 
 // Esc: Select no item.
 // Spc: Toggle selected task status.
 // Tab: Select next column.
