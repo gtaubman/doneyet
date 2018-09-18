@@ -173,6 +173,9 @@ void Workspace::Run() {
       case 'f':  // Filter on string
         RunFind();
         break;
+	  case 'h': //Display help
+		DisplayHelp();
+		break;
       case KEY_DOWN:
       case 'j':  // Select next task
         list_->SelectNextItem();
@@ -272,6 +275,14 @@ void Workspace::AddTask(Task* t) {
     t->AddSubTask(new Task(text, ""));
   }
   PerformFullListUpdate();
+}
+
+void Workspace::DisplayHelp() {
+	string text = DialogBox::RunMultiLine("I am a friendly help dialog",
+			"This is some friendly help text\nOpen and close this window using 'h'\n",
+			CursesUtils::winwidth() / 3,
+			CursesUtils::winheight() / 3);
+	return;
 }
 
 void Workspace::MoveTask(Task* t) {

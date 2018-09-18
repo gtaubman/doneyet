@@ -87,6 +87,7 @@ class Workspace {
   void RunFind();
   void PerformFullListUpdate();
   void DisplayNotes(Task* t);
+  void DisplayHelp();
 
   // Initialization Helper Functions
   void InitializeMenuBar();
