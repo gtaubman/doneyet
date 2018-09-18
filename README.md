@@ -54,6 +54,7 @@ Doneyet is used primarily through key commands. There is a menu system in place 
 The menu system also contains the 'Plain Text' menu item in the 'Generate' menu. This creates a text file of whatever is currently filtered in /tmp/snippet.txt and then calls less on that file. A potential use of this is reporting weekly progress in email. Copying directly out of the ncurses window is difficult and time consuming. This however generates a plain text version with no borders.
 
 #Versioning and Features
+
 1.0 - Original fork from https://github.com/gtaubman/doneyet
 
 1.1 - first release by stweise as no integration on original repository could be arranged
