@@ -8,7 +8,6 @@ void InfoBox::ShowMultiLine(const string& title,
   FIELD* field = new_field(height, width, 0, 0, 0, 0);
 
   // Set its options
-  set_field_back(field, A_UNDERLINE);
   field_opts_off(field, O_EDIT);
   if (!default_text.empty()) {
     set_field_buffer(field, 0, default_text.c_str());
