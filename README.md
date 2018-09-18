@@ -47,6 +47,7 @@ Doneyet is used primarily through key commands. There is a menu system in place 
 * f - Apply the Find Tasks filter.
 * S - Save the project.
 * Space - Toggle the status of the selected item. White is unstarted, green is in progress, blue is completed and red is paused.
+* h - Shows a help dialog.
 * q - Quit.
 
 #Menu System

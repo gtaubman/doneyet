@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "utils.h"
 #include "dialog-box.h"
+#include "info-box.h"
 #include "doneyet-config.h"
 #include "workspace.h"
 #include "file-manager.h"
@@ -279,9 +280,7 @@ void Workspace::AddTask(Task* t) {
 }
 
 void Workspace::DisplayHelp() {
-	string text = DialogBox::RunMultiLine("I am a friendly help dialog",
-			"This is some friendly help text\n"
-			"Open and close this window using 'h'\n"
+	string helptext =
 "* A - Apply the Show All Tasks filter.\n"
 "* a - Create a new task (or a subtask if pressed while a task is selected).\n"
 "* M - Show the menu bar.\n"
@@ -307,9 +306,13 @@ void Workspace::DisplayHelp() {
 "* f - Apply the Find Tasks filter.\n"
 "* S - Save the project.\n"
 "* Space - Toggle the status of the selected item. White is unstarted, green is in progress, blue is completed and red is paused.\n"
-"* q - Quit.\n",
-			CursesUtils::winwidth() / 3,
-			CursesUtils::winheight() / 3);
+"* h - Shows and closes this help dialog.\n"
+"* q - Quit.\n";
+
+	InfoBox::ShowMultiLine("Help",
+			helptext,
+			CursesUtils::winwidth() / 10 * 8,
+			CursesUtils::winheight() / 10 * 8);
 	return;
 }
 
