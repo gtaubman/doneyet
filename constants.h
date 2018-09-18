@@ -1,5 +1,5 @@
-#ifndef _CONSTANTS_H_
-#define _CONSTANTS_H_
+#ifndef __CONSTANTS__
+#define __CONSTANTS__
 
 class Constants {
  public:

@@ -1,5 +1,5 @@
-#ifndef __TASK_H__
-#define __TASK_H__
+#ifndef __TASK__
+#define __TASK__
 
 // TODO: Swap(Task*, Task*) is still a bit flakey if the tasks are in the
 // "wrong" order.  Fix that.

@@ -1,5 +1,5 @@
-#ifndef _DONEYET_CONFIG_H_
-#define _DONEYET_CONFIG_H_
+#ifndef __DONEYET_CONFIG__
+#define __DONEYET_CONFIG__
 
 // This class is used to wrap the parsing and validation of all configuration
 // options.  These options can be accessed directly, or (in the case of colors,

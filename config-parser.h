@@ -1,5 +1,5 @@
-#ifndef _CONFIG_PARSER_H_
-#define _CONFIG_PARSER_H_
+#ifndef __CONFIG_PARSER__
+#define __CONFIG_PARSER__
 
 // A super simple configuration file parser.  It allows defining sections with
 // [SECTION_NAME] on its own line.  Section values are of the following format:
