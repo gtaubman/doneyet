@@ -57,7 +57,7 @@ The menu system also contains the 'Plain Text' menu item in the 'Generate' menu.
 
 ## 1.0 - Original fork from https://github.com/gtaubman/doneyet
 
-## 1.1 - first release by stweise as no integration on original repository could be arranged
+## 1.1 - edit and delete of notes & help dialog
 Features:
 * added deleting and editing of notes
 * drawing closing T-junctions
