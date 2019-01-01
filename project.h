@@ -1,5 +1,5 @@
-#ifndef __PROJECT_H__
-#define __PROJECT_H__
+#ifndef __PROJECT__
+#define __PROJECT__
 
 #include <string>
 #include <vector>

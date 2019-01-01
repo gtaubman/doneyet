@@ -1,5 +1,5 @@
-#ifndef __TASK__DATE__
-#define __TASK__DATE__
+#ifndef __TASK_DATE__
+#define __TASK_DATE__
 
 #include <ctime>
 #include <string>

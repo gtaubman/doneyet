@@ -143,6 +143,14 @@ void HierarchicalList::Draw() {
     }
     ++col_start;
   }
+  //
+  //paint column ends
+  draw_at = 1;
+  for (int c = 0; c < columns_.size(); ++c) {
+    draw_at += CursesUtils::winwidth(columns_[c]);
+	mvwaddch(win_, height - 1, draw_at , ACS_BTEE);
+    ++draw_at;
+  }
   
   mvwaddch(columns_[0], win_rel_selected_line_, 0, '%');
   

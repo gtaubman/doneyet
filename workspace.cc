@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "utils.h"
 #include "dialog-box.h"
+#include "info-box.h"
 #include "doneyet-config.h"
 #include "workspace.h"
 #include "file-manager.h"
@@ -18,6 +19,7 @@ Workspace::Workspace() :
   menubar_(NULL),
   project_(NULL),
   list_(NULL),
+  notes_list_(NULL),
   done_(false) {
 
   // Initialize the menu bar.
@@ -58,7 +60,9 @@ Workspace::~Workspace() {
   delete project_;
   delete menubar_;
   delete list_;
-  delete notes_list_;
+  if (notes_list_ != NULL) {
+	  delete notes_list_;
+  }
 }
 
 // A: Show all tasks.
@@ -81,6 +85,7 @@ Workspace::~Workspace() {
 // R: Show only uncompleted tasks.
 // C: Show only tasks completed in the last week.
 // f: Search tasks.
+// h: display help. 
 // Esc: Select no item.
 // Spc: Toggle selected task status.
 // Tab: Select next column.
@@ -170,6 +175,9 @@ void Workspace::Run() {
       case 'f':  // Filter on string
         RunFind();
         break;
+	  case 'h': //Display help
+		DisplayHelp();
+		break;
       case KEY_DOWN:
       case 'j':  // Select next task
         list_->SelectNextItem();
@@ -269,6 +277,43 @@ void Workspace::AddTask(Task* t) {
     t->AddSubTask(new Task(text, ""));
   }
   PerformFullListUpdate();
+}
+
+void Workspace::DisplayHelp() {
+	string helptext =
+"* A - Apply the Show All Tasks filter.\n"
+"* a - Create a new task (or a subtask if pressed while a task is selected).\n"
+"* M - Show the menu bar.\n"
+"  * j and k - Change menu item.\n"
+"  * l and h - Change menu.\n"
+"  * Return - Select the selected menu item.\n"
+"  * Escape - Hide the menu bar.\n"
+"* m - Move the currently selected task. Note this doesn't work for root level tasks yet.\n"
+"  * k/u/Up Arrow - Move selected task up.\n"
+"  * j/d/Down Arrow - Move selected task down.\n"
+"  * Return - Place task at current position.\n"
+"  * Escape - Place task to where it was originally.\n"
+"* n - Add a note to the selected task.\n"
+"* v - View the notes of the selected task.\n"
+"* j - Selected next task.\n"
+"* k - Select previous task.\n"
+"* Escape - Select no task.\n"
+"* e - Edit selected task.\n"
+"* d - Delete selected task.\n"
+"* c - Toggle collapsed state of selected task.\n"
+"* R - Apply the Show Uncompleted Tasks filter.\n"
+"* C - Apply the Show Completed Tasks filter.\n"
+"* f - Apply the Find Tasks filter.\n"
+"* S - Save the project.\n"
+"* Space - Toggle the status of the selected item. White is unstarted, green is in progress, blue is completed and red is paused.\n"
+"* h - Shows and closes this help dialog.\n"
+"* q - Quit.\n";
+
+	InfoBox::ShowMultiLine("Help",
+			helptext,
+			CursesUtils::winwidth() / 10 * 8,
+			CursesUtils::winheight() / 10 * 8);
+	return;
 }
 
 void Workspace::MoveTask(Task* t) {
@@ -372,7 +417,24 @@ void Workspace::AddNote(Task* t) {
 
 void Workspace::ViewNotes(Task* t) {
   if (t != NULL) {
-    ListChooser::GetChoice(t->Notes());
+    if (t->HasNotes() ) {
+      string selected_note = ListChooser::GetMappedChoice(t->MappedNotes()); // use MappedNotes here
+      if (!selected_note.empty() ) { //user selected item (Abort with ESC)
+        string answer = DialogBox::RunMultiLine("Please Edit Note",
+            selected_note,
+            CursesUtils::winwidth() / 3,
+            CursesUtils::winheight() / 3);
+        if (answer.empty() ) {
+          t->DeleteNote(selected_note);
+        }
+        else if (answer.compare(selected_note) != 0) {
+          //note altered
+          t->DeleteNote(selected_note);
+          t->AddNote(answer);
+        }
+        //else nothing changed
+      }
+    }
   }
 }
 
@@ -386,7 +448,6 @@ void Workspace::HandleMenuInput(const string& input) {
   } else if (input == "Save") {
     SaveCurrentProject();
   } else if (input == "Quit") {
-    SaveCurrentProject();
     Quit();
   } else if (input == "All Tasks") {
     ShowAllTasks();

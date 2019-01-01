@@ -87,6 +87,7 @@ class Workspace {
   void RunFind();
   void PerformFullListUpdate();
   void DisplayNotes(Task* t);
+  void DisplayHelp();
 
   // Initialization Helper Functions
   void InitializeMenuBar();
@@ -106,7 +107,6 @@ class Workspace {
   HierarchicalList* list_;
   HierarchicalList* notes_list_;
   StringVectorSource notes_source_;
-  Task* currently_selected_task_;
   bool done_;
 };
 

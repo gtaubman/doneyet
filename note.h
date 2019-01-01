@@ -11,6 +11,7 @@ class Note {
   virtual ~Note();
 
   string Text();
+  string GetText();
   void Serialize(Serializer* s);
   void ReadFromSerializer(Serializer* s);
 

@@ -1,5 +1,5 @@
-#ifndef __TASK_H__
-#define __TASK_H__
+#ifndef __TASK__
+#define __TASK__
 
 // TODO: Swap(Task*, Task*) is still a bit flakey if the tasks are in the
 // "wrong" order.  Fix that.
@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include <map>
 #include "hierarchical-list.h"
 #include "serializer.h"
 #include "date.h"
@@ -18,6 +19,7 @@
 
 using std::string;
 using std::vector;
+using std::map;
 using std::ofstream;
 
 typedef enum TaskStatus_ {
@@ -35,8 +37,11 @@ class Task : public ListItem {
    virtual ~Task();
    static Task* NewTaskFromSerializer(Serializer* s);
 
+   bool HasNotes();
    void AddNote(const string& note);
+   void DeleteNote(const string& note);
    vector<string> Notes();
+   map<string, string> MappedNotes();
 
    string Title() { return title_; }
    static string TitleWrapper(Task* t) { return t->Title(); }

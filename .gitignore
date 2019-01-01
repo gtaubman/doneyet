@@ -1,0 +1,5 @@
+doneyet
+*.o
+*.gcov
+*.gcno
+*.gcda

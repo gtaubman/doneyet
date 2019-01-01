@@ -2,11 +2,13 @@
 #define __LIST_CHOOSER__
 
 #include <vector>
+#include <map>
 #include <string>
 #include "curses-menu.h"
 
 using std::string;
 using std::vector;
+using std::map;
 
 class ListChooser {
  public:
@@ -22,6 +24,8 @@ class ListChooser {
   static bool GetYesNo(const string& message, bool default_yes);
 
   static string GetChoice(const vector<string>& choices);
+
+  static string GetMappedChoice(const map<string,string>& mappedChoices);
 };
 
 #endif

@@ -1,0 +1,1 @@
+changing the state of a parent task that has subtasks can be done only by altering the state of the subtasks, not by altering the state of the parent task
