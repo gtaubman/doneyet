@@ -1,3 +1,4 @@
+#include <locale.h>
 #include <curses.h>
 #include <menu.h>
 #include <iostream>
@@ -18,11 +19,14 @@ int main(int argc, char** argv) {
   }
 
   if (curses) {
+    setlocale(LC_ALL, "");
     initscr();  // Create the standard window.
     keypad(stdscr, true);        // Enable keyboard mappings
     nonl();                         // Disable weird newline stuff.
     cbreak();                       // Take input characters one at a time.
     noecho();                       // We don't want input to be echoed
+    intrflush(stdscr, FALSE);
+
 
     // If our terminal has color, start up colors
     if (has_colors()) {
