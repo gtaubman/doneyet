@@ -7,8 +7,8 @@ FASTFLAGS = -O3
 COMPILEFLAGS =$(DEBUGFLAGS) $(FASTFLAGS)
 OFILES = $(OBJECTS:%=%.o)
 CCC	= g++
-IFLAGS = -I.
-LFLAGS =
+IFLAGS = -I. `pkg-config --cflags-only-I ncurses`
+LFLAGS = `pkg-config --libs-only-L ncurses`
 LIBS	= -lform -lmenu -lpanel -lncurses
 
 all	: $(EXECUTABLE)
