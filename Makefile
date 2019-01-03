@@ -11,6 +11,15 @@ IFLAGS = -I.
 LFLAGS =
 LIBS	= -lform -lmenu -lpanel -lncurses
 
+PROPER_PKG_CONFIG = $(shell pkg-config --cflags ncurses >/dev/null 2>&1 && echo true || echo false)
+$(info $$PROPER_PKG_CONFIG is [${PROPER_PKG_CONFIG}])
+
+ifeq ($(PROPER_PKG_CONFIG),true)
+IFLAGS += $(shell pkg-config --cflags-only-I ncurses)
+LFLAGS += $(shell pkg-config --libs-only-L ncurses)
+endif
+$(info $$IFLAGS is [${IFLAGS}])
+
 all	: $(EXECUTABLE)
 
 # the executable depends on all of the o-files being up-to-date
