@@ -67,3 +67,32 @@ Bugfixes:
 
 ## doneyet-1.0.0 - original version from google code import
 
+# Compilation/Installation
+
+## Linux & most other Unix-like Operating Systems
+Clone or download doneyet, cd into the main source code repository and then run make.
+```
+git clone git@github.com:gtaubman/doneyet.git
+cd doneyet
+make
+```
+The doneyet binary can now be copied to whatever system path suits best for you. You may also choose to run it right from here.
+```
+./doneyet
+```
+
+## Mac OS X
+### Versions before macOS Mojave 10.14
+Please follow the Linux instructions.
+
+### Version macOS Mojave 10.14
+There seems to be a bug in the way linking against the system supplied libcurses is done in macOS 10.14 when combined with libmenu. Please install homebrew, instructions are available on https://brew.sh/. Then install ncurses
+```
+brew install ncurses
+```
+and follow the post-installation instructions by adding the pkg-config definition of brew-installed ncurses to your pkg-config search path
+```
+echo 'export PKG_CONFIG_PATH="/usr/local/opt/ncurses/lib/pkgconfig"' >> ~/.bash_profile
+```
+you should ensure that the .bash_profile is sourced (close Terminal.app window and open up a new one if you don't know what that means)
+Please follow the Linux instructions now.
