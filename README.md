@@ -55,7 +55,7 @@ The menu system also contains the 'Plain Text' menu item in the 'Generate' menu.
 
 # Versioning and Features
 
-## 1.1 - edit and delete of notes & help dialog
+## doneyet-1.1.0 - edit and delete of notes & help dialog
 Features:
 * added deleting and editing of notes
 * drawing closing T-junctions on column ends
@@ -65,5 +65,5 @@ Bugfixes:
 * segmentation fault (ESC twice at startup)
 * removing unnecessary saving (is already performed by Quit() )
 
-## 1.0 - original version from google code import
+## doneyet-1.0.0 - original version from google code import
 
