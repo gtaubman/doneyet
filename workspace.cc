@@ -280,39 +280,10 @@ void Workspace::AddTask(Task* t) {
 }
 
 void Workspace::DisplayHelp() {
-	string helptext =
-"* A - Apply the Show All Tasks filter.\n"
-"* a - Create a new task (or a subtask if pressed while a task is selected).\n"
-"* M - Show the menu bar.\n"
-"  * j and k - Change menu item.\n"
-"  * l and h - Change menu.\n"
-"  * Return - Select the selected menu item.\n"
-"  * Escape - Hide the menu bar.\n"
-"* m - Move the currently selected task. Note this doesn't work for root level tasks yet.\n"
-"  * k/u/Up Arrow - Move selected task up.\n"
-"  * j/d/Down Arrow - Move selected task down.\n"
-"  * Return - Place task at current position.\n"
-"  * Escape - Place task to where it was originally.\n"
-"* n - Add a note to the selected task.\n"
-"* v - View the notes of the selected task.\n"
-"* j - Selected next task.\n"
-"* k - Select previous task.\n"
-"* Escape - Select no task.\n"
-"* e - Edit selected task.\n"
-"* d - Delete selected task.\n"
-"* c - Toggle collapsed state of selected task.\n"
-"* R - Apply the Show Uncompleted Tasks filter.\n"
-"* C - Apply the Show Completed Tasks filter.\n"
-"* f - Apply the Find Tasks filter.\n"
-"* S - Save the project.\n"
-"* Space - Toggle the status of the selected item. White is unstarted, green is in progress, blue is completed and red is paused.\n"
-"* h - Shows and closes this help dialog.\n"
-"* q - Quit.\n";
-
-	InfoBox::ShowMultiLine("Help",
-			helptext,
-			CursesUtils::winwidth() / 10 * 8,
-			CursesUtils::winheight() / 10 * 8);
+	InfoBox::ShowFullScreen("Help: key commands in doneyet:",
+			__HELPTEXT__,
+			CursesUtils::winwidth(),
+			CursesUtils::winheight());
 	return;
 }
 
