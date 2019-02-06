@@ -10,14 +10,11 @@ using std::ofstream;
 using std::iostream;
 
 int main(int argc, char** argv) {
-    if(argc>=2) // at least one argument or more
-    {
-        printf("%s does not understand any command line arguments yet.\nHere, have a help page :-)\n",argv[0]);
+    if (argc >= 2) {  // at least one argument or more
+        printf("%s does not understand any command line arguments yet.\nHere, have a help page :-)\n", argv[0]);
         printf("%s", __HELPTEXT__);
         return 0;
-    }
-    else // no arguments supplied
-    {
+    } else {  // no arguments supplied
         bool curses = true;
 
         DoneyetConfig* config = DoneyetConfig::GlobalConfig();
