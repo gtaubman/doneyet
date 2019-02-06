@@ -9,22 +9,24 @@ using std::time_t;
 using std::string;
 
 class Date {
- public:
-  explicit Date();
-  virtual ~Date();
+  public:
+    explicit Date();
+    virtual ~Date();
 
-  void SetToNow();
-  void SetToEmptyTime();
-  bool IsCloserToNowThan(Date* d);
-  time_t Time() { return time_; }
+    void SetToNow();
+    void SetToEmptyTime();
+    bool IsCloserToNowThan(Date* d);
+    time_t Time() {
+        return time_;
+    }
 
-  void Serialize(Serializer* s);
-  void ReadFromSerializer(Serializer* s);
-  
-  string ToString();
+    void Serialize(Serializer* s);
+    void ReadFromSerializer(Serializer* s);
 
- private:
-  time_t time_;
+    string ToString();
+
+  private:
+    time_t time_;
 };
 
 #endif

@@ -397,8 +397,7 @@ void Workspace::ViewNotes(Task* t) {
                                                         CursesUtils::winheight() / 3);
                 if (answer.empty() ) {
                     t->DeleteNote(selected_note);
-                }
-                else if (answer.compare(selected_note) != 0) {
+                } else if (answer.compare(selected_note) != 0) {
                     //note altered
                     t->DeleteNote(selected_note);
                     t->AddNote(answer);

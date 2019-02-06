@@ -12,36 +12,40 @@ class FileManager;
 static FileManager* fm = NULL;
 
 class FileManager {
- public:
-  static FileManager* DefaultFileManager() {
-    if (fm == NULL) {
-      fm = new FileManager();
+  public:
+    static FileManager* DefaultFileManager() {
+        if (fm == NULL) {
+            fm = new FileManager();
+        }
+        return fm;
     }
-    return fm;
-  }
 
-  bool Initialize();
-  bool DirectoryContents(const string& dir, vector<string>* contents);
+    bool Initialize();
+    bool DirectoryContents(const string& dir, vector<string>* contents);
 
-  string ProjectDir() { return project_dir_; }
-  int NumSavedProjects();
-  vector<string> SavedProjectNames();
+    string ProjectDir() {
+        return project_dir_;
+    }
+    int NumSavedProjects();
+    vector<string> SavedProjectNames();
 
-  // Return the full path to the configuration file.  Will be empty if there is
-  // no configuration file.
-  string ConfigFilePath() { return config_file_path_; }
+    // Return the full path to the configuration file.  Will be empty if there is
+    // no configuration file.
+    string ConfigFilePath() {
+        return config_file_path_;
+    }
 
- private:
-  FileManager();
-  virtual ~FileManager();
+  private:
+    FileManager();
+    virtual ~FileManager();
 
-  bool CheckDir(const string& dir);
-  bool FileExists(const string& file_path);
+    bool CheckDir(const string& dir);
+    bool FileExists(const string& file_path);
 
-  string home_dir_;
-  string data_dir_;
-  string project_dir_;
-  string config_file_path_;
+    string home_dir_;
+    string data_dir_;
+    string project_dir_;
+    string config_file_path_;
 };
 
 #endif

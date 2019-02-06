@@ -41,7 +41,7 @@ using std::string;
 "* q - Quit.\n"
 
 class StringListItem : public ListItem {
-public:
+  public:
     StringListItem(string str) : ListItem() {
         str_ = str;
     }
@@ -62,12 +62,12 @@ public:
     }
     virtual void SetListText(string& text) { }
 
-private:
+  private:
     string str_;
 };
 
 class StringVectorSource : public HierarchicalListDataSource {
-public:
+  public:
     StringVectorSource() { }
     virtual ~StringVectorSource() { }
 
@@ -96,19 +96,19 @@ public:
         return list_items_[i];
     }
 
-private:
+  private:
     vector<StringListItem*> list_items_;
 };
 
 class Workspace {
-public:
+  public:
     explicit Workspace();
     virtual ~Workspace();
 
     void Run();
     void Quit();
 
-private:
+  private:
     void NewProject();
     void OpenProject();
     void SaveCurrentProject();

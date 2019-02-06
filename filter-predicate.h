@@ -22,67 +22,71 @@ using std::string;
 
 // Filter Predicate
 template <class T> class FilterPredicate {
- public:
-  FilterPredicate() {
-    is_not_ = false;
-  }
-  virtual ~FilterPredicate() {}
-  virtual bool ObjectPasses(T* t)=0;
-  virtual vector<T*> FilterVector(const vector<T*>& list) {
-    vector<T*> out;
-    for (int i = 0; i < list.size(); ++i) {
-      if (ObjectPasses(list[i])) {
-        out.push_back(list[i]);
-      }
+  public:
+    FilterPredicate() {
+        is_not_ = false;
     }
-    return out;
-  }
+    virtual ~FilterPredicate() {}
+    virtual bool ObjectPasses(T* t) = 0;
+    virtual vector<T*> FilterVector(const vector<T*>& list) {
+        vector<T*> out;
+        for (int i = 0; i < list.size(); ++i) {
+            if (ObjectPasses(list[i])) {
+                out.push_back(list[i]);
+            }
+        }
+        return out;
+    }
 
-  void SetIsNot(bool n) { is_not_ = n; }
-  bool IsNot() { return is_not_; }
+    void SetIsNot(bool n) {
+        is_not_ = n;
+    }
+    bool IsNot() {
+        return is_not_;
+    }
 
- protected:
-  bool is_not_;
+  protected:
+    bool is_not_;
 };
 
 template <class T> class BooleanFilterPredicate : public FilterPredicate<T> {
- public:
-  BooleanFilterPredicate(bool (*bool_getter_function)(T*)) {
-    bool_getter_function_ = bool_getter_function;
-  }
-
-  virtual ~BooleanFilterPredicate() { }
-
-  bool ObjectPasses(T* t) {
-    if (this->is_not_) {
-      return !bool_getter_function_(t);
+  public:
+    BooleanFilterPredicate(bool (*bool_getter_function)(T*)) {
+        bool_getter_function_ = bool_getter_function;
     }
-    return bool_getter_function_(t);
-  }
 
- private:
-  bool (*bool_getter_function_)(T*);
+    virtual ~BooleanFilterPredicate() { }
+
+    bool ObjectPasses(T* t) {
+        if (this->is_not_) {
+            return !bool_getter_function_(t);
+        }
+        return bool_getter_function_(t);
+    }
+
+  private:
+    bool (*bool_getter_function_)(T*);
 };
 
 // Equality Filter Predicate
 template <class T1, class T2> class EqualityFilterPredicate : public FilterPredicate<T1> {
- public:
-  EqualityFilterPredicate(T2 val, T2 (*value_getter_function)(T1*)) {
-    val_ = val;
-    value_getter_function_ = value_getter_function;
-  }
-  virtual ~EqualityFilterPredicate() {}
-
-  bool ObjectPasses(T1* t) {
-    if (this->is_not_) {
-      return value_getter_function_(t) != val_;
+  public:
+    EqualityFilterPredicate(T2 val, T2 (*value_getter_function)(T1*)) {
+        val_ = val;
+        value_getter_function_ = value_getter_function;
     }
-    return value_getter_function_(t) == val_;
-  }
+    virtual ~EqualityFilterPredicate() {}
 
- private:
-  T2 val_;
-  T2 (*value_getter_function_)(T1*);
+    bool ObjectPasses(T1* t) {
+        if (this->is_not_) {
+            return value_getter_function_(t) != val_;
+        }
+        return value_getter_function_(t) == val_;
+    }
+
+  private:
+    T2 val_;
+    T2 (*value_getter_function_)(T1*);
 };
 
 // Greater Than Filter Predicate.  Takes two types.  The first type is the type
@@ -93,135 +97,135 @@ template <class T1, class T2> class EqualityFilterPredicate : public FilterPredi
 //   GTFilterPredicate<MyObj, int> gtfp(11, MyObj::StaticValueWrapper);
 //   vector<MyObj*> filtered_list = gtfp.FilterVector(list);
 template <class T1, class T2> class GTFilterPredicate : public FilterPredicate<T1> {
- public:
-  GTFilterPredicate(T2 val, T2 (*value_getter_function)(T1*)) {
-    val_ = val;
-    value_getter_function_ = value_getter_function;
-  }
-  virtual ~GTFilterPredicate() {}
-
-  bool ObjectPasses(T1* t) {
-    if (this->is_not_) {
-      return value_getter_function_(t) <= val_;
+  public:
+    GTFilterPredicate(T2 val, T2 (*value_getter_function)(T1*)) {
+        val_ = val;
+        value_getter_function_ = value_getter_function;
     }
-    return value_getter_function_(t) > val_;
-  }
- private:
-  T2 val_;
-  T2 (*value_getter_function_)(T1*);
+    virtual ~GTFilterPredicate() {}
+
+    bool ObjectPasses(T1* t) {
+        if (this->is_not_) {
+            return value_getter_function_(t) <= val_;
+        }
+        return value_getter_function_(t) > val_;
+    }
+  private:
+    T2 val_;
+    T2 (*value_getter_function_)(T1*);
 };
 
 // Less Than Filter Predicate
 template <class T1, class T2> class LTFilterPredicate : public FilterPredicate<T1> {
- public:
-  LTFilterPredicate(T2 val, T2 (*value_getter_function)(T1*)) {
-    val_ = val;
-    value_getter_function_ = value_getter_function;
-  }
-  virtual ~LTFilterPredicate() {}
-
-  bool ObjectPasses(T1* t) {
-    if (this->is_not_) {
-      return value_getter_function_(t) >= val_;
+  public:
+    LTFilterPredicate(T2 val, T2 (*value_getter_function)(T1*)) {
+        val_ = val;
+        value_getter_function_ = value_getter_function;
     }
-    return value_getter_function_(t) < val_;
-  }
- private:
-  T2 val_;
-  T2 (*value_getter_function_)(T1*);
+    virtual ~LTFilterPredicate() {}
+
+    bool ObjectPasses(T1* t) {
+        if (this->is_not_) {
+            return value_getter_function_(t) >= val_;
+        }
+        return value_getter_function_(t) < val_;
+    }
+  private:
+    T2 val_;
+    T2 (*value_getter_function_)(T1*);
 };
 
 // String Contains Filter Predicate
 template <class T> class StringContainsFilterPredicate : public FilterPredicate<T> {
- public:
-  StringContainsFilterPredicate(string needle,
-                                string (*text_getter_function)(T*)) {
-    needle_ = needle;
-    text_getter_function_ = text_getter_function; 
-  }
-  virtual ~StringContainsFilterPredicate() { }
-
-  virtual bool ObjectPasses(T* t) {
-    const string text = text_getter_function_(t);
-    if (this->is_not_) {
-      return (text.find(needle_) == string::npos);
+  public:
+    StringContainsFilterPredicate(string needle,
+                                  string (*text_getter_function)(T*)) {
+        needle_ = needle;
+        text_getter_function_ = text_getter_function;
     }
-    return (text.find(needle_) != string::npos);
-  }
+    virtual ~StringContainsFilterPredicate() { }
 
- private:
-  string needle_;
-  string (*text_getter_function_)(T*);
+    virtual bool ObjectPasses(T* t) {
+        const string text = text_getter_function_(t);
+        if (this->is_not_) {
+            return (text.find(needle_) == string::npos);
+        }
+        return (text.find(needle_) != string::npos);
+    }
+
+  private:
+    string needle_;
+    string (*text_getter_function_)(T*);
 };
 
 // AND Filter Predicate
 template <class T> class AndFilterPredicate : public FilterPredicate<T> {
- public:
-  AndFilterPredicate() {}
-  ~AndFilterPredicate() {
-    for (int i = 0; i < children_.size(); ++i) {
-      delete children_[i];
+  public:
+    AndFilterPredicate() {}
+    ~AndFilterPredicate() {
+        for (int i = 0; i < children_.size(); ++i) {
+            delete children_[i];
+        }
     }
-  }
 
-  virtual bool ObjectPasses(T* t) {
-    for (int i = 0; i < children_.size(); ++i) {
-      if (!children_[i]->ObjectPasses(t)) {
-        return this->is_not_ ? true : false;
-      }
+    virtual bool ObjectPasses(T* t) {
+        for (int i = 0; i < children_.size(); ++i) {
+            if (!children_[i]->ObjectPasses(t)) {
+                return this->is_not_ ? true : false;
+            }
+        }
+        if (this->is_not_)
+            return false;
+        return true;
     }
-    if (this->is_not_)
-      return false;
-    return true;
-  }
 
-  virtual void AddChild(FilterPredicate<T>* f) {
-    children_.push_back(f);
-  }
-
-  virtual void Clear() {
-    for (int i = 0; i < children_.size(); ++i) {
-      delete children_[i];
+    virtual void AddChild(FilterPredicate<T>* f) {
+        children_.push_back(f);
     }
-    children_.clear();
-  }
- private:
-  vector<FilterPredicate<T>*> children_;
+
+    virtual void Clear() {
+        for (int i = 0; i < children_.size(); ++i) {
+            delete children_[i];
+        }
+        children_.clear();
+    }
+  private:
+    vector<FilterPredicate<T>*> children_;
 };
 
 // OR Filter Predicate
 template <class T> class OrFilterPredicate : public FilterPredicate<T> {
- public:
-  OrFilterPredicate() {}
-  ~OrFilterPredicate() {
-    for (int i = 0; i < children_.size(); ++i) {
-      delete children_[i];
+  public:
+    OrFilterPredicate() {}
+    ~OrFilterPredicate() {
+        for (int i = 0; i < children_.size(); ++i) {
+            delete children_[i];
+        }
     }
-  }
 
-  virtual bool ObjectPasses(T* t) {
-    for (int i = 0; i < children_.size(); ++i) {
-      if (children_[i]->ObjectPasses(t)) {
-        return this->is_not_ ? false : true;
-      }
+    virtual bool ObjectPasses(T* t) {
+        for (int i = 0; i < children_.size(); ++i) {
+            if (children_[i]->ObjectPasses(t)) {
+                return this->is_not_ ? false : true;
+            }
+        }
+        if (this->is_not_)
+            return true;
+        return false;
     }
-    if (this->is_not_)
-      return true;
-    return false;
-  }
 
-  virtual void AddChild(FilterPredicate<T>* f) {
-    children_.push_back(f);
-  }
-
-  virtual void Clear() {
-    for (int i = 0; i < children_.size(); ++i) {
-      delete children_[i];
+    virtual void AddChild(FilterPredicate<T>* f) {
+        children_.push_back(f);
     }
-    children_.clear();
-  }
- private:
-  vector<FilterPredicate<T>*> children_;
+
+    virtual void Clear() {
+        for (int i = 0; i < children_.size(); ++i) {
+            delete children_[i];
+        }
+        children_.clear();
+    }
+  private:
+    vector<FilterPredicate<T>*> children_;
 };
 
 #endif

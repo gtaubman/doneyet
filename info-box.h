@@ -11,7 +11,7 @@
 using std::string;
 
 class InfoBox {
-public:
+  public:
     static void ShowMultiLine(
         const string& title,
         const string& default_text,
