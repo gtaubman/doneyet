@@ -294,8 +294,7 @@ void Workspace::MoveTask(Task* t) {
     int amount_moved = 0;
     bool done = false;
     while (!done) {
-        int ch;
-        ch = getch();
+        int ch = getch();
         switch (ch) {
         case KEY_UP:
         case 'k':
@@ -339,8 +338,7 @@ void Workspace::ShowMenuBar(Task* t) {
     bool done = false;
     menubar_->ShowNextMenu();
     while (!done) {
-        int ch;
-        ch = getch();
+        int ch = getch();
         switch (ch) {
         case KEY_DOWN:
         case 'j':

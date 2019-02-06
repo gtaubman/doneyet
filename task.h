@@ -49,15 +49,12 @@ class Task : public ListItem {
     static string TitleWrapper(Task* t) {
         return t->Title();
     }
-    void SetTitle(const string& title);
-
     string Description() {
         return description_;
     }
     static string DescriptionWrapper(Task* t) {
         return t->Description();
     }
-    void SetDescription(const string& description);
     Date CompletionDate() {
         return completion_date_;
     }

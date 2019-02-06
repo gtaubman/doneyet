@@ -17,10 +17,6 @@ void Date::SetToEmptyTime() {
     time_ = 0;
 }
 
-bool Date::IsCloserToNowThan(Date* d) {
-    return time_ > d->Time();
-}
-
 string Date::ToString() {
     // For some reason, ctime and its friends output the strings with a newline in
     // them:

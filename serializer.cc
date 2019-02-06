@@ -37,19 +37,11 @@ Serializer::~Serializer() {
     delete out_;
 }
 
-void Serializer::WriteInt8(int8 i) {
-    WriteUint8(static_cast<uint8>(i));
-}
-
 void Serializer::WriteUint8(uint8 i) {
     assert(out_ != NULL);
     assert(!done_);
     const char* c = (const char*) &i;
     out_->write(c, 1);
-}
-
-void Serializer::WriteInt16(int16 i) {
-    WriteUint16(i);
 }
 
 void Serializer::WriteUint16(uint16 i) {
@@ -75,16 +67,6 @@ void Serializer::WriteUint64(uint64 i) {
     WriteUint32(i);
 }
 
-void Serializer::WriteFloat(float f) {
-    uint32* i = (uint32*) (&f);
-    WriteUint32(*i);
-}
-
-void Serializer::WriteDouble(double d) {
-    uint64* i = (uint64*) (&d);
-    WriteUint64(*i);
-}
-
 void Serializer::WriteString(string str) {
     int length = str.length();
     WriteUint32(length);
@@ -108,19 +90,11 @@ uint8 Serializer::ReadUint8() {
     return i;
 }
 
-int8 Serializer::ReadInt8() {
-    return static_cast<int8>(ReadUint8());
-}
-
 uint16 Serializer::ReadUint16() {
     uint16 i = 0;
     i |= (static_cast<uint16>(ReadUint8()) << 8);
     i |= ReadUint8();
     return i;
-}
-
-int16 Serializer::ReadInt16() {
-    return static_cast<int16>(ReadUint16());
 }
 
 uint32 Serializer::ReadUint32() {
@@ -141,22 +115,6 @@ uint64 Serializer::ReadUint64() {
     return i;
 }
 
-int64 Serializer::ReadInt64() {
-    return static_cast<int64>(ReadUint64());
-}
-
-float Serializer::ReadFloat() {
-    uint32 i = ReadUint32();
-    float* f = (float*) &i;
-    return *f;
-}
-
-double Serializer::ReadDouble() {
-    uint64 i = ReadUint64();
-    double* d = (double*) &i;
-    return *d;
-}
-
 string Serializer::ReadString() {
     // First read the size of the string
     uint32 str_size = ReadUint32();
@@ -165,18 +123,6 @@ string Serializer::ReadString() {
     in_->read(data, str_size);
 
     return string(data);
-}
-
-void Serializer::ChangeToStdBytes(char* data, long unsigned int bytes) {
-#ifndef __BIG_ENDIAN__
-    // We assume that big endian is the "standard" here.  So, if we're running on
-    // a big endian machine this is essentially a no-op.
-    char tmp[bytes];
-    for (int i = 0; i < bytes; ++i) {
-        tmp[i] = data[bytes - i - 1];
-    }
-    memcpy(data, tmp, bytes);
-#endif
 }
 
 void Serializer::CloseAll() {

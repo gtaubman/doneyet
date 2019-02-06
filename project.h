@@ -43,9 +43,6 @@ class Project : public HierarchicalListDataSource {
     void ArchiveCompletedTasks();
 
     int NumFilteredRoots();
-    int NumTotalRoots() {
-        return tasks_.size();
-    }
     Task* FilteredRoot(int r);
 
     // Functions required by HierarchicalListDataSource:

@@ -83,11 +83,10 @@ string ListChooser::GetChoiceWithOptions(const vector<string>& choices,
     post_menu(menu);
     wrefresh(frill_window);
 
-    int ch;
     bool done = false;
     bool hit_escape = false;
     while (!done) {
-        ch = wgetch(frill_window);
+	int ch = wgetch(frill_window);
         switch (ch) {
         case 27:  // escape
             hit_escape = true;

@@ -108,10 +108,9 @@ void InfoBox::ShowMultiLine(const string& title,
     post_form(form);
     wrefresh(form_win);
 
-    int ch;
     bool done = false;
     while (!done) {
-        ch = wgetch(form_win);
+        int ch = wgetch(form_win);
         switch (ch) {
         case 'h':
         case 'q':

@@ -41,9 +41,6 @@ template <class T> class FilterPredicate {
     void SetIsNot(bool n) {
         is_not_ = n;
     }
-    bool IsNot() {
-        return is_not_;
-    }
 
   protected:
     bool is_not_;

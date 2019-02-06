@@ -181,14 +181,6 @@ void Task::MoveDown() {
     }
 }
 
-void Task::SetTitle(const string& title) {
-    title_ = title;
-}
-
-void Task::SetDescription(const string& description) {
-    description_ = description;
-}
-
 void Task::Serialize(Serializer* s) {
     // Initially we store a unique identifier to ourselves that will help with
     // reading in the tasks and assembling the tree.

@@ -67,13 +67,13 @@ Project* Project::NewProjectFromFile(string path) {
     int num_tasks = s.ReadInt32();
 
     // First read in every task in the file.
-    int task_identifier;
-    int parent_pointer;
     map<int, Task*> task_map;
     map<Task*, int> tasks_parents;
     vector<Task*> tasks;
     for (int i = 0; i < num_tasks; ++i) {
         // Read in the values.
+        int task_identifier;
+        int parent_pointer;
         task_identifier = s.ReadUint64();
         Task* t = Task::NewTaskFromSerializer(&s);
         parent_pointer = s.ReadUint64();

@@ -73,11 +73,10 @@ string DialogBox::RunMultiLine(const string& title,
     post_form(form);
     wrefresh(form_win);
 
-    int ch;
     bool done = false;
     bool hit_escape = false;
     while (!done) {
-        ch = wgetch(form_win);
+        int ch = wgetch(form_win);
         switch (ch) {
         case 27:  // escape
             hit_escape = true;

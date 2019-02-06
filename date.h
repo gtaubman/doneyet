@@ -15,7 +15,6 @@ class Date {
 
     void SetToNow();
     void SetToEmptyTime();
-    bool IsCloserToNowThan(Date* d);
     time_t Time() {
         return time_;
     }
