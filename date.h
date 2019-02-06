@@ -1,5 +1,5 @@
-#ifndef __TASK_DATE__
-#define __TASK_DATE__
+#ifndef DATE_H_
+#define DATE_H_
 
 #include <ctime>
 #include <string>
@@ -28,4 +28,4 @@ class Date {
     time_t time_;
 };
 
-#endif
+#endif  // DATE_H_

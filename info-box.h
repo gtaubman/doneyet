@@ -1,5 +1,5 @@
-#ifndef __INFO_BOX__
-#define __INFO_BOX__
+#ifndef INFO_BOX_H_
+#define INFO_BOX_H_
 
 #include <ncurses.h>
 #include <form.h>
@@ -24,4 +24,4 @@ class InfoBox {
         int height);
 };
 
-#endif
+#endif  // INFO_BOX_H_

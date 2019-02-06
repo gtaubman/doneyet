@@ -1,5 +1,5 @@
-#ifndef __NOTE__
-#define __NOTE__
+#ifndef NOTE_H_
+#define NOTE_H_
 
 #include <string>
 #include "date.h"
@@ -20,4 +20,4 @@ class Note {
     string text_;
 };
 
-#endif
+#endif  // NOTE_H_

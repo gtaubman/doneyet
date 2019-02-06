@@ -1,5 +1,5 @@
-#ifndef __FILE_VERSIONS__
-#define __FILE_VERSIONS__
+#ifndef FILE_VERSIONS_H_
+#define FILE_VERSIONS_H_
 
 #include "basic-types.h"
 
@@ -11,4 +11,4 @@ static const uint64 NOTES_VERSION = 1;
 // Keep track of all status changes to a task.
 static const uint64 TASK_STATUS_VERSION = 2;
 
-#endif
+#endif  // FILE_VERSIONS_H_

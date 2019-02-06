@@ -1,5 +1,5 @@
-#ifndef __SERIALIZER__
-#define __SERIALIZER__
+#ifndef SERIALIZER_H_
+#define SERIALIZER_H_
 
 #include <string>
 #include <iostream>
@@ -55,4 +55,4 @@ class Serializer {
     uint64 version_;
 };
 
-#endif
+#endif  // SERIALIZER_H_

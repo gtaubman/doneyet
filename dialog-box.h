@@ -1,5 +1,5 @@
-#ifndef __DIALOG_BOX__
-#define __DIALOG_BOX__
+#ifndef DIALOG_BOX_H_
+#define DIALOG_BOX_H_
 
 #include <ncurses.h>
 #include <form.h>
@@ -28,4 +28,4 @@ class DialogBox {
         const int width);
 };
 
-#endif
+#endif  // DIALOG_BOX_H_

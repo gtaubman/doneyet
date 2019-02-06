@@ -1,5 +1,5 @@
-#ifndef __FILTER_PREDICATE__
-#define __FILTER_PREDICATE__
+#ifndef FILTER_PREDICATE_H_
+#define FILTER_PREDICATE_H_
 
 // This class provides a filter predicate tree to support filtering vectors
 // with arbitrary function calls via the FilterVector() function.  A sample use case:
@@ -225,4 +225,4 @@ template <class T> class OrFilterPredicate : public FilterPredicate<T> {
     vector<FilterPredicate<T>*> children_;
 };
 
-#endif
+#endif  // FILTER_PREDICATE_H_

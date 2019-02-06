@@ -1,5 +1,5 @@
-#ifndef __CURSES_MENU__
-#define __CURSES_MENU__
+#ifndef CURSES_MENU_H_
+#define CURSES_MENU_H_
 
 #include <menu.h>
 #include <string>
@@ -66,4 +66,4 @@ class MenuBar {
     int current_loc_;
 };
 
-#endif
+#endif  // CURSES_MENU_H_

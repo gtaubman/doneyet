@@ -1,5 +1,5 @@
-#ifndef __PROJECT__
-#define __PROJECT__
+#ifndef PROJECT_H_
+#define PROJECT_H_
 
 #include <string>
 #include <vector>
@@ -55,6 +55,7 @@ class Project : public HierarchicalListDataSource {
 
     void RecomputeNodeStatus();
     friend ostream& operator <<(ostream& out, Project& project);
+
   private:
     TaskStatus ComputeStatusForTask(Task* t);
 
@@ -64,4 +65,4 @@ class Project : public HierarchicalListDataSource {
     AndFilterPredicate<Task> base_filter_;
 };
 
-#endif
+#endif  // PROJECT_H_

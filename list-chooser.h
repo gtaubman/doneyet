@@ -1,5 +1,5 @@
-#ifndef __LIST_CHOOSER__
-#define __LIST_CHOOSER__
+#ifndef LIST_CHOOSER_H_
+#define LIST_CHOOSER_H_
 
 #include <vector>
 #include <map>
@@ -28,4 +28,4 @@ class ListChooser {
     static string GetMappedChoice(const map<string, string>& mappedChoices);
 };
 
-#endif
+#endif  // LIST_CHOOSER_H_

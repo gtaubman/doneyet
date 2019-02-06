@@ -1,5 +1,5 @@
-#ifndef __HIERARCHICAL_LIST__
-#define __HIERARCHICAL_LIST__
+#ifndef HIERARCHICAL_LIST_H_
+#define HIERARCHICAL_LIST_H_
 
 #include <ncurses.h>
 #include <string>
@@ -208,4 +208,4 @@ class HierarchicalList {
     bool draw_column_headers_;
 };
 
-#endif
+#endif  // HIERARCHICAL_LIST_H_

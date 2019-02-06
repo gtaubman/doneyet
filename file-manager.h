@@ -1,5 +1,5 @@
-#ifndef __FILE_MANAGER__
-#define __FILE_MANAGER__
+#ifndef FILE_MANAGER_H_
+#define FILE_MANAGER_H_
 
 #include <vector>
 #include <string>
@@ -48,4 +48,4 @@ class FileManager {
     string config_file_path_;
 };
 
-#endif
+#endif  // FILE_MANAGER_H_

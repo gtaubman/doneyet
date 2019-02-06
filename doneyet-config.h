@@ -1,5 +1,5 @@
-#ifndef __DONEYET_CONFIG__
-#define __DONEYET_CONFIG__
+#ifndef DONEYET_CONFIG_H_
+#define DONEYET_CONFIG_H_
 
 // This class is used to wrap the parsing and validation of all configuration
 // options.  These options can be accessed directly, or (in the case of colors,
@@ -87,4 +87,4 @@ class DoneyetConfig {
     short selected_menu_background_color_;
 };
 
-#endif
+#endif  // DONEYET_CONFIG_H_
