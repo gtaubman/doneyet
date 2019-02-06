@@ -36,7 +36,7 @@ class ListItem {
     virtual int NumListChildren() = 0;
     virtual ListItem* ListChild(int i) = 0;
     virtual ListItem* ListParent() = 0;
-    virtual void SetListText(string& text) = 0;
+    virtual void SetListText(const string& text) = 0;
     virtual int ListColor() {
         return 0;
     }

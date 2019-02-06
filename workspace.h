@@ -1,5 +1,5 @@
-#ifndef __WORKSPACE__
-#define __WORKSPACE__
+#ifndef WORKSPACE_H_
+#define WORKSPACE_H_
 
 #include <assert.h>
 #include <vector>
@@ -42,7 +42,7 @@ using std::string;
 
 class StringListItem : public ListItem {
   public:
-    StringListItem(string str) : ListItem() {
+    explicit StringListItem(string str) : ListItem() {
         str_ = str;
     }
 
@@ -60,7 +60,7 @@ class StringListItem : public ListItem {
     virtual ListItem* ListParent() {
         return NULL;
     }
-    virtual void SetListText(string& text) { }
+    virtual void SetListText(const string& text) { }
 
   private:
     string str_;
@@ -151,4 +151,4 @@ class Workspace {
     bool done_;
 };
 
-#endif
+#endif  // WORKSPACE_H_

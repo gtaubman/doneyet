@@ -131,7 +131,7 @@ class Task : public ListItem {
     Task* ListParent() {
         return Parent();
     }
-    void SetListText(string& text) {
+    void SetListText(const string& text) {
         title_ = text;
     }
 
