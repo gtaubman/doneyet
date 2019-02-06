@@ -1,0 +1,6 @@
+This is a formatting standard for this project.
+Checking using cpplint.py from https://github.com/google/styleguide/tree/gh-pages/cpplint
+$ cpplint.py --filter=-whitespace/line_length,-build/include,-legal/copyright,-readability/streams *.cc *.h 
+
+Automatic Formatting using astyle from http://astyle.sourceforge.net/
+$ astyle --project=.astylerc *.cc *.h

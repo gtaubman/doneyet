@@ -15,13 +15,12 @@
 
 static bool do_resize;
 
-Workspace::Workspace() :
-    menubar_(NULL),
-    project_(NULL),
-    list_(NULL),
-    notes_list_(NULL),
-    done_(false) {
-
+Workspace::Workspace()
+    : menubar_(NULL),
+      project_(NULL),
+      list_(NULL),
+      notes_list_(NULL),
+      done_(false) {
     // Initialize the menu bar.
     InitializeMenuBar();
 
@@ -132,7 +131,7 @@ void Workspace::Run() {
         case 'C':  // Show weekly completed tasks
             ShowTasksCompletedLastWeek();
             break;
-        case 'd': { // Deleted selected task
+        case 'd': {  // Deleted selected task
             // If nothing is selected there's nothing to delete.
             if (selected_task == NULL) {
                 break;
@@ -175,7 +174,7 @@ void Workspace::Run() {
         case 'f':  // Filter on string
             RunFind();
             break;
-        case 'h': //Display help
+        case 'h':  // Display help
             DisplayHelp();
             break;
         case KEY_DOWN:
@@ -192,7 +191,7 @@ void Workspace::Run() {
         case 'M':  // Show menu bar
             ShowMenuBar(selected_task);
             break;
-        case 'n': // Add note to selected task
+        case 'n':  // Add note to selected task
             AddNote(selected_task);
             break;
         case 'R':  // Show unfinished tasks
@@ -317,7 +316,7 @@ void Workspace::MoveTask(Task* t) {
                 project_->FilterTasks();
                 --amount_moved;
             }
-            while(amount_moved < 0) {
+            while (amount_moved < 0) {
                 t->MoveUp();
                 project_->FilterTasks();
                 ++amount_moved;
@@ -342,7 +341,7 @@ void Workspace::ShowMenuBar(Task* t) {
     menubar_->ShowNextMenu();
     while (!done) {
         ch = getch();
-        switch(ch) {
+        switch (ch) {
         case KEY_DOWN:
         case 'j':
             menubar_->SendEventToMenu(REQ_DOWN_ITEM);
@@ -388,21 +387,21 @@ void Workspace::AddNote(Task* t) {
 
 void Workspace::ViewNotes(Task* t) {
     if (t != NULL) {
-        if (t->HasNotes() ) {
-            string selected_note = ListChooser::GetMappedChoice(t->MappedNotes()); // use MappedNotes here
-            if (!selected_note.empty() ) { //user selected item (Abort with ESC)
+        if (t->HasNotes()) {
+            string selected_note = ListChooser::GetMappedChoice(t->MappedNotes());  // use MappedNotes here
+            if (!selected_note.empty()) {  // User selected item (Abort with ESC)
                 string answer = DialogBox::RunMultiLine("Please Edit Note",
                                                         selected_note,
                                                         CursesUtils::winwidth() / 3,
                                                         CursesUtils::winheight() / 3);
-                if (answer.empty() ) {
+                if (answer.empty()) {
                     t->DeleteNote(selected_note);
                 } else if (answer.compare(selected_note) != 0) {
-                    //note altered
+                    // note altered
                     t->DeleteNote(selected_note);
                     t->AddNote(answer);
                 }
-                //else nothing changed
+                // else nothing changed
             }
         }
     }
