@@ -1,13 +1,8 @@
 #include <locale.h>
 #include <curses.h>
 #include <menu.h>
-#include <iostream>
-#include <fstream>
 #include "workspace.h"
 #include "doneyet-config.h"
-
-using std::ofstream;
-using std::iostream;
 
 int main(int argc, char** argv) {
     if (argc >= 2) {  // at least one argument or more

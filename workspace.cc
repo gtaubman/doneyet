@@ -435,7 +435,10 @@ void Workspace::HandleMenuInput(const string& input) {
         } else {
             out << (*project_);
             endwin();
-            system("less /tmp/snippet.txt");
+            int ret = system("less /tmp/snippet.txt");
+            if (ret != 0) {
+                beep();
+            }
             list_->Draw();
             doupdate();
         }
