@@ -7,7 +7,7 @@
 
 class Note {
   public:
-    Note(const string& text);
+    explicit Note(const string& text);
     virtual ~Note();
 
     string Text();

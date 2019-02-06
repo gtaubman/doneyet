@@ -1,5 +1,5 @@
-#ifndef __TASK__
-#define __TASK__
+#ifndef TASK_H_
+#define TASK_H_
 
 // TODO: Swap(Task*, Task*) is still a bit flakey if the tasks are in the
 // "wrong" order.  Fix that.
@@ -136,6 +136,7 @@ class Task : public ListItem {
     }
 
     void ToStream(ostream& out, int depth);
+
   private:
     friend class Project;
     void UnSerializeFromSerializer(Serializer* s);
@@ -162,4 +163,4 @@ class Task : public ListItem {
     vector<StatusChange> status_changes_;
 };
 
-#endif
+#endif  // TASK_H_

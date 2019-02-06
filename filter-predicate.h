@@ -51,7 +51,7 @@ template <class T> class FilterPredicate {
 
 template <class T> class BooleanFilterPredicate : public FilterPredicate<T> {
   public:
-    BooleanFilterPredicate(bool (*bool_getter_function)(T*)) {
+    explicit BooleanFilterPredicate(bool (*bool_getter_function)(T*)) {
         bool_getter_function_ = bool_getter_function;
     }
 

@@ -292,9 +292,9 @@ void Workspace::MoveTask(Task* t) {
 
     // Now we get characters until they hit return.
     int amount_moved = 0;
-    int ch;
     bool done = false;
     while (!done) {
+        int ch;
         ch = getch();
         switch (ch) {
         case KEY_UP:
@@ -336,10 +336,10 @@ void Workspace::MoveTask(Task* t) {
 
 void Workspace::ShowMenuBar(Task* t) {
     string menu_answer;
-    int ch;
     bool done = false;
     menubar_->ShowNextMenu();
     while (!done) {
+        int ch;
         ch = getch();
         switch (ch) {
         case KEY_DOWN:
