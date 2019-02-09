@@ -14,10 +14,10 @@ using std::map;
 using std::string;
 
 class ConfigParser {
-  public:
-    // Parse a config file and append to config.
-    static bool ParseConfig(const string& config_file_path,
-                            map<string, map<string, string> >* config);
+ public:
+  // Parse a config file and append to config.
+  static bool ParseConfig(const string& config_file_path,
+                          map<string, map<string, string> >* config);
 };
 
 #endif  // CONFIG_PARSER_H_

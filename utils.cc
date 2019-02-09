@@ -1,123 +1,113 @@
-#include <assert.h>
-#include <string.h>
 #include "utils.h"
+#include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 // Returns the origin and dimensions of an ncurses window.
 window_info CursesUtils::get_window_info(WINDOW* win) {
-    // The struct to return;
-    window_info info;
+  // The struct to return;
+  window_info info;
 
-    // Get the origin of the window
-    int x, y;
-    getyx(win, y, x);
-    info.origin_x = x;
-    info.origin_y = y;
+  // Get the origin of the window
+  int x, y;
+  getyx(win, y, x);
+  info.origin_x = x;
+  info.origin_y = y;
 
-    // Get the size of the window
-    getmaxyx(win, y, x);
-    info.width = x;
-    info.height = y;
+  // Get the size of the window
+  getmaxyx(win, y, x);
+  info.width = x;
+  info.height = y;
 
-    return info;
+  return info;
 }
 
-void CursesUtils::print_in_middle(WINDOW *win,
-                                  int starty,
-                                  int startx,
-                                  int width,
-                                  const char *string,
-                                  chtype color) {
-    int length, x, y;
-    float temp;
+void CursesUtils::print_in_middle(WINDOW* win, int starty, int startx,
+                                  int width, const char* string, chtype color) {
+  int length, x, y;
+  float temp;
 
-    if(win == NULL)
-        win = stdscr;
-    getyx(win, y, x);
-    if(startx != 0)
-        x = startx;
-    if(starty != 0)
-        y = starty;
-    if(width == 0)
-        width = 80;
+  if (win == NULL) win = stdscr;
+  getyx(win, y, x);
+  if (startx != 0) x = startx;
+  if (starty != 0) y = starty;
+  if (width == 0) width = 80;
 
-    length = strlen(string);
-    temp = (width - length) / 2;
-    x = startx + (int)temp;
-    wattron(win, color | A_BOLD);
-    mvwprintw(win, y, x, "%s", string);
-    wattroff(win, color | A_BOLD);
+  length = strlen(string);
+  temp = (width - length) / 2;
+  x = startx + (int)temp;
+  wattron(win, color | A_BOLD);
+  mvwprintw(win, y, x, "%s", string);
+  wattroff(win, color | A_BOLD);
 
-    // Draw a horizontal line
-    wmove(win, 2, 0);
-    waddch(win, ACS_LTEE);
-    for (int i = 1; i < width - 1; ++i) {
-        waddch(win, ACS_HLINE);
-    }
-    waddch(win, ACS_RTEE);
+  // Draw a horizontal line
+  wmove(win, 2, 0);
+  waddch(win, ACS_LTEE);
+  for (int i = 1; i < width - 1; ++i) {
+    waddch(win, ACS_HLINE);
+  }
+  waddch(win, ACS_RTEE);
 }
 
 int CursesUtils::winheight(WINDOW* win) {
-    int w, h;
-    getmaxyx(win, h, w);
-    return h;
+  int w, h;
+  getmaxyx(win, h, w);
+  return h;
 }
 
 int CursesUtils::winwidth(WINDOW* win) {
-    int w, h;
-    getmaxyx(win, h, w);
-    return w;
+  int w, h;
+  getmaxyx(win, h, w);
+  return w;
 }
 
 int StrUtils::chars_to_whitespace(const string& str, int i) {
-    int p = str.find(" ", i);
-    return p == string::npos ? str.size() - i : p - i;
+  int p = str.find(" ", i);
+  return p == string::npos ? str.size() - i : p - i;
 }
 
 void StrUtils::trim_multiple_spaces(string& str) {
-    int space = 0;
-    while (true) {
-        space = str.find_first_of(" ", space);
-        if (space == string::npos) {
-            return;
-        }
-        int next_char = str.find_first_not_of(" ", space);
-        ++space;
-        str.erase(space, next_char - space);
-        ++space;
+  int space = 0;
+  while (true) {
+    space = str.find_first_of(" ", space);
+    if (space == string::npos) {
+      return;
     }
+    int next_char = str.find_first_not_of(" ", space);
+    ++space;
+    str.erase(space, next_char - space);
+    ++space;
+  }
 }
 
-void StrUtils::SplitStringUsing(const string splitter,
-                                const string str,
+void StrUtils::SplitStringUsing(const string splitter, const string str,
                                 vector<string>* vec) {
-    if (!splitter.size()) {
-        return;
-    }
+  if (!splitter.size()) {
+    return;
+  }
 
-    int start_pos = 0;
-    size_t find_pos = string::npos;
-    while ((find_pos = str.find(splitter, start_pos)) != string::npos) {
-        vec->push_back(str.substr(start_pos, find_pos - start_pos));
-        start_pos = find_pos + splitter.size();
-    }
-    if (start_pos != str.size()) {
-        vec->push_back(str.substr(start_pos, find_pos));
-    }
+  int start_pos = 0;
+  size_t find_pos = string::npos;
+  while ((find_pos = str.find(splitter, start_pos)) != string::npos) {
+    vec->push_back(str.substr(start_pos, find_pos - start_pos));
+    start_pos = find_pos + splitter.size();
+  }
+  if (start_pos != str.size()) {
+    vec->push_back(str.substr(start_pos, find_pos));
+  }
 }
 
-int StrUtils::HeightOfTextInWidth(int width,
-                                  const string& text,
+int StrUtils::HeightOfTextInWidth(int width, const string& text,
                                   int non_first_line_indent) {
-    int lines_used = 1;
-    int curx = 0;
-    for (int i = 0; i < text.size(); ++i) {
-        int chars_to_ws = chars_to_whitespace(text, i);
-        if (curx + chars_to_ws > width) {
-            ++lines_used;
-            curx = non_first_line_indent;
-        }
-        ++curx;
+  int lines_used = 1;
+  int curx = 0;
+  for (int i = 0; i < text.size(); ++i) {
+    int chars_to_ws = chars_to_whitespace(text, i);
+    if (curx + chars_to_ws > width) {
+      ++lines_used;
+      curx = non_first_line_indent;
     }
-    return lines_used;
+    ++curx;
+  }
+  return lines_used;
 }

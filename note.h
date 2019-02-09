@@ -6,18 +6,18 @@
 #include "serializer.h"
 
 class Note {
-  public:
-    explicit Note(const string& text);
-    virtual ~Note();
+ public:
+  explicit Note(const string& text);
+  virtual ~Note();
 
-    string Text();
-    string GetText();
-    void Serialize(Serializer* s);
-    void ReadFromSerializer(Serializer* s);
+  string Text();
+  string GetText();
+  void Serialize(Serializer* s);
+  void ReadFromSerializer(Serializer* s);
 
-  private:
-    Date date_;
-    string text_;
+ private:
+  Date date_;
+  string text_;
 };
 
 #endif  // NOTE_H_
