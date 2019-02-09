@@ -1,22 +1,18 @@
 #include "file-manager.h"
+#include <dirent.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <dirent.h>
+#include <sys/types.h>
 #include <iostream>
 
 using std::cout;
 using std::endl;
 
-FileManager::FileManager() {
-  Initialize();
-}
+FileManager::FileManager() { Initialize(); }
 
-FileManager::~FileManager() {
-
-}
+FileManager::~FileManager() {}
 
 bool FileManager::Initialize() {
   // Get the user directory.  Without this we can't find where to save our data.
@@ -40,7 +36,7 @@ bool FileManager::Initialize() {
   // Make (or check for the existence of) the Projects directory.
   project_dir_ = data_dir_ + "Projects";
   if (!CheckDir(project_dir_)) {
-    return false; 
+    return false;
   }
   project_dir_ += "/";
 
@@ -61,7 +57,7 @@ bool FileManager::Initialize() {
 }
 
 bool FileManager::DirectoryContents(const string& dir,
-    vector<string>* contents) {
+                                    vector<string>* contents) {
   contents->clear();
   DIR* dir_ptr = opendir(dir.c_str());
   if (dir_ptr == NULL) {
@@ -70,8 +66,7 @@ bool FileManager::DirectoryContents(const string& dir,
 
   dirent* dr;
   while ((dr = readdir(dir_ptr))) {
-    if (strcmp(dr->d_name, ".") != 0 &&
-        strcmp(dr->d_name, "..") != 0 &&
+    if (strcmp(dr->d_name, ".") != 0 && strcmp(dr->d_name, "..") != 0 &&
         dr->d_name[0] != '.') {
       contents->push_back(dr->d_name);
     }
@@ -87,7 +82,7 @@ int FileManager::NumSavedProjects() {
   return projects.size();
 }
 
-vector<string> FileManager::SavedProjectNames() { 
+vector<string> FileManager::SavedProjectNames() {
   vector<string> projects;
   DirectoryContents(ProjectDir(), &projects);
   return projects;

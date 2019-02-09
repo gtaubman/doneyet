@@ -9,13 +9,9 @@ Note::~Note() {
   // Nothing to delete.
 }
 
-string Note::Text() {
-  return date_.ToString() + ": " + text_;
-}
+string Note::Text() { return date_.ToString() + ": " + text_; }
 
-string Note::GetText() {
-  return text_;
-}
+string Note::GetText() { return text_; }
 
 void Note::Serialize(Serializer* s) {
   s->WriteString(text_);

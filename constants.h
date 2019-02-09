@@ -1,5 +1,5 @@
-#ifndef __CONSTANTS__
-#define __CONSTANTS__
+#ifndef CONSTANTS_H_
+#define CONSTANTS_H_
 
 class Constants {
  public:
@@ -10,4 +10,4 @@ class Constants {
   static const int kNoteViewSize = 40;
 };
 
-#endif
+#endif  // CONSTANTS_H_

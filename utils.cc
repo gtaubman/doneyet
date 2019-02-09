@@ -1,7 +1,7 @@
-#include <assert.h>
-#include <string.h>
 #include "utils.h"
+#include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 // Returns the origin and dimensions of an ncurses window.
 window_info CursesUtils::get_window_info(WINDOW* win) {
@@ -22,27 +22,19 @@ window_info CursesUtils::get_window_info(WINDOW* win) {
   return info;
 }
 
-void CursesUtils::print_in_middle(WINDOW *win,
-    int starty,
-    int startx,
-    int width,
-    const char *string,
-    chtype color) {
+void CursesUtils::print_in_middle(WINDOW* win, int starty, int startx,
+                                  int width, const char* string, chtype color) {
   int length, x, y;
   float temp;
 
-  if(win == NULL)
-    win = stdscr;
+  if (win == NULL) win = stdscr;
   getyx(win, y, x);
-  if(startx != 0)
-    x = startx;
-  if(starty != 0)
-    y = starty;
-  if(width == 0)
-    width = 80;
+  if (startx != 0) x = startx;
+  if (starty != 0) y = starty;
+  if (width == 0) width = 80;
 
   length = strlen(string);
-  temp = (width - length)/ 2;
+  temp = (width - length) / 2;
   x = startx + (int)temp;
   wattron(win, color | A_BOLD);
   mvwprintw(win, y, x, "%s", string);
@@ -58,13 +50,13 @@ void CursesUtils::print_in_middle(WINDOW *win,
 }
 
 int CursesUtils::winheight(WINDOW* win) {
-  int w,h;
+  int w, h;
   getmaxyx(win, h, w);
   return h;
 }
 
 int CursesUtils::winwidth(WINDOW* win) {
-  int w,h;
+  int w, h;
   getmaxyx(win, h, w);
   return w;
 }
@@ -88,9 +80,8 @@ void StrUtils::trim_multiple_spaces(string& str) {
   }
 }
 
-void StrUtils::SplitStringUsing(const string splitter,
-    const string str,
-    vector<string>* vec) {
+void StrUtils::SplitStringUsing(const string splitter, const string str,
+                                vector<string>* vec) {
   if (!splitter.size()) {
     return;
   }
@@ -106,8 +97,7 @@ void StrUtils::SplitStringUsing(const string splitter,
   }
 }
 
-int StrUtils::HeightOfTextInWidth(int width,
-                                  const string& text,
+int StrUtils::HeightOfTextInWidth(int width, const string& text,
                                   int non_first_line_indent) {
   int lines_used = 1;
   int curx = 0;

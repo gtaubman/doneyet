@@ -1,5 +1,5 @@
-#ifndef __DONEYET_CONFIG__
-#define __DONEYET_CONFIG__
+#ifndef DONEYET_CONFIG_H_
+#define DONEYET_CONFIG_H_
 
 // This class is used to wrap the parsing and validation of all configuration
 // options.  These options can be accessed directly, or (in the case of colors,
@@ -53,17 +53,15 @@ class DoneyetConfig {
   short SelectedMenuBackgroundColor();
 
  private:
-  DoneyetConfig() { }
+  DoneyetConfig() {}
 
   map<string, map<string, string> > config_;
 
   // Attempts to convert config[color_name] into a color, and set var_to_set to
   // that color.  If this fails it prints an error and return false.
-  bool ParseColor(map<string, string>& config,
-                  const string& color_name,
+  bool ParseColor(map<string, string>& config, const string& color_name,
                   short* var_to_set);
-  bool ParseBool(map<string, string>& config,
-                 const string& to_parse,
+  bool ParseBool(map<string, string>& config, const string& to_parse,
                  bool* value);
 
   bool ParseGeneralOptions();
@@ -87,4 +85,4 @@ class DoneyetConfig {
   short selected_menu_background_color_;
 };
 
-#endif
+#endif  // DONEYET_CONFIG_H_

@@ -1,5 +1,5 @@
-#ifndef __CURSES_MENU__
-#define __CURSES_MENU__
+#ifndef CURSES_MENU_H_
+#define CURSES_MENU_H_
 
 #include <menu.h>
 #include <string>
@@ -18,7 +18,7 @@ class Menu {
   void Display();
   string SelectedItem();
   void StopDisplaying();
-  
+
   vector<string> Items() { return item_strings_; }
   int Location() { return xloc_; }
   string Name() { return name_; }
@@ -58,4 +58,4 @@ class MenuBar {
   int current_loc_;
 };
 
-#endif
+#endif  // CURSES_MENU_H_

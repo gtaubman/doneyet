@@ -9,7 +9,8 @@ using namespace std;
 static int errors = 0;
 
 void ERROR(const string& error) {
-  cout << error << endl;;
+  cout << error << endl;
+  ;
   ++errors;
 }
 
@@ -108,7 +109,9 @@ void TestSplitStringUsing() {
 
 void TestHeightOfTextInWidth() {
   int width = 107;
-  string text = "- Figure out when to select the newly created task and when not to. Or possibly just make this a preference.";
+  string text =
+      "- Figure out when to select the newly created task and when not to. Or "
+      "possibly just make this a preference.";
   int height = StrUtils::HeightOfTextInWidth(width, text, 2);
   if (height != 2) {
     ERROR("Computing heights of text is broken.");

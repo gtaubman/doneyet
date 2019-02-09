@@ -9,12 +9,9 @@ Menu::Menu(const string& name, int xloc) {
   displaying_ = false;
 }
 
-Menu::~Menu() {
-}
+Menu::~Menu() {}
 
-void Menu::AddMenuItem(const string& item) {
-  item_strings_.push_back(item);
-}
+void Menu::AddMenuItem(const string& item) { item_strings_.push_back(item); }
 
 void Menu::Display() {
   vector<string> choices = item_strings_;
@@ -22,7 +19,7 @@ void Menu::Display() {
 
   if (!displaying_) {
     // Create the menu and its items:
-    items_ = (ITEM**) malloc((1 + choices.size()) * sizeof(ITEM*));
+    items_ = (ITEM**)malloc((1 + choices.size()) * sizeof(ITEM*));
     items_[choices.size()] = NULL;
     for (int i = 0; i < choices.size(); ++i) {
       items_[i] = new_item(choices[i].c_str(), "");
@@ -96,7 +93,7 @@ MenuBar::MenuBar() {
 
 MenuBar::~MenuBar() {
   for (int i = 0; i < menus_.size(); ++i) {
-    delete(menus_[i]);
+    delete (menus_[i]);
   }
 }
 
@@ -136,9 +133,7 @@ void MenuBar::ShowCurrentMenu() {
   menus_[current_menu_]->Display();
 }
 
-void MenuBar::HideCurrentMenu() {
-  menus_[current_menu_]->StopDisplaying();
-}
+void MenuBar::HideCurrentMenu() { menus_[current_menu_]->StopDisplaying(); }
 
 void MenuBar::SendEventToMenu(int c) {
   menu_driver(menus_[current_menu_]->MenuObject(), c);
@@ -153,8 +148,7 @@ void MenuBar::ShowNextMenu() {
     return;
   }
 
-  if (current_menu_ >= 0)
-    menus_[current_menu_]->StopDisplaying();
+  if (current_menu_ >= 0) menus_[current_menu_]->StopDisplaying();
   ++current_menu_;
   DrawMenuBar();
   menus_[current_menu_]->Display();
@@ -173,6 +167,4 @@ void MenuBar::ShowPreviousMenu() {
   menus_[current_menu_]->Display();
 }
 
-string MenuBar::SelectedItem() {
-  return menus_[current_menu_]->SelectedItem();
-}
+string MenuBar::SelectedItem() { return menus_[current_menu_]->SelectedItem(); }

@@ -1,15 +1,14 @@
-#include <assert.h>
 #include "serializer.h"
+#include <assert.h>
 #include <string.h>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 using std::cout;
 using std::endl;
 
-Serializer::Serializer(const string& inpath,
-                       const string& outpath)
-  : out_(NULL), in_(NULL), okay_(true), done_(false) {
+Serializer::Serializer(const string& inpath, const string& outpath)
+    : out_(NULL), in_(NULL), okay_(true), done_(false) {
   if (!inpath.empty()) {
     in_ = new std::ifstream(inpath.c_str(), std::ios::in | std::ios::binary);
     if (in_->fail()) {
@@ -37,19 +36,11 @@ Serializer::~Serializer() {
   delete out_;
 }
 
-void Serializer::WriteInt8(int8 i) {
-  WriteUint8(static_cast<uint8>(i));
-}
-
 void Serializer::WriteUint8(uint8 i) {
   assert(out_ != NULL);
   assert(!done_);
-  const char* c = (const char*) &i;
+  const char* c = (const char*)&i;
   out_->write(c, 1);
-}
-
-void Serializer::WriteInt16(int16 i) {
-  WriteUint16(i);
 }
 
 void Serializer::WriteUint16(uint16 i) {
@@ -57,32 +48,18 @@ void Serializer::WriteUint16(uint16 i) {
   WriteUint8(i);
 }
 
-void Serializer::WriteInt32(int i) {
-  WriteUint32(static_cast<uint32>(i));
-}
+void Serializer::WriteInt32(int i) { WriteUint32(static_cast<uint32>(i)); }
 
 void Serializer::WriteUint32(uint32 ui) {
   WriteUint16(ui >> 16);
   WriteUint16(ui);
 }
 
-void Serializer::WriteInt64(int64 i) {
-  WriteUint64(i);
-}
+void Serializer::WriteInt64(int64 i) { WriteUint64(i); }
 
 void Serializer::WriteUint64(uint64 i) {
   WriteUint32(i >> 32);
   WriteUint32(i);
-}
-
-void Serializer::WriteFloat(float f) {
-  uint32* i = (uint32*) (&f);
-  WriteUint32(*i);
-}
-
-void Serializer::WriteDouble(double d) {
-  uint64* i = (uint64*) (&d);
-  WriteUint64(*i);
 }
 
 void Serializer::WriteString(string str) {
@@ -98,7 +75,7 @@ uint8 Serializer::ReadUint8() {
   assert(in_ != NULL);
 
   uint8 i = 0;
-  char* c = (char*) &i;
+  char* c = (char*)&i;
   in_->read(c, 1);
 
   if (in_->eof()) {
@@ -108,19 +85,11 @@ uint8 Serializer::ReadUint8() {
   return i;
 }
 
-int8 Serializer::ReadInt8() {
-  return static_cast<int8>(ReadUint8());
-}
-
 uint16 Serializer::ReadUint16() {
   uint16 i = 0;
   i |= (static_cast<uint16>(ReadUint8()) << 8);
   i |= ReadUint8();
   return i;
-}
-
-int16 Serializer::ReadInt16() {
-  return static_cast<int16>(ReadUint16());
 }
 
 uint32 Serializer::ReadUint32() {
@@ -130,31 +99,13 @@ uint32 Serializer::ReadUint32() {
   return i;
 }
 
-int32 Serializer::ReadInt32() {
-  return static_cast<int32>(ReadUint32());
-}
+int32 Serializer::ReadInt32() { return static_cast<int32>(ReadUint32()); }
 
 uint64 Serializer::ReadUint64() {
   uint64 i = 0;
   i |= (static_cast<uint64>(ReadUint32()) << 32);
   i |= ReadUint32();
   return i;
-}
-
-int64 Serializer::ReadInt64() {
-  return static_cast<int64>(ReadUint64());
-}
-
-float Serializer::ReadFloat() {
-  uint32 i = ReadUint32();
-  float* f = (float*) &i;
-  return *f;
-}
-
-double Serializer::ReadDouble() {
-  uint64 i = ReadUint64();
-  double* d = (double*) &i;
-  return *d;
 }
 
 string Serializer::ReadString() {
@@ -165,18 +116,6 @@ string Serializer::ReadString() {
   in_->read(data, str_size);
 
   return string(data);
-}
-
-void Serializer::ChangeToStdBytes(char* data, long unsigned int bytes) {
-  #ifndef __BIG_ENDIAN__
-  // We assume that big endian is the "standard" here.  So, if we're running on
-  // a big endian machine this is essentially a no-op.
-  char tmp[bytes];
-  for (int i = 0; i < bytes; ++i) {
-    tmp[i] = data[bytes - i - 1];
-  }
-  memcpy(data, tmp, bytes);
-  #endif
 }
 
 void Serializer::CloseAll() {

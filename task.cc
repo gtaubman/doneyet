@@ -1,14 +1,13 @@
-#include <algorithm>
-#include <assert.h>
-#include <string>
 #include "task.h"
-#include "utils.h"
+#include <assert.h>
+#include <algorithm>
+#include <string>
 #include "file-versions.h"
+#include "utils.h"
 
 using std::string;
 
-Task::Task(const string& title,
-           const string& description) 
+Task::Task(const string& title, const string& description)
     : parent_(NULL),
       status_(CREATED),
       title_(title),
@@ -32,27 +31,23 @@ Task* Task::NewTaskFromSerializer(Serializer* s) {
   return t;
 }
 
-void Task::AddNote(const string& note) {
-  notes_.push_back(new Note(note));
-}
+void Task::AddNote(const string& note) { notes_.push_back(new Note(note)); }
 
-bool Task::HasNotes() {
-  return !notes_.empty();
-}
+bool Task::HasNotes() { return !notes_.empty(); }
 
 void Task::DeleteNote(const string& note) {
-	std::vector<Note*>::iterator delete_it;
-	bool found = false;
-	
-	for (vector<Note*>::iterator it = notes_.begin(); it != notes_.end(); it++) {
-		    if ((*it)->GetText().compare(note) == 0) {
-				found=true;
-				delete_it = it;
-			}
-	}
-	if (found) {
-				notes_.erase(delete_it);
-	}
+  std::vector<Note*>::iterator delete_it;
+  bool found = false;
+
+  for (vector<Note*>::iterator it = notes_.begin(); it != notes_.end(); it++) {
+    if ((*it)->GetText().compare(note) == 0) {
+      found = true;
+      delete_it = it;
+    }
+  }
+  if (found) {
+    notes_.erase(delete_it);
+  }
 }
 
 vector<string> Task::Notes() {
@@ -62,11 +57,11 @@ vector<string> Task::Notes() {
   }
   return notes;
 }
-	
+
 map<string, string> Task::MappedNotes() {
   map<string, string> mappedNotes;
   for (int i = 0; i < notes_.size(); ++i) {
-	mappedNotes[notes_[i]->Text()]=notes_[i]->GetText();
+    mappedNotes[notes_[i]->Text()] = notes_[i]->GetText();
   }
   return mappedNotes;
 }
@@ -125,7 +120,7 @@ void Task::SwapTasks(Task* a, Task* b) {
   if (a == b) {
     return;
   }
-  
+
   // Find the indices of a and b.
   vector<Task*>::iterator ait = find(subtasks_.begin(), subtasks_.end(), a);
   vector<Task*>::iterator bit = find(subtasks_.begin(), subtasks_.end(), b);
@@ -148,9 +143,8 @@ void Task::MoveTaskUp(Task* t) {
   }
 
   // Find the task in our filtered list:
-  vector<Task*>::iterator it = find(filtered_tasks_.begin(),
-                                    filtered_tasks_.end(),
-                                    t);
+  vector<Task*>::iterator it =
+      find(filtered_tasks_.begin(), filtered_tasks_.end(), t);
   --it;
   SwapTasks(*it, t);
 }
@@ -162,9 +156,8 @@ void Task::MoveTaskDown(Task* t) {
   }
 
   // Find the task in our filtered list:
-  vector<Task*>::iterator it = find(filtered_tasks_.begin(),
-                                    filtered_tasks_.end(),
-                                    t);
+  vector<Task*>::iterator it =
+      find(filtered_tasks_.begin(), filtered_tasks_.end(), t);
   ++it;
   SwapTasks(t, *it);
 }
@@ -179,14 +172,6 @@ void Task::MoveDown() {
   if (Parent()) {
     Parent()->MoveTaskDown(this);
   }
-}
-
-void Task::SetTitle(const string& title) {
-  title_ = title;
-}
-
-void Task::SetDescription(const string& description) {
-  description_ = description;
 }
 
 void Task::Serialize(Serializer* s) {
@@ -306,13 +291,9 @@ int Task::ListColor() {
   return c;
 }
 
-int Task::NumFilteredChildren() {
-  return filtered_tasks_.size();
-}
+int Task::NumFilteredChildren() { return filtered_tasks_.size(); }
 
-Task* Task::FilteredChild(int c) {
-  return filtered_tasks_[c];
-}
+Task* Task::FilteredChild(int c) { return filtered_tasks_[c]; }
 
 void Task::ToStream(ostream& out, int depth) {
   const string marker = "- ";

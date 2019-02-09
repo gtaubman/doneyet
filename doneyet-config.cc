@@ -1,8 +1,8 @@
-#include <cctype>
-#include <ncurses.h>
 #include "doneyet-config.h"
-#include "file-manager.h"
+#include <ncurses.h>
+#include <cctype>
 #include "config-parser.h"
+#include "file-manager.h"
 
 static const short kColorError = -2;
 
@@ -55,47 +55,28 @@ bool DoneyetConfig::Parse() {
   menus[kSelectedMenuItemBackgroundColor] = "blue";
 
   if (file_manager->ConfigFilePath().length() &&
-      !ConfigParser::ParseConfig(file_manager->ConfigFilePath(),
-                                 &config_)) {
+      !ConfigParser::ParseConfig(file_manager->ConfigFilePath(), &config_)) {
     return false;
   }
 
-  return ParseGeneralOptions() &&
-      ParseTaskOptions() &&
-      ParseMenuOptions();
+  return ParseGeneralOptions() && ParseTaskOptions() && ParseMenuOptions();
 }
 
-short DoneyetConfig::ForegroundColor() {
-  return foreground_color_;
-}
+short DoneyetConfig::ForegroundColor() { return foreground_color_; }
 
-short DoneyetConfig::BackgroundColor() {
-  return background_color_;
-}
+short DoneyetConfig::BackgroundColor() { return background_color_; }
 
-short DoneyetConfig::HeaderTextColor() {
-  return header_text_color_;
-}
+short DoneyetConfig::HeaderTextColor() { return header_text_color_; }
 
-short DoneyetConfig::UnstartedTaskColor() {
-  return unstarted_task_color_;
-}
+short DoneyetConfig::UnstartedTaskColor() { return unstarted_task_color_; }
 
-short DoneyetConfig::InProgressTaskColor() {
-  return in_progress_task_color_;
-}
+short DoneyetConfig::InProgressTaskColor() { return in_progress_task_color_; }
 
-short DoneyetConfig::PausedTaskColor() {
-  return paused_task_color_;
-}
+short DoneyetConfig::PausedTaskColor() { return paused_task_color_; }
 
-short DoneyetConfig::FinishedTaskColor() {
-  return finished_task_color_;
-}
+short DoneyetConfig::FinishedTaskColor() { return finished_task_color_; }
 
-bool DoneyetConfig::PromptOnDeleteTask() {
-  return prompt_on_delete_task_;
-}
+bool DoneyetConfig::PromptOnDeleteTask() { return prompt_on_delete_task_; }
 
 short DoneyetConfig::MenubarForegroundColor() {
   return menubar_foreground_color_;
@@ -151,14 +132,11 @@ static short ColorForString(string s) {
 }
 
 bool DoneyetConfig::ParseColor(map<string, string>& config,
-                               const string& color_name,
-                               short* var_to_set) {
+                               const string& color_name, short* var_to_set) {
   *var_to_set = ColorForString(config[color_name]);
   if (*var_to_set == kColorError) {
-    fprintf(stderr,
-            "'%s' is not a valid color for config option %s.\n",
-            config[color_name].c_str(),
-            color_name.c_str());
+    fprintf(stderr, "'%s' is not a valid color for config option %s.\n",
+            config[color_name].c_str(), color_name.c_str());
     return false;
   }
 
@@ -166,8 +144,7 @@ bool DoneyetConfig::ParseColor(map<string, string>& config,
 }
 
 bool DoneyetConfig::ParseBool(map<string, string>& config,
-                              const string& to_parse,
-                              bool* value) {
+                              const string& to_parse, bool* value) {
   const string& param = config[to_parse];
   if (param == "true" || param == "yes") {
     *value = true;
@@ -186,18 +163,18 @@ bool DoneyetConfig::ParseGeneralOptions() {
   map<string, string>& general = config_[kGeneralSection];
 
   return ParseColor(general, kForegroundColor, &foreground_color_) &&
-      ParseColor(general, kBackgroundColor, &background_color_) &&
-      ParseColor(general, kHeaderTextColor, &header_text_color_);
+         ParseColor(general, kBackgroundColor, &background_color_) &&
+         ParseColor(general, kHeaderTextColor, &header_text_color_);
 }
 
 bool DoneyetConfig::ParseTaskOptions() {
   map<string, string>& task = config_[kTasksSection];
 
   return ParseColor(task, kUnstartedTaskColor, &unstarted_task_color_) &&
-      ParseColor(task, kInProgressColor, &in_progress_task_color_) &&
-      ParseColor(task, kPausedColor, &paused_task_color_) &&
-      ParseColor(task, kFinishedColor, &finished_task_color_) &&
-      ParseBool(task, kPromptOnDeleteTask, &prompt_on_delete_task_);
+         ParseColor(task, kInProgressColor, &in_progress_task_color_) &&
+         ParseColor(task, kPausedColor, &paused_task_color_) &&
+         ParseColor(task, kFinishedColor, &finished_task_color_) &&
+         ParseBool(task, kPromptOnDeleteTask, &prompt_on_delete_task_);
 }
 
 bool DoneyetConfig::ParseMenuOptions() {
@@ -205,14 +182,14 @@ bool DoneyetConfig::ParseMenuOptions() {
 
   return ParseColor(menu, kMenubarForegroundColor,
                     &menubar_foreground_color_) &&
-      ParseColor(menu, kMenubarBackgroundColor,
-                 &menubar_background_color_) &&
-      ParseColor(menu, kUnselectedMenuItemForegroundColor,
+         ParseColor(menu, kMenubarBackgroundColor,
+                    &menubar_background_color_) &&
+         ParseColor(menu, kUnselectedMenuItemForegroundColor,
                     &unselected_menu_foreground_color_) &&
-      ParseColor(menu, kUnselectedMenuItemBackgroundColor,
-                 &unselected_menu_background_color_) &&
-      ParseColor(menu, kSelectedMenuItemForegroundColor,
-                 &selected_menu_foreground_color_) &&
-      ParseColor(menu, kSelectedMenuItemBackgroundColor,
-                 &selected_menu_background_color_);
+         ParseColor(menu, kUnselectedMenuItemBackgroundColor,
+                    &unselected_menu_background_color_) &&
+         ParseColor(menu, kSelectedMenuItemForegroundColor,
+                    &selected_menu_foreground_color_) &&
+         ParseColor(menu, kSelectedMenuItemBackgroundColor,
+                    &selected_menu_background_color_);
 }

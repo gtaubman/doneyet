@@ -2,19 +2,15 @@
 #include <stdlib.h>
 
 string ListChooser::GetChoiceWithOptions(const vector<string>& choices,
-                                         const string& message,
-                                         int fg_color,
-                                         int bg_color,
-                                         int xloc,
-                                         int yloc,
-                                         bool border,
-                                         string mark) {
+                                         const string& message, int fg_color,
+                                         int bg_color, int xloc, int yloc,
+                                         bool border, string mark) {
   if (!choices.size()) {
     return "";
   }
 
   // Create the menu and its items:
-  ITEM** items = (ITEM**) malloc((1 + choices.size()) * sizeof(ITEM*));
+  ITEM** items = (ITEM**)malloc((1 + choices.size()) * sizeof(ITEM*));
   items[choices.size()] = NULL;
   for (int i = 0; i < choices.size(); ++i) {
     items[i] = new_item(choices[i].c_str(), "");
@@ -42,7 +38,8 @@ string ListChooser::GetChoiceWithOptions(const vector<string>& choices,
     spacing += 2;
   }
 
-  // If there's a message to be displayed, then add an extra line to allow for it.
+  // If there's a message to be displayed, then add an extra line to allow for
+  // it.
   int message_padding = message.size() ? 1 : 0;
 
   if (xloc == -1 && yloc == -1) {
@@ -52,12 +49,10 @@ string ListChooser::GetChoiceWithOptions(const vector<string>& choices,
   }
 
   WINDOW* frill_window = newwin(rows + spacing + message_padding,
-                                cols + spacing + message.size(),
-                                yloc,
-                                xloc);
+                                cols + spacing + message.size(), yloc, xloc);
   keypad(frill_window, true);
-  WINDOW* text_window = derwin(frill_window, rows,
-                               cols, border + message_padding, border);
+  WINDOW* text_window =
+      derwin(frill_window, rows, cols, border + message_padding, border);
   set_menu_win(menu, frill_window);
   set_menu_sub(menu, text_window);
 
@@ -83,11 +78,10 @@ string ListChooser::GetChoiceWithOptions(const vector<string>& choices,
   post_menu(menu);
   wrefresh(frill_window);
 
-  int ch;
   bool done = false;
   bool hit_escape = false;
   while (!done) {
-    ch = wgetch(frill_window);
+    int ch = wgetch(frill_window);
     switch (ch) {
       case 27:  // escape
         hit_escape = true;
@@ -135,44 +129,30 @@ bool ListChooser::GetYesNo(const string& message, bool default_yes) {
     choices.push_back("Yes");
   }
 
-  return ListChooser::GetChoiceWithOptions(choices,
-                                           message,
-                                           COLOR_PAIR(0) | A_REVERSE,
-                                           COLOR_PAIR(0),
-                                           -1,
-                                           -1,
-                                           true,
-                                           ">") == "Yes";
+  return ListChooser::GetChoiceWithOptions(
+             choices, message, COLOR_PAIR(0) | A_REVERSE, COLOR_PAIR(0), -1, -1,
+             true, ">") == "Yes";
 }
 
 string ListChooser::GetChoice(const vector<string>& choices) {
-  return GetChoiceWithOptions(choices,
-                              "",
-                              COLOR_PAIR(0) | A_REVERSE,
-                              COLOR_PAIR(0),
-                              -1,
-                              -1,
-                              true,
-                              " ");
+  return GetChoiceWithOptions(choices, "", COLOR_PAIR(0) | A_REVERSE,
+                              COLOR_PAIR(0), -1, -1, true, " ");
 }
 
-string ListChooser::GetMappedChoice(const map<string,string>& mappedChoices) {
-	vector<string> displayedChoices;
-	for (map<string,string>::const_iterator it=mappedChoices.begin(); it!=mappedChoices.end(); ++it) {
-		    displayedChoices.push_back(it->first);
-	}
-  string displayedSelection=GetChoiceWithOptions(displayedChoices,
-                              "",
-                              COLOR_PAIR(0) | A_REVERSE,
-                              COLOR_PAIR(0),
-                              -1,
-                              -1,
-                              true,
-                              " ");
-  string answer="";
-  if(!displayedSelection.empty()){
-    map<string, string>::const_iterator item=mappedChoices.find(displayedSelection);
-    answer=item->second;
-	}
+string ListChooser::GetMappedChoice(const map<string, string>& mappedChoices) {
+  vector<string> displayedChoices;
+  for (map<string, string>::const_iterator it = mappedChoices.begin();
+       it != mappedChoices.end(); ++it) {
+    displayedChoices.push_back(it->first);
+  }
+  string displayedSelection =
+      GetChoiceWithOptions(displayedChoices, "", COLOR_PAIR(0) | A_REVERSE,
+                           COLOR_PAIR(0), -1, -1, true, " ");
+  string answer = "";
+  if (!displayedSelection.empty()) {
+    map<string, string>::const_iterator item =
+        mappedChoices.find(displayedSelection);
+    answer = item->second;
+  }
   return answer;
 }

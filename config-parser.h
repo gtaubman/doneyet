@@ -1,5 +1,5 @@
-#ifndef __CONFIG_PARSER__
-#define __CONFIG_PARSER__
+#ifndef CONFIG_PARSER_H_
+#define CONFIG_PARSER_H_
 
 // A super simple configuration file parser.  It allows defining sections with
 // [SECTION_NAME] on its own line.  Section values are of the following format:
@@ -20,4 +20,4 @@ class ConfigParser {
                           map<string, map<string, string> >* config);
 };
 
-#endif
+#endif  // CONFIG_PARSER_H_
