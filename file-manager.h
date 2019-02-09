@@ -1,11 +1,11 @@
-#ifndef __FILE_MANAGER__
-#define __FILE_MANAGER__
+#ifndef FILE_MANAGER_H_
+#define FILE_MANAGER_H_
 
-#include <vector>
 #include <string>
+#include <vector>
 
-using std::vector;
 using std::string;
+using std::vector;
 
 class FileManager;
 
@@ -44,4 +44,4 @@ class FileManager {
   string config_file_path_;
 };
 
-#endif
+#endif  // FILE_MANAGER_H_

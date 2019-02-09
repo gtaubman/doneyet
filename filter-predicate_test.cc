@@ -1,32 +1,27 @@
-#include <vector>
+#include "filter-predicate.h"
 #include <iostream>
 #include <string>
-#include "filter-predicate.h"
+#include <vector>
 
 using namespace std;
 
 static int errors = 0;
 
 void ERROR(const string& error) {
-  cout << "ERROR: " <<  error << endl;;
+  cout << "ERROR: " << error << endl;
+  ;
   ++errors;
 }
 
 class TestObj {
  public:
-  TestObj(int val) {
-    val_ = val;
-  }
+  TestObj(int val) { val_ = val; }
 
   int Val() { return val_; }
-  static int ValWrapper(TestObj* t) {
-    return t->Val();
-  }
+  static int ValWrapper(TestObj* t) { return t->Val(); }
 
   bool Alive() { return val_; }
-  static bool AliveWrapper(TestObj* t) {
-    return t->Alive();
-  }
+  static bool AliveWrapper(TestObj* t) { return t->Alive(); }
 
   void SetStr(string str) { str_ = str; }
   string Str() { return str_; }
@@ -134,9 +129,9 @@ bool TestORFilterPredicate() {
   int val1 = 11;
   int val2 = 4;
   GTFilterPredicate<TestObj, int>* gtfp =
-    new GTFilterPredicate<TestObj, int>(val1, TestObj::ValWrapper);
+      new GTFilterPredicate<TestObj, int>(val1, TestObj::ValWrapper);
   LTFilterPredicate<TestObj, int>* ltfp =
-    new LTFilterPredicate<TestObj, int>(val2, TestObj::ValWrapper);
+      new LTFilterPredicate<TestObj, int>(val2, TestObj::ValWrapper);
 
   or_filter.AddChild(gtfp);
   or_filter.AddChild(ltfp);
@@ -173,9 +168,9 @@ bool TestANDFilterPredicate() {
   int val1 = 11;
   int val2 = 4;
   GTFilterPredicate<TestObj, int>* gtfp =
-    new GTFilterPredicate<TestObj, int>(val1, TestObj::ValWrapper);
+      new GTFilterPredicate<TestObj, int>(val1, TestObj::ValWrapper);
   GTFilterPredicate<TestObj, int>* gtfp2 =
-    new GTFilterPredicate<TestObj, int>(val2, TestObj::ValWrapper);
+      new GTFilterPredicate<TestObj, int>(val2, TestObj::ValWrapper);
 
   and_filter.AddChild(gtfp2);
   and_filter.AddChild(gtfp);
@@ -211,7 +206,8 @@ bool TestStringContainsFilterPredicate() {
   test_objects[11]->SetStr("doesn't have the good word.");
 
   // Make the filter
-  StringContainsFilterPredicate<TestObj> filter(string("gabe"), TestObj::StrWrapper);
+  StringContainsFilterPredicate<TestObj> filter(string("gabe"),
+                                                TestObj::StrWrapper);
   vector<TestObj*> filtered = filter.FilterVector(test_objects);
   for (int i = 0; i < filtered.size(); ++i) {
     string str = filtered[i]->Str();
@@ -226,16 +222,13 @@ bool TestStringContainsFilterPredicate() {
 }
 
 bool RunTests() {
-  return TestBooleanFilterPredicate() &&
-    TestGTFilterPredicate() &&
-    TestLTFilterPredicate() &&
-    TestORFilterPredicate() &&
-    TestANDFilterPredicate() &&
-    TestStringContainsFilterPredicate();
+  return TestBooleanFilterPredicate() && TestGTFilterPredicate() &&
+         TestLTFilterPredicate() && TestORFilterPredicate() &&
+         TestANDFilterPredicate() && TestStringContainsFilterPredicate();
 }
 
 int main() {
   bool success = RunTests();
-  cout  << errors << " errors." << endl;
+  cout << errors << " errors." << endl;
   return success;
 }

@@ -1,5 +1,5 @@
-#ifndef __HIERARCHICAL_LIST__
-#define __HIERARCHICAL_LIST__
+#ifndef HIERARCHICAL_LIST_H_
+#define HIERARCHICAL_LIST_H_
 
 #include <ncurses.h>
 #include <string>
@@ -22,10 +22,9 @@ using std::vector;
 
 struct ColumnSpec {
   ColumnSpec(const string& s, bool is_percent)
-    : spec(s),
-      in_percents(is_percent) { }
- string spec;
- bool in_percents;
+      : spec(s), in_percents(is_percent) {}
+  string spec;
+  bool in_percents;
 };
 
 class ListItem {
@@ -36,7 +35,7 @@ class ListItem {
   virtual int NumListChildren() = 0;
   virtual ListItem* ListChild(int i) = 0;
   virtual ListItem* ListParent() = 0;
-  virtual void SetListText(string& text) = 0;
+  virtual void SetListText(const string& text) = 0;
   virtual int ListColor() { return 0; }
 
   virtual int Height() { return height_; }
@@ -47,22 +46,21 @@ class ListItem {
   virtual void SetDepth(int d) { depth_ = d; }
   virtual bool ShouldExpand() { return should_expand_; }
   virtual void ToggleExpanded() {
-    if (NumListChildren())
-      should_expand_ = !should_expand_;
+    if (NumListChildren()) should_expand_ = !should_expand_;
   }
 
  private:
-  int height_;   // How many lines this entry takes up.
-  int index_;    // Which number item we are in the list.
-  int depth_;    // How many parents we have before getting to a root.
-  bool should_expand_;   // Whether or not to draw this node's children.
+  int height_;          // How many lines this entry takes up.
+  int index_;           // Which number item we are in the list.
+  int depth_;           // How many parents we have before getting to a root.
+  bool should_expand_;  // Whether or not to draw this node's children.
 };
 
 // This is a protocol defining how data can be accessed by the HierarchicalList.
 // It supports multiple table columns, each with a separate title.
 class HierarchicalListDataSource {
  public:
-  virtual ~HierarchicalListDataSource() { }
+  virtual ~HierarchicalListDataSource() {}
   virtual int NumRoots() = 0;
   virtual ListItem* Root(int i) = 0;
 };
@@ -76,7 +74,7 @@ enum ScrollType {
 class HierarchicalList {
  public:
   HierarchicalList(string& name, int height, int width, int y, int x,
-      const ColumnSpec& column_spec);
+                   const ColumnSpec& column_spec);
   virtual ~HierarchicalList();
 
   void SetDatasource(HierarchicalListDataSource* d);
@@ -97,7 +95,10 @@ class HierarchicalList {
   void EditSelectedItem();
   ListItem* SelectedItem() { return selected_item_; }
 
-  void SetPrependText(string p) { prepend_ = p; prepend_size_ = p.length(); }
+  void SetPrependText(string p) {
+    prepend_ = p;
+    prepend_size_ = p.length();
+  }
 
   void ToggleExpansionOfSelectedItem();
 
@@ -177,4 +178,4 @@ class HierarchicalList {
   bool draw_column_headers_;
 };
 
-#endif
+#endif  // HIERARCHICAL_LIST_H_

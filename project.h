@@ -1,18 +1,18 @@
-#ifndef __PROJECT__
-#define __PROJECT__
+#ifndef PROJECT_H_
+#define PROJECT_H_
 
+#include <fstream>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <fstream>
-#include "task.h"
-#include "serializer.h"
 #include "filter-predicate.h"
+#include "serializer.h"
+#include "task.h"
 
+using std::ifstream;
+using std::ofstream;
 using std::string;
 using std::vector;
-using std::ofstream;
-using std::ifstream;
 
 class Project : public HierarchicalListDataSource {
  public:
@@ -39,7 +39,6 @@ class Project : public HierarchicalListDataSource {
   void ArchiveCompletedTasks();
 
   int NumFilteredRoots();
-  int NumTotalRoots() { return tasks_.size(); }
   Task* FilteredRoot(int r);
 
   // Functions required by HierarchicalListDataSource:
@@ -47,7 +46,8 @@ class Project : public HierarchicalListDataSource {
   ListItem* Root(int i) { return static_cast<ListItem*>(FilteredRoot(i)); }
 
   void RecomputeNodeStatus();
-  friend ostream& operator <<(ostream& out, Project& project);
+  friend ostream& operator<<(ostream& out, Project& project);
+
  private:
   TaskStatus ComputeStatusForTask(Task* t);
 
@@ -57,4 +57,4 @@ class Project : public HierarchicalListDataSource {
   AndFilterPredicate<Task> base_filter_;
 };
 
-#endif
+#endif  // PROJECT_H_

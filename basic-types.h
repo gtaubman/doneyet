@@ -1,5 +1,5 @@
-#ifndef __FILE_TYPES__
-#define __FILE_TYPES__
+#ifndef BASIC_TYPES_H_
+#define BASIC_TYPES_H_
 
 // Unsigned
 typedef unsigned long long uint64;
@@ -13,4 +13,4 @@ typedef int int32;
 typedef short int16;
 typedef char int8;
 
-#endif
+#endif  // BASIC_TYPES_H_

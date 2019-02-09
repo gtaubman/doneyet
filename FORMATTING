@@ -1,0 +1,4 @@
+This is a formatting standard for this project.
+
+using clang-format (see: https://clang.llvm.org/docs/ClangFormat.html):
+$ clang-format -i --style=google *.cc *.h

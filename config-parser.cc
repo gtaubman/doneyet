@@ -1,16 +1,16 @@
 #include "config-parser.h"
-#include <iostream>
-#include <fstream>
 #include <assert.h>
+#include <fstream>
+#include <iostream>
 
 // Returns a new string that has all padding whitespace removed.
 static string StripWhiteSpace(const string& s) {
   size_t start_pos = 0;
   size_t end_pos = s.length() - 1;
-  while(s[start_pos] == ' ' && start_pos < s.length()) {
+  while (s[start_pos] == ' ' && start_pos < s.length()) {
     ++start_pos;
   }
-  while(s[end_pos] == ' ' && end_pos >= 0) {
+  while (s[end_pos] == ' ' && end_pos >= 0) {
     --end_pos;
   }
   assert(start_pos < end_pos);
@@ -26,9 +26,9 @@ bool ConfigParser::ParseConfig(const string& file_path,
   }
 
   string line;
-  map<string,string>* current_section = NULL;
+  map<string, string>* current_section = NULL;
   while (!config_file.eof()) {
-    getline(config_file, line); 
+    getline(config_file, line);
 
     // Skip comment lines.
     if (!line.size() || line[0] == '#') {
@@ -58,8 +58,8 @@ bool ConfigParser::ParseConfig(const string& file_path,
     }
 
     string key = StripWhiteSpace(line.substr(0, equals_pos));
-    string value = StripWhiteSpace(line.substr(equals_pos + 1,
-                                               line.size() - equals_pos - 1));
+    string value = StripWhiteSpace(
+        line.substr(equals_pos + 1, line.size() - equals_pos - 1));
     (*current_section)[key] = value;
   }
   config_file.close();

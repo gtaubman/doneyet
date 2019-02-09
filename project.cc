@@ -5,10 +5,7 @@
 
 using std::map;
 
-Project::Project(string name)
-  : name_(name) {
-  ShowAllTasks();
-}
+Project::Project(string name) : name_(name) { ShowAllTasks(); }
 
 Project::~Project() {
   for (int i = 0; i < tasks_.size(); ++i) {
@@ -28,7 +25,7 @@ void Project::FilterTasks(FilterPredicate<Task>* filter) {
 
 Task* Project::AddTaskNamed(const string& name) {
   Task* nt = new Task(name, "");
-  tasks_.push_back(nt);  
+  tasks_.push_back(nt);
   return nt;
 }
 
@@ -54,26 +51,26 @@ Project* Project::NewProjectFromFile(string path) {
   if (!s.Okay()) {
     return NULL;
   }
-  
+
   // Read the file version
   uint64 file_version = s.ReadUint64();
   s.SetVersion(file_version);
-  
+
   // Find the project's name
   string project_name = s.ReadString();
   Project* p = new Project(project_name);
 
   // Find how many tasks there are.
   int num_tasks = s.ReadInt32();
-  
+
   // First read in every task in the file.
-  int task_identifier;
-  int parent_pointer;
   map<int, Task*> task_map;
   map<Task*, int> tasks_parents;
   vector<Task*> tasks;
   for (int i = 0; i < num_tasks; ++i) {
     // Read in the values.
+    int task_identifier;
+    int parent_pointer;
     task_identifier = s.ReadUint64();
     Task* t = Task::NewTaskFromSerializer(&s);
     parent_pointer = s.ReadUint64();
@@ -82,7 +79,7 @@ Project* Project::NewProjectFromFile(string path) {
     task_map[task_identifier] = t;
     tasks.push_back(t);
   }
-  
+
   // Then re-assemble the tree structure.
   for (int i = 0; i < tasks.size(); ++i) {
     Task* t = tasks[i];
@@ -158,8 +155,8 @@ TaskStatus Project::ComputeStatusForTask(Task* t) {
   // If all children are the same, this node gets that status.
   for (int i = 0; i < NUM_STATUSES; ++i) {
     if (status_counts[i] == t->NumChildren()) {
-      t->SetStatus((TaskStatus) i);
-      return (TaskStatus) i;
+      t->SetStatus((TaskStatus)i);
+      return (TaskStatus)i;
     }
   }
 
@@ -168,17 +165,13 @@ TaskStatus Project::ComputeStatusForTask(Task* t) {
   return IN_PROGRESS;
 }
 
-int Project::NumFilteredRoots() {
-  return filtered_tasks_.size();
-}
+int Project::NumFilteredRoots() { return filtered_tasks_.size(); }
 
-Task* Project::FilteredRoot(int r) {
-  return filtered_tasks_[r];
-}
+Task* Project::FilteredRoot(int r) { return filtered_tasks_[r]; }
 
 void Project::ShowAllTasks() {
   GTFilterPredicate<Task, time_t>* gtfp =
-    new GTFilterPredicate<Task, time_t>(-1, Task::CompletionDateWrapper);
+      new GTFilterPredicate<Task, time_t>(-1, Task::CompletionDateWrapper);
   base_filter_.Clear();
   base_filter_.AddChild(gtfp);
   FilterTasks();
@@ -186,7 +179,8 @@ void Project::ShowAllTasks() {
 
 void Project::ArchiveCompletedTasks() {
   EqualityFilterPredicate<Task, TaskStatus>* efp =
-    new EqualityFilterPredicate<Task, TaskStatus>(COMPLETED, Task::StatusWrapper);
+      new EqualityFilterPredicate<Task, TaskStatus>(COMPLETED,
+                                                    Task::StatusWrapper);
   efp->SetIsNot(true);
   base_filter_.Clear();
   base_filter_.AddChild(efp);
@@ -198,10 +192,10 @@ void Project::ShowCompletedLastWeek() {
   time_t week_ago;
   std::time(&week_ago);
   week_ago -= 60 * 60 * 24 * 7;
-  GTFilterPredicate<Task, time_t>* gtfp =
-    new GTFilterPredicate<Task, time_t>(week_ago, Task::CompletionDateWrapper);
+  GTFilterPredicate<Task, time_t>* gtfp = new GTFilterPredicate<Task, time_t>(
+      week_ago, Task::CompletionDateWrapper);
   GTFilterPredicate<Task, int>* has_filtered_child =
-    new GTFilterPredicate<Task, int>(0, Task::NumFilteredOffspringWrapper);
+      new GTFilterPredicate<Task, int>(0, Task::NumFilteredOffspringWrapper);
   OrFilterPredicate<Task>* or_filter = new OrFilterPredicate<Task>();
   or_filter->AddChild(gtfp);
   or_filter->AddChild(has_filtered_child);
@@ -217,13 +211,13 @@ void Project::RunSearchFilter(const string& needle) {
   // Create the search filters.  Right now it only searches on the text and
   // description of the tasks.
   StringContainsFilterPredicate<Task>* title_filter =
-    new StringContainsFilterPredicate<Task>(needle, Task::TitleWrapper);
+      new StringContainsFilterPredicate<Task>(needle, Task::TitleWrapper);
 
   StringContainsFilterPredicate<Task>* description_filter =
-    new StringContainsFilterPredicate<Task>(needle, Task::DescriptionWrapper);
+      new StringContainsFilterPredicate<Task>(needle, Task::DescriptionWrapper);
 
   GTFilterPredicate<Task, int>* has_filtered_child =
-    new GTFilterPredicate<Task, int>(0, Task::NumFilteredOffspringWrapper);
+      new GTFilterPredicate<Task, int>(0, Task::NumFilteredOffspringWrapper);
 
   OrFilterPredicate<Task>* or_filter = new OrFilterPredicate<Task>();
   or_filter->AddChild(title_filter);
@@ -234,7 +228,7 @@ void Project::RunSearchFilter(const string& needle) {
   FilterTasks();
 }
 
-ostream& operator <<(ostream& out, Project& project) {
+ostream& operator<<(ostream& out, Project& project) {
   for (int i = 0; i < project.NumFilteredRoots(); ++i) {
     project.FilteredRoot(i)->ToStream(out, 0);
   }
