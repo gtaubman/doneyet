@@ -5,28 +5,17 @@
 
 using std::map;
 
-Project::Project(string name) : name_(name) { ShowAllTasks(); }
-
-Project::~Project() {
-  for (int i = 0; i < tasks_.size(); ++i) {
-    tasks_[i]->Delete();
-  }
+Project::Project(string name) : name_(name) {
+  tasks_ = new Task(name, "");
+  ShowAllTasks();
 }
+
+Project::~Project() { tasks_->Delete(); }
 
 void Project::FilterTasks(FilterPredicate<Task>* filter) {
-  // Filter all the children of the root tasks.
-  for (int i = 0; i < tasks_.size(); ++i) {
-    tasks_[i]->ApplyFilter(filter);
-  }
+  tasks_->ApplyFilter(filter);
 
-  // Finally filter the root tasks themselves.
-  filtered_tasks_ = filter->FilterVector(tasks_);
-}
-
-Task* Project::AddTaskNamed(const string& name) {
-  Task* nt = new Task(name, "");
-  tasks_.push_back(nt);
-  return nt;
+  filtered_tasks_ = tasks_;
 }
 
 void Project::Serialize(Serializer* s) {
@@ -36,13 +25,8 @@ void Project::Serialize(Serializer* s) {
   // Write our project name to the file.
   s->WriteString(name_);
 
-  // Write how many tasks there are.
-  s->WriteInt32(NumTasks());
-
   // Serialize the tree.
-  for (int i = 0; i < tasks_.size(); ++i) {
-    tasks_[i]->Serialize(s);
-  }
+  tasks_->Serialize(s);
 }
 
 Project* Project::NewProjectFromFile(string path) {
@@ -60,76 +44,19 @@ Project* Project::NewProjectFromFile(string path) {
   string project_name = s.ReadString();
   Project* p = new Project(project_name);
 
-  // Find how many tasks there are.
-  int num_tasks = s.ReadInt32();
-
   // First read in every task in the file.
-  map<int, Task*> task_map;
-  map<Task*, int> tasks_parents;
-  vector<Task*> tasks;
-  for (int i = 0; i < num_tasks; ++i) {
-    // Read in the values.
-    int task_identifier;
-    int parent_pointer;
-    task_identifier = s.ReadUint64();
-    Task* t = Task::NewTaskFromSerializer(&s);
-    parent_pointer = s.ReadUint64();
-
-    tasks_parents[t] = parent_pointer;
-    task_map[task_identifier] = t;
-    tasks.push_back(t);
-  }
-
-  // Then re-assemble the tree structure.
-  for (int i = 0; i < tasks.size(); ++i) {
-    Task* t = tasks[i];
-    if (tasks_parents[t] == 0) {
-      // We have a root task.  Add it to the root list.
-      p->tasks_.push_back(tasks[i]);
-    } else {
-      // We have a child task.  Add it to its parent's list.
-      task_map[tasks_parents[t]]->AddSubTask(tasks[i]);
-    }
-  }
 
   p->ShowAllTasks();
   return p;
 }
 
-int Project::NumTasks() {
-  int total = 0;
-  for (int i = 0; i < tasks_.size(); ++i) {
-    total += 1 + tasks_[i]->NumOffspring();
-  }
-  return total;
-}
-
-void Project::DeleteTask(Task* t) {
-  if (t->Parent() == NULL) {
-    // It's a top level task.  Remove it from our list of roots.
-    for (int i = 0; i < tasks_.size(); ++i) {
-      if (tasks_[i] == t) {
-        tasks_[i]->Delete();
-        tasks_.erase(tasks_.begin() + i);
-        break;
-      }
-    }
-  } else {
-    for (int i = 0; i < tasks_.size(); ++i) {
-      tasks_[i]->DeleteTask(t);
-    }
-  }
-}
+void Project::DeleteTask(Task* t) { tasks_->DeleteTask(t); }
 
 // Compute the status of all nodes.  Nodes which have children have their status
 // for them (hence the need for this function).  A node with any IN_PROGRESS
 // child is itself IN_PROGRESS.  If all of a node's children are PAUSED, the
 // node is PAUSED.
-void Project::RecomputeNodeStatus() {
-  for (int i = 0; i < tasks_.size(); ++i) {
-    ComputeStatusForTask(tasks_[i]);
-  }
-}
+void Project::RecomputeNodeStatus() { ComputeStatusForTask(tasks_); }
 
 TaskStatus Project::ComputeStatusForTask(Task* t) {
   if (!t->NumChildren()) {
@@ -164,10 +91,6 @@ TaskStatus Project::ComputeStatusForTask(Task* t) {
   t->SetStatus(IN_PROGRESS);
   return IN_PROGRESS;
 }
-
-int Project::NumFilteredRoots() { return filtered_tasks_.size(); }
-
-Task* Project::FilteredRoot(int r) { return filtered_tasks_[r]; }
 
 void Project::ShowAllTasks() {
   GTFilterPredicate<Task, time_t>* gtfp =
@@ -229,8 +152,6 @@ void Project::RunSearchFilter(const string& needle) {
 }
 
 ostream& operator<<(ostream& out, Project& project) {
-  for (int i = 0; i < project.NumFilteredRoots(); ++i) {
-    project.FilteredRoot(i)->ToStream(out, 0);
-  }
+  project.filtered_tasks_->ToStream(out, 0);
   return out;
 }

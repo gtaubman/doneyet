@@ -160,11 +160,6 @@ void Workspace::Run() {
           list_->ScrollToTop();
         }
 
-        // Also, this could have been the last task.  If it was, make sure no
-        // task is selected now.
-        if (project_->NumTasks() == 0) {
-          list_->SelectNoItem();
-        }
         break;
       }
       case 'e':  // Edit selected task
@@ -259,7 +254,7 @@ void Workspace::AddTask(Task* t) {
 
   if (t == NULL) {
     // We add a task to the root level list if no task is selected.
-    project_->AddTaskNamed(text);
+    project_->GetRootTask()->AddSubTask(new Task(text, ""));
   } else {
     // Add the task as a subtask of the selected task.
     t->AddSubTask(new Task(text, ""));

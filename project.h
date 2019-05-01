@@ -4,7 +4,6 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <vector>
 #include "filter-predicate.h"
 #include "serializer.h"
 #include "task.h"
@@ -26,11 +25,10 @@ class Project : public HierarchicalListDataSource {
   void RunSearchFilter(const string& find);
 
   string Name() { return name_; }
-  Task* AddTaskNamed(const string& name);
   void Serialize(Serializer* s);
+  Task* GetRootTask() { return tasks_; };
 
   // A count of every item in the tree.
-  int NumTasks();
   void DeleteTask(Task* t);
 
   // Various Common Filters
@@ -38,12 +36,9 @@ class Project : public HierarchicalListDataSource {
   void ShowCompletedLastWeek();
   void ArchiveCompletedTasks();
 
-  int NumFilteredRoots();
-  Task* FilteredRoot(int r);
-
   // Functions required by HierarchicalListDataSource:
-  int NumRoots() { return NumFilteredRoots(); }
-  ListItem* Root(int i) { return static_cast<ListItem*>(FilteredRoot(i)); }
+  int NumRoots() { return 1; }
+  ListItem* Root(int i) { return static_cast<ListItem*>(filtered_tasks_); }
 
   void RecomputeNodeStatus();
   friend ostream& operator<<(ostream& out, Project& project);
@@ -52,8 +47,8 @@ class Project : public HierarchicalListDataSource {
   TaskStatus ComputeStatusForTask(Task* t);
 
   string name_;
-  vector<Task*> tasks_;
-  vector<Task*> filtered_tasks_;
+  Task* tasks_;
+  Task* filtered_tasks_;
   AndFilterPredicate<Task> base_filter_;
 };
 
