@@ -54,8 +54,12 @@ void HierarchicalList::Draw() {
   }
 
   int lines_used = -top_line_;
-  for (int i = 0; i < NumRoots(); ++i) {
-    lines_used += Draw(Root(i), lines_used, 0);
+  for (int r = 0; r < NumRoots(); ++r) {
+    if (Root(r)->ShouldExpand()) {
+      for (int i = 0; i < Root(r)->NumListChildren(); ++i) {
+        lines_used += Draw(Root(r)->ListChild(i), lines_used, 0);
+      }
+    }
   }
 
   if (draw_column_headers_) {
