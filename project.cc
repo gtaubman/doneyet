@@ -25,6 +25,9 @@ void Project::Serialize(Serializer* s) {
   // Write our project name to the file.
   s->WriteString(name_);
 
+  // Write how many tasks there are.
+  s->WriteInt32(NumTasks());
+
   // Serialize the tree.
   tasks_->Serialize(s);
 }
@@ -44,11 +47,47 @@ Project* Project::NewProjectFromFile(string path) {
   string project_name = s.ReadString();
   Project* p = new Project(project_name);
 
+  // Find how many tasks there are.
+  int num_tasks = s.ReadInt32();
+
   // First read in every task in the file.
+  map<int, Task*> task_map;
+  map<Task*, int> tasks_parents;
+  vector<Task*> tasks;
+  for (int i = 0; i < num_tasks; ++i) {
+    // Read in the values.
+    int task_identifier;
+    int parent_pointer;
+    task_identifier = s.ReadUint64();
+    Task* t = Task::NewTaskFromSerializer(&s);
+    parent_pointer = s.ReadUint64();
+
+    tasks_parents[t] = parent_pointer;
+    task_map[task_identifier] = t;
+    tasks.push_back(t);
+  }
+
+  // Then re-assemble the tree structure.
+  for (int i = 0; i < tasks.size(); ++i) {
+    Task* t = tasks[i];
+    if (tasks_parents[t] == 0) {
+      // We have a root task.  Add it to the root list.
+      p->tasks_=tasks[i];
+    } else {
+      // We have a child task.  Add it to its parent's list.
+      task_map[tasks_parents[t]]->AddSubTask(tasks[i]);
+    }
+  }
 
   p->ShowAllTasks();
   return p;
 }
+
+int Project::NumTasks() {
+  int total = 1 + tasks_->NumOffspring();
+  return total;
+}
+
 
 void Project::DeleteTask(Task* t) { tasks_->DeleteTask(t); }
 

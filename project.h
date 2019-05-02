@@ -29,6 +29,7 @@ class Project : public HierarchicalListDataSource {
   Task* GetRootTask() { return tasks_; };
 
   // A count of every item in the tree.
+  int NumTasks();
   void DeleteTask(Task* t);
 
   // Various Common Filters
