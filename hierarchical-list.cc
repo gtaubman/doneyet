@@ -516,8 +516,10 @@ void HierarchicalList::UpdateFlattenedItems() {
   flattened_items_.clear();
   total_lines_ = 0;
 
-  for (int i = 0; i < NumRoots(); ++i) {
-    PreOrderAddToList(Root(i));
+  for (int r = 0; r < NumRoots(); ++r) {
+      for (int i = 0; i < Root(r)->NumListChildren(); ++i) {
+        PreOrderAddToList(Root(r)->ListChild(i));
+      }
   }
 
   for (int i = 0; i < flattened_items_.size(); ++i) {
