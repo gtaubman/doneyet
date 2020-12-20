@@ -1,4 +1,5 @@
 #include "list-chooser.h"
+
 #include <stdlib.h>
 
 string ListChooser::GetChoiceWithOptions(const vector<string>& choices,

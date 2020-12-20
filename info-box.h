@@ -4,6 +4,7 @@
 #include <form.h>
 #include <math.h>
 #include <ncurses.h>
+
 #include <string>
 
 #include "utils.h"

@@ -5,12 +5,14 @@
 // "wrong" order.  Fix that.
 
 #include <ncurses.h>
+
 #include <ctime>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <string>
 #include <vector>
+
 #include "date.h"
 #include "filter-predicate.h"
 #include "hierarchical-list.h"

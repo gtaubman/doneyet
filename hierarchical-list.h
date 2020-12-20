@@ -2,6 +2,7 @@
 #define HIERARCHICAL_LIST_H_
 
 #include <ncurses.h>
+
 #include <string>
 #include <vector>
 

@@ -2,6 +2,7 @@
 #define NOTE_H_
 
 #include <string>
+
 #include "date.h"
 #include "serializer.h"
 

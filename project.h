@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
 #include "filter-predicate.h"
 #include "serializer.h"
 #include "task.h"

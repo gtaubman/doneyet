@@ -1,6 +1,7 @@
 #include <locale.h>
 #include <menu.h>
 #include <ncurses.h>
+
 #include "doneyet-config.h"
 #include "workspace.h"
 

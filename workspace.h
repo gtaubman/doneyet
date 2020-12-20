@@ -3,8 +3,10 @@
 
 #include <assert.h>
 #include <signal.h>
+
 #include <string>
 #include <vector>
+
 #include "curses-menu.h"
 #include "hierarchical-list.h"
 #include "project.h"

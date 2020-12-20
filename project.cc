@@ -1,5 +1,7 @@
 #include "project.h"
+
 #include <map>
+
 #include "hierarchical-list.h"
 #include "utils.h"
 

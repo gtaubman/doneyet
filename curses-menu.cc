@@ -1,4 +1,5 @@
 #include "curses-menu.h"
+
 #include <stdlib.h>
 
 Menu::Menu(const string& name, int xloc) {

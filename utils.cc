@@ -1,4 +1,5 @@
 #include "utils.h"
+
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -56,7 +57,8 @@ int CursesUtils::winheight(WINDOW* win) {
 }
 
 int CursesUtils::winwidth(WINDOW* win) {
-  int w, h;
+  int w;
+  int __attribute__((unused)) h;
   getmaxyx(win, h, w);
   return w;
 }

@@ -1,4 +1,5 @@
 #include "filter-predicate.h"
+
 #include <iostream>
 #include <string>
 #include <vector>

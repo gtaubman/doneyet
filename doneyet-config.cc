@@ -1,6 +1,9 @@
 #include "doneyet-config.h"
+
 #include <ncurses.h>
+
 #include <cctype>
+
 #include "config-parser.h"
 #include "file-manager.h"
 

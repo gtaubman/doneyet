@@ -2,8 +2,10 @@
 #define CURSES_MENU_H_
 
 #include <menu.h>
+
 #include <string>
 #include <vector>
+
 #include "utils.h"
 
 using std::string;
