@@ -53,7 +53,7 @@ Doneyet is used primarily through key commands. There is a menu system in place 
 # Menu System
 The menu system also contains the 'Plain Text' menu item in the 'Generate' menu. This creates a text file of whatever is currently filtered in /tmp/snippet.txt and then calls less on that file. A potential use of this is reporting weekly progress in email. Copying directly out of the ncurses window is difficult and time consuming. This however generates a plain text version with no borders.
 
-# Versioning and Features
+# Versions and Features
 
 ## doneyet-1.1.0 - edit and delete of notes & help dialog
 Features:
@@ -85,18 +85,18 @@ The doneyet binary can now be copied to whatever system path suits best for you.
 ### Versions before macOS Mojave 10.14
 Please follow the Linux instructions.
 
-### Version macOS Mojave 10.14
-There seems to be a bug in the way linking against the system supplied libcurses is done in macOS 10.14 when combined with libmenu. Please install homebrew, instructions are available on https://brew.sh/. Then install ncurses
+### Versions of macOS since Mojave 10.14
+There seems to be a bug in the way linking against the system supplied libcurses is done since macOS 10.14 when combined with libmenu. Please install homebrew, instructions are available on https://brew.sh/. Then install ncurses
 ```
 brew install ncurses
 ```
-and follow the post-installation instructions by adding the pkg-config definition of brew-installed ncurses to your pkg-config search path, verison for bash:
+and follow the post-installation instructions by adding the pkg-config definition of brew-installed ncurses to your pkg-config search path, version for bash:
 ```
 echo 'export PKG_CONFIG_PATH="/usr/local/opt/ncurses/lib/pkgconfig"' >> ~/.bash_profile
 ```
-or if your shell if zsh (default since macOS Catalina 10.15):
+or if your shell is zsh (default since macOS Catalina 10.15):
 ```
 echo 'export PKG_CONFIG_PATH="/usr/local/opt/ncurses/lib/pkgconfig"' >> ~/.zshrc
 ```
-you should ensure that the .bash_profile or .zshrc is sourced (close Terminal.app window and open up a new one if you don't know what that means)
+you should ensure that the **.bash_profile** or **.zshrc** is sourced (close Terminal.app window and open up a new one if you don't know what that means)
 Please follow the Linux instructions now.
