@@ -211,7 +211,7 @@ void Workspace::Run() {
       case 27:  // Escape
         list_->SelectNoItem();
         break;
-      case 'q':
+      case CTRL('q'):
         Quit();
         break;
     }
