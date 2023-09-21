@@ -90,7 +90,12 @@ There seems to be a bug in the way linking against the system supplied libcurses
 ```
 brew install ncurses
 ```
-and follow the post-installation instructions by adding the pkg-config definition of brew-installed ncurses to your pkg-config search path, version for bash:
+and follow the post-installation instructions (example below)
+```
+For pkg-config to find ncurses you may need to set:
+  export PKG_CONFIG_PATH="/opt/homebrew/opt/ncurses/lib/pkgconfig"
+```
+by adding the pkg-config definition of brew-installed ncurses to your pkg-config search path, version for bash:
 ```
 echo 'export PKG_CONFIG_PATH="/usr/local/opt/ncurses/lib/pkgconfig"' >> ~/.bash_profile
 ```
