@@ -46,10 +46,6 @@ using std::vector;
   "* h - Shows and closes this help dialog.\n"                               \
   "* q - Quit.\n"
 
-#ifndef CTRL
-#define CTRL(c) ((c) & 037)
-#endif
-
 class StringListItem : public ListItem {
  public:
   explicit StringListItem(string str) : ListItem() { str_ = str; }
