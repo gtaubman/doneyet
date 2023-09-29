@@ -1,7 +1,7 @@
 #ifndef HIERARCHICAL_LIST_H_
 #define HIERARCHICAL_LIST_H_
 
-#include <ncurses.h>
+#include <ncursesw/ncurses.h>
 
 #include <string>
 #include <vector>

@@ -4,7 +4,7 @@
 // TODO: Swap(Task*, Task*) is still a bit flakey if the tasks are in the
 // "wrong" order.  Fix that.
 
-#include <ncurses.h>
+#include <ncursesw/ncurses.h>
 
 #include <ctime>
 #include <fstream>

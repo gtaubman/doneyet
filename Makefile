@@ -9,12 +9,12 @@ OFILES = $(OBJECTS:%=%.o)
 CCC	= g++
 IFLAGS = -I.
 LFLAGS =
-LIBS	= -lform -lmenu -lpanel -lncurses
+LIBS	= -lformw -lmenuw -lpanelw -lncursesw
 
-PROPER_PKG_CONFIG = $(shell pkg-config --cflags ncurses >/dev/null 2>&1 && echo true || echo false)
+PROPER_PKG_CONFIG = $(shell pkg-config --cflags ncursesw >/dev/null 2>&1 && echo true || echo false)
 ifeq ($(PROPER_PKG_CONFIG),true)
-IFLAGS += $(shell pkg-config --cflags-only-I ncurses)
-LFLAGS += $(shell pkg-config --libs-only-L ncurses)
+IFLAGS += $(shell pkg-config --cflags-only-I ncursesw)
+LFLAGS += $(shell pkg-config --libs-only-L ncursesw)
 endif
 
 all	: $(EXECUTABLE)

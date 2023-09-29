@@ -1,6 +1,7 @@
+#define _XOPEN_SOURCE_EXTENDED
 #include <locale.h>
-#include <menu.h>
-#include <ncurses.h>
+#include <ncursesw/menu.h>
+#include <ncursesw/ncurses.h>
 
 #include "doneyet-config.h"
 #include "workspace.h"
