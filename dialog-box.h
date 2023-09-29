@@ -1,8 +1,8 @@
 #ifndef DIALOG_BOX_H_
 #define DIALOG_BOX_H_
 
-#include <ncursesw/form.h>
 #include <math.h>
+#include <ncursesw/form.h>
 #include <ncursesw/ncurses.h>
 
 #include <string>

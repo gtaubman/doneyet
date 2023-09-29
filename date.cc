@@ -12,7 +12,7 @@ void Date::SetToNow() { std::time(&time_); }
 
 void Date::SetToEmptyTime() { time_ = 0; }
 
-string Date::ToString() {
+string Date::ToString() const {
   // For some reason, ctime and its friends output the strings with a newline in
   // them:
   // Thu Nov 24 18:22:48 1986\n\0
@@ -23,7 +23,7 @@ string Date::ToString() {
   return string(buf);
 }
 
-void Date::Serialize(Serializer* s) {
+void Date::Serialize(Serializer* s) const {
   s->WriteInt32(static_cast<int32>(time_));
 }
 

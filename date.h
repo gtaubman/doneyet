@@ -18,10 +18,10 @@ class Date {
   void SetToEmptyTime();
   time_t Time() { return time_; }
 
-  void Serialize(Serializer* s);
+  void Serialize(Serializer* s) const;
   void ReadFromSerializer(Serializer* s);
 
-  string ToString();
+  string ToString() const;
 
  private:
   time_t time_;

@@ -21,9 +21,9 @@ class Menu {
   string SelectedItem();
   void StopDisplaying();
 
-  vector<string> Items() { return item_strings_; }
-  int Location() { return xloc_; }
-  string Name() { return name_; }
+  vector<string> const Items() { return item_strings_; }
+  int Location() const { return xloc_; }
+  string Name() const { return name_; }
   MENU* MenuObject() { return menu_; }
 
  private:

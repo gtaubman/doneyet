@@ -12,7 +12,7 @@ static string StripWhiteSpace(const string& s) {
   while (s[start_pos] == ' ' && start_pos < s.length()) {
     ++start_pos;
   }
-  while (s[end_pos] == ' ' && end_pos >= 0) {
+  while (s[end_pos] == ' ') {
     --end_pos;
   }
   assert(start_pos < end_pos);
