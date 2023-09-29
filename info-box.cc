@@ -25,8 +25,8 @@ void InfoBox::ShowFullScreen(const string& title, const string& default_text,
   WINDOW* field = newwin(height, width, 0, 0);
   draw_borders(field);
   WINDOW* fieldInner = newwin(height - 2, width - 2, 1, 1);
-  mvwprintw(fieldInner, 0, 0, title.c_str());
-  mvwprintw(fieldInner, 1, 0, default_text.c_str());
+  mvwprintw(fieldInner, 0, 0, "%s", title.c_str());
+  mvwprintw(fieldInner, 1, 0, "%s", default_text.c_str());
   wrefresh(field);
   wrefresh(fieldInner);
   getch();
