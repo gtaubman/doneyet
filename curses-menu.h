@@ -13,15 +13,19 @@ using std::vector;
 
 class Menu {
  public:
-  Menu(const string& name, int xloc);
-  ~Menu();
+  Menu(const string& name, int xloc)
+      : xloc_(xloc),
+        name_(name),
+        fg_color_(COLOR_PAIR(8) | A_BOLD),
+        bg_color_(COLOR_PAIR(9)),
+        displaying_(false){};
+  ~Menu(){};
 
   void AddMenuItem(const string& item);
   void Display();
   string SelectedItem();
   void StopDisplaying();
 
-  vector<string> Items() const { return item_strings_; }
   int Location() const { return xloc_; }
   string Name() const { return name_; }
   MENU* MenuObject() { return menu_; }
@@ -46,8 +50,6 @@ class MenuBar {
 
   void DrawMenuBar();
   Menu* AddMenu(const string& menu_name);
-  void ShowCurrentMenu();
-  void HideCurrentMenu();
   void SendEventToMenu(int c);
   void ShowNextMenu();
   void ShowPreviousMenu();

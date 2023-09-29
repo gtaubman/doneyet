@@ -3,3 +3,6 @@ doneyet
 *.gcov
 *.gcno
 *.gcda
+.idea
+cmake-*
+build

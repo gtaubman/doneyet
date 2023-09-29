@@ -1,16 +1,6 @@
 #include "curses-menu.h"
 
-#include <stdlib.h>
-
-Menu::Menu(const string& name, int xloc) {
-  name_ = name;
-  xloc_ = xloc;
-  fg_color_ = COLOR_PAIR(8) | A_BOLD;
-  bg_color_ = COLOR_PAIR(9);
-  displaying_ = false;
-}
-
-Menu::~Menu() {}
+#include <cstdlib>
 
 void Menu::AddMenuItem(const string& item) { item_strings_.push_back(item); }
 
@@ -128,13 +118,6 @@ Menu* MenuBar::AddMenu(const string& menu_name) {
   current_loc_ += menu_name.length() + space_between_menus_;
   return m;
 }
-
-void MenuBar::ShowCurrentMenu() {
-  DrawMenuBar();
-  menus_[current_menu_]->Display();
-}
-
-void MenuBar::HideCurrentMenu() { menus_[current_menu_]->StopDisplaying(); }
 
 void MenuBar::SendEventToMenu(int c) {
   menu_driver(menus_[current_menu_]->MenuObject(), c);
