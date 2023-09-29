@@ -45,15 +45,14 @@ class DoneyetConfig {
   // Attempts to convert config[color_name] into a color, and set var_to_set to
   // that color.  If this fails it prints an error and return false.
   static bool ParseColor(map<string, string>& config, const string& color_name,
-                  short* var_to_set);
+                         short* var_to_set);
   static bool ParseBool(map<string, string>& config, const string& to_parse,
-                 bool* value);
+                        bool* value);
 
   bool ParseGeneralOptions();
   short foreground_color_;
   short background_color_;
   bool prompt_on_delete_task_;
-
 };
 
 #endif  // DONEYET_CONFIG_H_
