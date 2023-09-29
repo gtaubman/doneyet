@@ -21,11 +21,12 @@ string DialogBox::RunMultiLine(const string& title, const string& default_text,
   // Create a window big enough to hold our form.  Then make it slightly
   // bigger to allow space for borders and the title text.
   // Get the min size for the form:
-  int rows, cols;
+  int cols;
+  int rows;
   scale_form(form, &rows, &cols);
 
   // Figure out how many lines of text we'll have for the label:
-  int label_rows = 1;  // ceil(title.size() / cols);
+  int label_rows = 1;
 
   // Account for the two side borders, plus two spaces on either side of the
   // text entry box:
@@ -93,7 +94,6 @@ string DialogBox::RunMultiLine(const string& title, const string& default_text,
         break;
       case '\r':
         done = true;
-        // form_driver(form, REQ_NEW_LINE);
         break;
       default:
         form_driver(form, ch);
@@ -107,7 +107,7 @@ string DialogBox::RunMultiLine(const string& title, const string& default_text,
   string answer(field_buffer(field, 0));
 
   // trim trailing whitespace
-  int notwhite = answer.find_last_not_of(" \t\n");
+  int notwhite = (int)answer.find_last_not_of(" \t\n");
   answer.erase(notwhite + 1);
   StrUtils::trim_multiple_spaces(answer);
 
@@ -126,7 +126,7 @@ string DialogBox::RunMultiLine(const string& title, const string& default_text,
 }
 
 string DialogBox::RunCentered(const string& title, const string& default_text) {
-  return DialogBox::RunMultiLine(title, default_text, title.size(), 1);
+  return DialogBox::RunMultiLine(title, default_text, (int)title.size(), 1);
 }
 
 string DialogBox::RunCenteredWithWidth(const string& title,

@@ -16,7 +16,7 @@ class Date {
 
   void SetToNow();
   void SetToEmptyTime();
-  time_t Time() { return time_; }
+  time_t Time() const { return time_; }
 
   void Serialize(Serializer* s) const;
   void ReadFromSerializer(Serializer* s);

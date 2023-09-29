@@ -9,28 +9,28 @@
 
 static const short kColorError = -2;
 
-static const char* kGeneralSection = "GENERAL";
-static const char* kForegroundColor = "foreground_color";
-static const char* kBackgroundColor = "background_color";
-static const char* kHeaderTextColor = "header_text_color";
+static const char* const kGeneralSection = "GENERAL";
+static const char* const kForegroundColor = "foreground_color";
+static const char* const kBackgroundColor = "background_color";
+static const char* const kHeaderTextColor = "header_text_color";
 
-static const char* kTasksSection = "TASKS";
-static const char* kUnstartedTaskColor = "unstarted_color";
-static const char* kInProgressColor = "in_progress_color";
-static const char* kPausedColor = "paused_color";
-static const char* kFinishedColor = "finished_color";
-static const char* kPromptOnDeleteTask = "prompt_on_delete";
+static const char* const kTasksSection = "TASKS";
+static const char* const kUnstartedTaskColor = "unstarted_color";
+static const char* const kInProgressColor = "in_progress_color";
+static const char* const kPausedColor = "paused_color";
+static const char* const kFinishedColor = "finished_color";
+static const char* const kPromptOnDeleteTask = "prompt_on_delete";
 
-static const char* kMenusSection = "MENUS";
-static const char* kMenubarForegroundColor = "bar_foreground_color";
-static const char* kMenubarBackgroundColor = "bar_background_color";
-static const char* kUnselectedMenuItemForegroundColor =
+static const char* const kMenusSection = "MENUS";
+static const char* const kMenubarForegroundColor = "bar_foreground_color";
+static const char* const kMenubarBackgroundColor = "bar_background_color";
+static const char* const kUnselectedMenuItemForegroundColor =
     "unselected_item_foreground_color";
-static const char* kUnselectedMenuItemBackgroundColor =
+static const char* const kUnselectedMenuItemBackgroundColor =
     "unselected_item_background_color";
-static const char* kSelectedMenuItemForegroundColor =
+static const char* const kSelectedMenuItemForegroundColor =
     "selected_item_foreground_color";
-static const char* kSelectedMenuItemBackgroundColor =
+static const char* const kSelectedMenuItemBackgroundColor =
     "selected_item_background_color";
 
 bool DoneyetConfig::Parse() {
@@ -65,43 +65,49 @@ bool DoneyetConfig::Parse() {
   return ParseGeneralOptions() && ParseTaskOptions() && ParseMenuOptions();
 }
 
-short DoneyetConfig::ForegroundColor() { return foreground_color_; }
+short DoneyetConfig::ForegroundColor() const { return foreground_color_; }
 
-short DoneyetConfig::BackgroundColor() { return background_color_; }
+short DoneyetConfig::BackgroundColor() const { return background_color_; }
 
-short DoneyetConfig::HeaderTextColor() { return header_text_color_; }
+short DoneyetConfig::HeaderTextColor() const { return header_text_color_; }
 
-short DoneyetConfig::UnstartedTaskColor() { return unstarted_task_color_; }
+short DoneyetConfig::UnstartedTaskColor() const {
+  return unstarted_task_color_;
+}
 
-short DoneyetConfig::InProgressTaskColor() { return in_progress_task_color_; }
+short DoneyetConfig::InProgressTaskColor() const {
+  return in_progress_task_color_;
+}
 
-short DoneyetConfig::PausedTaskColor() { return paused_task_color_; }
+short DoneyetConfig::PausedTaskColor() const { return paused_task_color_; }
 
-short DoneyetConfig::FinishedTaskColor() { return finished_task_color_; }
+short DoneyetConfig::FinishedTaskColor() const { return finished_task_color_; }
 
-bool DoneyetConfig::PromptOnDeleteTask() { return prompt_on_delete_task_; }
+bool DoneyetConfig::PromptOnDeleteTask() const {
+  return prompt_on_delete_task_;
+}
 
-short DoneyetConfig::MenubarForegroundColor() {
+short DoneyetConfig::MenubarForegroundColor() const {
   return menubar_foreground_color_;
 }
 
-short DoneyetConfig::MenubarBackgroundColor() {
+short DoneyetConfig::MenubarBackgroundColor() const {
   return menubar_background_color_;
 }
 
-short DoneyetConfig::UnselectedMenuForegroundColor() {
+short DoneyetConfig::UnselectedMenuForegroundColor() const {
   return unselected_menu_foreground_color_;
 }
 
-short DoneyetConfig::UnselectedMenuBackgroundColor() {
+short DoneyetConfig::UnselectedMenuBackgroundColor() const {
   return unselected_menu_background_color_;
 }
 
-short DoneyetConfig::SelectedMenuForegroundColor() {
+short DoneyetConfig::SelectedMenuForegroundColor() const {
   return selected_menu_foreground_color_;
 }
 
-short DoneyetConfig::SelectedMenuBackgroundColor() {
+short DoneyetConfig::SelectedMenuBackgroundColor() const {
   return selected_menu_background_color_;
 }
 
@@ -135,7 +141,8 @@ static short ColorForString(string s) {
 }
 
 bool DoneyetConfig::ParseColor(map<string, string>& config,
-                               const string& color_name, short* var_to_set) {
+                               const string& color_name,
+                               short* var_to_set) const {
   *var_to_set = ColorForString(config[color_name]);
   if (*var_to_set == kColorError) {
     fprintf(stderr, "'%s' is not a valid color for config option %s.\n",
@@ -147,7 +154,7 @@ bool DoneyetConfig::ParseColor(map<string, string>& config,
 }
 
 bool DoneyetConfig::ParseBool(map<string, string>& config,
-                              const string& to_parse, bool* value) {
+                              const string& to_parse, bool* value) const {
   const string& param = config[to_parse];
   if (param == "true" || param == "yes") {
     *value = true;

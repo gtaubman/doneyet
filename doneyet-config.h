@@ -33,24 +33,24 @@ class DoneyetConfig {
   bool Parse();
 
   // General related configuration.
-  short ForegroundColor();
-  short BackgroundColor();
-  short HeaderTextColor();
+  short ForegroundColor() const;
+  short BackgroundColor() const;
+  short HeaderTextColor() const;
 
   // Task related configuration.
-  short UnstartedTaskColor();
-  short InProgressTaskColor();
-  short PausedTaskColor();
-  short FinishedTaskColor();
-  bool PromptOnDeleteTask();
+  short UnstartedTaskColor() const;
+  short InProgressTaskColor() const;
+  short PausedTaskColor() const;
+  short FinishedTaskColor() const;
+  bool PromptOnDeleteTask() const;
 
   // Menu related configuration.
-  short MenubarForegroundColor();
-  short MenubarBackgroundColor();
-  short UnselectedMenuForegroundColor();
-  short UnselectedMenuBackgroundColor();
-  short SelectedMenuForegroundColor();
-  short SelectedMenuBackgroundColor();
+  short MenubarForegroundColor() const;
+  short MenubarBackgroundColor() const;
+  short UnselectedMenuForegroundColor() const;
+  short UnselectedMenuBackgroundColor() const;
+  short SelectedMenuForegroundColor() const;
+  short SelectedMenuBackgroundColor() const;
 
  private:
   DoneyetConfig() {}
@@ -60,9 +60,9 @@ class DoneyetConfig {
   // Attempts to convert config[color_name] into a color, and set var_to_set to
   // that color.  If this fails it prints an error and return false.
   bool ParseColor(map<string, string>& config, const string& color_name,
-                  short* var_to_set);
+                  short* var_to_set) const;
   bool ParseBool(map<string, string>& config, const string& to_parse,
-                 bool* value);
+                 bool* value) const;
 
   bool ParseGeneralOptions();
   short foreground_color_;
