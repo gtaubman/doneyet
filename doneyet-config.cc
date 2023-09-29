@@ -27,7 +27,6 @@ bool DoneyetConfig::Parse() {
   map<string, string>& tasks = config_[kTasksSection];
   tasks[kPromptOnDeleteTask] = "true";
 
-
   if (file_manager->ConfigFilePath().length() &&
       !ConfigParser::ParseConfig(file_manager->ConfigFilePath(), &config_)) {
     return false;
@@ -47,7 +46,7 @@ bool DoneyetConfig::PromptOnDeleteTask() const {
 static short ColorForString(string s) {
   // First lowercase.
   for (int i = 0; i < s.length(); ++i) {
-    s[i] = std::tolower(s[i]);
+    s[i] = (char) std::tolower(s[i]);
   }
 
   if (s == "black") {
@@ -75,7 +74,7 @@ static short ColorForString(string s) {
 
 bool DoneyetConfig::ParseColor(map<string, string>& config,
                                const string& color_name,
-                               short* var_to_set) const {
+                               short* var_to_set) {
   *var_to_set = ColorForString(config[color_name]);
   if (*var_to_set == kColorError) {
     fprintf(stderr, "'%s' is not a valid color for config option %s.\n",
@@ -87,7 +86,7 @@ bool DoneyetConfig::ParseColor(map<string, string>& config,
 }
 
 bool DoneyetConfig::ParseBool(map<string, string>& config,
-                              const string& to_parse, bool* value) const {
+                              const string& to_parse, bool* value) {
   const string& param = config[to_parse];
   if (param == "true" || param == "yes") {
     *value = true;

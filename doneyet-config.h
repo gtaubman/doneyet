@@ -14,17 +14,17 @@ using std::string;
 
 class DoneyetConfig;
 
-static DoneyetConfig* global_config = NULL;
+static DoneyetConfig* global_config = nullptr;
 
 class DoneyetConfig {
  public:
   static DoneyetConfig* GlobalConfig() {
-    if (global_config == NULL) {
+    if (global_config == nullptr) {
       global_config = new DoneyetConfig();
       if (!global_config->Parse()) {
         delete global_config;
-        global_config = NULL;
-        return NULL;
+        global_config = nullptr;
+        return nullptr;
       }
     }
     return global_config;
@@ -44,10 +44,10 @@ class DoneyetConfig {
 
   // Attempts to convert config[color_name] into a color, and set var_to_set to
   // that color.  If this fails it prints an error and return false.
-  bool ParseColor(map<string, string>& config, const string& color_name,
-                  short* var_to_set) const;
-  bool ParseBool(map<string, string>& config, const string& to_parse,
-                 bool* value) const;
+  static bool ParseColor(map<string, string>& config, const string& color_name,
+                  short* var_to_set);
+  static bool ParseBool(map<string, string>& config, const string& to_parse,
+                 bool* value);
 
   bool ParseGeneralOptions();
   short foreground_color_;
