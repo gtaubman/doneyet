@@ -35,22 +35,7 @@ class DoneyetConfig {
   // General related configuration.
   short ForegroundColor() const;
   short BackgroundColor() const;
-  short HeaderTextColor() const;
-
-  // Task related configuration.
-  short UnstartedTaskColor() const;
-  short InProgressTaskColor() const;
-  short PausedTaskColor() const;
-  short FinishedTaskColor() const;
   bool PromptOnDeleteTask() const;
-
-  // Menu related configuration.
-  short MenubarForegroundColor() const;
-  short MenubarBackgroundColor() const;
-  short UnselectedMenuForegroundColor() const;
-  short UnselectedMenuBackgroundColor() const;
-  short SelectedMenuForegroundColor() const;
-  short SelectedMenuBackgroundColor() const;
 
  private:
   DoneyetConfig() {}
@@ -67,22 +52,8 @@ class DoneyetConfig {
   bool ParseGeneralOptions();
   short foreground_color_;
   short background_color_;
-  short header_text_color_;
   bool prompt_on_delete_task_;
 
-  bool ParseTaskOptions();
-  short unstarted_task_color_;
-  short in_progress_task_color_;
-  short paused_task_color_;
-  short finished_task_color_;
-
-  bool ParseMenuOptions();
-  short menubar_foreground_color_;
-  short menubar_background_color_;
-  short unselected_menu_foreground_color_;
-  short unselected_menu_background_color_;
-  short selected_menu_foreground_color_;
-  short selected_menu_background_color_;
 };
 
 #endif  // DONEYET_CONFIG_H_
