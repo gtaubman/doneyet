@@ -1,9 +1,8 @@
 #include "config-parser.h"
 
-#include <assert.h>
+#include <cassert>
 
 #include <fstream>
-#include <iostream>
 
 // Returns a new string that has all padding whitespace removed.
 static string StripWhiteSpace(const string& s) {
@@ -33,7 +32,7 @@ bool ConfigParser::ParseConfig(const string& file_path,
     getline(config_file, line);
 
     // Skip comment lines.
-    if (!line.size() || line[0] == '#') {
+    if (line.empty() || line[0] == '#') {
       continue;
     }
 
