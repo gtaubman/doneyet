@@ -1,7 +1,5 @@
 #include "utils.h"
 
-#include <assert.h>
-#include <stdio.h>
 #include <string.h>
 
 // Returns the origin and dimensions of an ncurses window.
@@ -25,17 +23,18 @@ window_info CursesUtils::get_window_info(WINDOW* win) {
 
 void CursesUtils::print_in_middle(WINDOW* win, int starty, int startx,
                                   int width, const char* string, chtype color) {
-  int length, x, y;
+  int length;
+  int x;
+  int y;
   float temp;
 
-  if (win == NULL) win = stdscr;
+  if (win == nullptr) win = stdscr;
   getyx(win, y, x);
-  if (startx != 0) x = startx;
   if (starty != 0) y = starty;
   if (width == 0) width = 80;
 
   length = strlen(string);
-  temp = (width - length) / 2;
+  temp = float(width - length) / 2;
   x = startx + (int)temp;
   wattron(win, color | A_BOLD);
   mvwprintw(win, y, x, "%s", string);
@@ -89,7 +88,7 @@ void StrUtils::SplitStringUsing(const string splitter, const string str,
   }
 
   int start_pos = 0;
-  size_t find_pos = string::npos;
+  size_t find_pos;
   while ((find_pos = str.find(splitter, start_pos)) != string::npos) {
     vec->push_back(str.substr(start_pos, find_pos - start_pos));
     start_pos = find_pos + splitter.size();

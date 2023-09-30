@@ -19,10 +19,10 @@
 static bool do_resize;
 
 Workspace::Workspace()
-    : menubar_(NULL),
-      project_(NULL),
-      list_(NULL),
-      notes_list_(NULL),
+    : menubar_(nullptr),
+      project_(nullptr),
+      list_(nullptr),
+      notes_list_(nullptr),
       done_(false) {
   // Initialize the menu bar.
   InitializeMenuBar();
@@ -373,7 +373,7 @@ void Workspace::AddNote(Task* t) {
 }
 
 void Workspace::ViewNotes(Task* t) {
-  if (t != NULL) {
+  if (t != nullptr) {
     if (t->HasNotes()) {
       string selected_note = ListChooser::GetMappedChoice(
           t->MappedNotes());         // use MappedNotes here
@@ -504,9 +504,11 @@ void Workspace::SaveCurrentProject() {
 }
 
 void Workspace::PerformFullListUpdate() {
-  project_->RecomputeNodeStatus();
-  project_->FilterTasks();
-  list_->Update();
+  if (project_ != nullptr) {
+    project_->RecomputeNodeStatus();
+    project_->FilterTasks();
+    list_->Update();
+  }
 }
 
 void Workspace::DisplayNotes(Task* t) {
