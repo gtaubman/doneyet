@@ -50,7 +50,7 @@ bool FileManager::Initialize() {
   }
 
   // Check for a config file.
-  config_file_path_ = data_dir_ + "/config";
+  config_file_path_ = data_dir_ + "config";
   if (!FileExists(config_file_path_)) {
     config_file_path_ = "";
   }

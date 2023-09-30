@@ -32,7 +32,7 @@ bool ConfigParser::ParseConfig(const string& file_path,
     getline(config_file, line);
 
     // Skip comment lines.
-    if (!line.empty() || line[0] == '#') {
+    if (line.empty() || line[0] == '#') {
       continue;
     }
 

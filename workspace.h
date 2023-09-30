@@ -31,7 +31,7 @@ using std::vector;
   "  * Escape - Place task to where it was originally.\n"                    \
   "* n - Add a note to the selected task.\n"                                 \
   "* v - View the notes of the selected task.\n"                             \
-  "* j - Selected next task.\n"                                              \
+  "* j - Select next task.\n"                                                \
   "* k - Select previous task.\n"                                            \
   "* Escape - Select no task.\n"                                             \
   "* e - Edit selected task.\n"                                              \

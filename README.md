@@ -16,10 +16,10 @@ DoneYet? is a filter-based todo list manager. Currently there are only four filt
 * Show Completed Tasks - This shows only tasks that have a completion date within 7 days of now.
 * Find - This filter takes a user specified string and shows any that match. This uses case-sensitive search.
 
-# Saving
+## Saving
 Doneyet will save on quit, or when choosing 'Save' from the 'Project' menu.
 
-# Key Shortcuts
+## Key Shortcuts
 Doneyet is used primarily through key commands. There is a menu system in place but not everything can be achieved through it. The key commands are as follows:
 
 * A - Apply the Show All Tasks filter.
@@ -36,7 +36,7 @@ Doneyet is used primarily through key commands. There is a menu system in place 
   * Escape - Place task to where it was originally.
 * n - Add a note to the selected task.
 * v - View the notes of the selected task.
-* j - Selected next task.
+* j - Select next task.
 * k - Select previous task.
 * Escape - Select no task.
 * e - Edit selected task.
@@ -50,12 +50,24 @@ Doneyet is used primarily through key commands. There is a menu system in place 
 * h - Shows a help dialog.
 * q - Quit.
 
-# Menu System
+## Menu System
 The menu system also contains the 'Plain Text' menu item in the 'Generate' menu. This creates a text file of whatever is currently filtered in /tmp/snippet.txt and then calls less on that file. A potential use of this is reporting weekly progress in email. Copying directly out of the ncurses window is difficult and time consuming. This however generates a plain text version with no borders.
 
-# Versions and Features
+## Project files
 
-## doneyet-1.1.0 - edit and delete of notes & help dialog
+Project files are stored in ___~/.todo/Projects/___. Please backup your ___~/.todo___ folder regularly.
+## Configuration file
+
+A configuration file can be placed in ___~/.todo/___ to set some options.
+```
+[TASKS]
+# prompt_on_delete default is true
+prompt_on_delete = false
+```
+
+## Versions and Features
+
+### doneyet-1.1.0 - edit and delete of notes & help dialog
 Features:
 * added deleting and editing of notes
 * drawing closing T-junctions on column ends
@@ -65,7 +77,7 @@ Bugfixes:
 * segmentation fault (ESC twice at startup)
 * removing unnecessary saving (is already performed by Quit() )
 
-## doneyet-1.0.0 - original version from google code import
+### doneyet-1.0.0 - original version from google code import
 
 # Compilation/Installation
 
