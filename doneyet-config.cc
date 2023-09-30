@@ -27,9 +27,14 @@ bool DoneyetConfig::Parse() {
   map<string, string>& tasks = config_[kTasksSection];
   tasks[kPromptOnDeleteTask] = "true";
 
-  if (file_manager->ConfigFilePath().length() &&
-      !ConfigParser::ParseConfig(file_manager->ConfigFilePath(), &config_)) {
-    return false;
+  // parse config associated with project, if configured, overwriting defaults
+  // if specified
+  if (file_manager->ConfigFilePath().length()) {
+    bool ok =
+        ConfigParser::ParseConfig(file_manager->ConfigFilePath(), &config_);
+    if (!ok) {
+      return false;
+    }
   }
 
   return ParseGeneralOptions();

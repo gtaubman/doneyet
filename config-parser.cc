@@ -1,7 +1,6 @@
 #include "config-parser.h"
 
-#include <assert.h>
-
+#include <cassert>
 #include <fstream>
 #include <iostream>
 
@@ -28,12 +27,12 @@ bool ConfigParser::ParseConfig(const string& file_path,
   }
 
   string line;
-  map<string, string>* current_section = NULL;
+  map<string, string>* current_section = nullptr;
   while (!config_file.eof()) {
     getline(config_file, line);
 
     // Skip comment lines.
-    if (!line.size() || line[0] == '#') {
+    if (!line.empty() || line[0] == '#') {
       continue;
     }
 
@@ -45,7 +44,7 @@ bool ConfigParser::ParseConfig(const string& file_path,
 
     // If we get this far and we don't already have a section, bail out.  This
     // can occur when no section is provided initially.
-    if (current_section == NULL) {
+    if (current_section == nullptr) {
       fprintf(stderr, "No section at beginning of config file.\n");
       return false;
     }

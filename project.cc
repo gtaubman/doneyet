@@ -2,9 +2,6 @@
 
 #include <map>
 
-#include "hierarchical-list.h"
-#include "utils.h"
-
 using std::map;
 
 Project::Project(string name) : name_(name) { ShowAllTasks(); }
@@ -51,7 +48,7 @@ Project* Project::NewProjectFromFile(string path) {
   // Create the serializer
   Serializer s(path, "");
   if (!s.Okay()) {
-    return NULL;
+    return nullptr;
   }
 
   // Read the file version
@@ -107,7 +104,7 @@ int Project::NumTasks() {
 }
 
 void Project::DeleteTask(Task* t) {
-  if (t->Parent() == NULL) {
+  if (t->Parent() == nullptr) {
     // It's a top level task.  Remove it from our list of roots.
     for (int i = 0; i < tasks_.size(); ++i) {
       if (tasks_[i] == t) {
@@ -167,7 +164,7 @@ TaskStatus Project::ComputeStatusForTask(Task* t) {
   return IN_PROGRESS;
 }
 
-int Project::NumFilteredRoots() { return filtered_tasks_.size(); }
+int Project::NumFilteredRoots() const { return filtered_tasks_.size(); }
 
 Task* Project::FilteredRoot(int r) { return filtered_tasks_[r]; }
 

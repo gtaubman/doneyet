@@ -26,7 +26,7 @@ class Project : public HierarchicalListDataSource {
   void FilterTasks() { FilterTasks(&base_filter_); }
   void RunSearchFilter(const string& find);
 
-  string Name() { return name_; }
+  string Name() const { return name_; }
   Task* AddTaskNamed(const string& name);
   void Serialize(Serializer* s);
 
@@ -39,7 +39,7 @@ class Project : public HierarchicalListDataSource {
   void ShowCompletedLastWeek();
   void ArchiveCompletedTasks();
 
-  int NumFilteredRoots();
+  int NumFilteredRoots() const;
   Task* FilteredRoot(int r);
 
   // Functions required by HierarchicalListDataSource:
