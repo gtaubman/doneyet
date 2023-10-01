@@ -58,7 +58,7 @@ The menu system also contains the 'Plain Text' menu item in the 'Generate' menu.
 Project files are stored in ___~/.todo/Projects/___. Please backup your ___~/.todo___ folder regularly.
 ## Configuration file
 
-A configuration file can be placed in ___~/.todo/___ to set some options.
+A configuration file can be created in ___~/.todo/config___ to set some options.
 ```
 [TASKS]
 # prompt_on_delete default is true
