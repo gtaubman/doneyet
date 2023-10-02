@@ -22,3 +22,6 @@ target_link_libraries(doneyet ${NCURSES_LINK_LIBRARIES} -lpanelw -lmenuw -lformw
 add_executable(wide_input_test wide_input_test.cc)
 target_link_options(wide_input_test PRIVATE ${NCURSES_LDFLAGS})
 target_link_libraries(wide_input_test ${NCURSES_LINK_LIBRARIES} -lpanelw -lmenuw -lformw -lncursesw)
+add_executable(wide_project_test wide_project_test.cc project.cc task.cc date.cc serializer.cc note.cc hierarchical-list.cc dialog-box.cc utils.cc)
+target_link_options(wide_project_test PRIVATE ${NCURSES_LDFLAGS})
+target_link_libraries(wide_project_test ${NCURSES_LINK_LIBRARIES} -lpanelw -lmenuw -lformw -lncursesw)

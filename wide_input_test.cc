@@ -10,7 +10,6 @@ int main() {
   noecho();
   keypad(stdscr, TRUE);
 
-  /* Create the form and post it */
   // wchar_t wstr[] = { 9474, L'\0' };
   // mvaddwstr(0, 0, wstr);
   mvprintw(1, 0, "Input tester\n");
