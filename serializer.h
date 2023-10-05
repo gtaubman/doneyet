@@ -7,41 +7,39 @@
 
 #include "basic-types.h"
 
-using std::ifstream;
+using std::wifstream;
 using std::istream;
-using std::ofstream;
+using std::wofstream;
 using std::ostream;
 using std::string;
+using std::wstring;
 
 class Serializer {
  public:
   Serializer(const string& inpath, const string& outpath);
   ~Serializer();
 
-  void WriteUint8(uint8 i);
-  void WriteUint16(uint16 i);
   void WriteInt32(int i);
   void WriteUint32(uint32 i);
   void WriteInt64(int64 i);
   void WriteUint64(uint64 i);
-  void WriteString(string str);
+  void WriteString(wstring str);
 
-  uint8 ReadUint8();
-  uint16 ReadUint16();
   uint32 ReadUint32();
   int32 ReadInt32();
   uint64 ReadUint64();
-  string ReadString();
+  wstring ReadString();
 
   int Version() { return version_; }
   void SetVersion(int v) { version_ = v; }
+  void Flush();
 
   void CloseAll();
   bool Okay() { return okay_; }
 
  private:
-  ofstream* out_;
-  ifstream* in_;
+  wofstream* out_;
+  wifstream* in_;
 
   bool okay_;
   bool done_;

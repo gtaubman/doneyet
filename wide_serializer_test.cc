@@ -17,19 +17,28 @@ int main() {
   int ok=true;
   wint_t ch;
   mvaddwstr(0,0,L"Give me a project name:");
+  /*
   while ( ch != '\n' ) {
       ok = get_wch(&ch);
       input.push_back(ch);
   }
+   */
   //printw("%ls\n", ch);
   mvaddwstr(1,0,input.c_str());
   refresh();
-  Project *p =  new Project("bla");
-  p->AddTaskNamed("new task");
-    Serializer s("", "./bla");
-    s.SetVersion(NOTES_VERSION);
-    p->Serialize(&s);
-    s.CloseAll();
+  //Project *p =  new Project(L"MyProject");
+  //p->AddTaskNamed(L"new task meet with fiancé at ÂÂ°Albörg");
+  Serializer s("", "./bla");
+  //  p->Serialize(&s);
+  s.SetVersion(NOTES_VERSION);
+  s.WriteString(L"input öäü fiancé: ÂÄ many more words");
+  s.Flush();
+  s.CloseAll();
+  //delete p;
+  Serializer s2("./bla", "./bla2");
+  s2.SetVersion(NOTES_VERSION);
+  mvaddwstr(5,0,s2.ReadString().c_str());
+  s2.CloseAll();
 
   ok = get_wch(&ch);
   endwin();
