@@ -12,7 +12,7 @@ using std::string;
 using std::wstring;
 
 Serializer::Serializer(const string& inpath, const string& outpath)
-    : out_(nullptr), in_(nullptr), okay_(true), done_(false) {
+    : out_(nullptr), in_(nullptr), okay_(true) {
   if (!inpath.empty()) {
     in_ = new std::wifstream(inpath.c_str(), std::ios::in | std::ios::binary);
     if (in_->fail()) {
@@ -55,8 +55,8 @@ void Serializer::WriteUint64(uint64 i) {
   WriteUint32(i);
 }
 
-void Serializer::WriteString(wstring str) {
-  int bytelength = str.length();
+void Serializer::WriteString(const wstring& str) {
+  uint32 bytelength = uint32( str.length());
   WriteUint32(bytelength);
   *out_ << str;
 }
@@ -66,10 +66,6 @@ uint32 Serializer::ReadUint32() {
     uint32 i = 0;
     wchar_t * c = (wchar_t*)&i;
     in_->read(c, 1);
-
-    if (in_->eof()) {
-        done_ = true;
-    }
     return i;
 }
 

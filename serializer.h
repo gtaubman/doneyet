@@ -23,7 +23,7 @@ class Serializer {
   void WriteUint32(uint32 i);
   void WriteInt64(int64 i);
   void WriteUint64(uint64 i);
-  void WriteString(wstring str);
+  void WriteString(const wstring& str);
 
   uint32 ReadUint32();
   int32 ReadInt32();
@@ -42,7 +42,6 @@ class Serializer {
   wifstream* in_;
 
   bool okay_;
-  bool done_;
 
   // This is user set data to aid in passing around a file version.
   uint64 version_;
