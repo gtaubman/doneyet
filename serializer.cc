@@ -58,7 +58,8 @@ void Serializer::WriteUint64(uint64 i) {
 void Serializer::WriteString(const wstring& str) {
   uint32 bytelength = uint32( str.length());
   WriteUint32(bytelength);
-  *out_ << str;
+  //*out_ << str;
+  out_->write(str.c_str(), bytelength);
 }
 
 uint32 Serializer::ReadUint32() {

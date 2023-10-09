@@ -23,7 +23,8 @@ int main() {
     if (ch == KEY_DOWN) {
       break;
     } else {
-      printw("%lc\n", ch);
+      //printf("%ls \n", L"\U0001f600");
+      printw("%lc : %08x\n", ch, ch);
     }
     refresh();
   }

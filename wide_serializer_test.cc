@@ -38,8 +38,12 @@ int main() {
   //delete p;
   Serializer s2("./bla", "./bla2");
   s2.SetVersion(NOTES_VERSION);
-  mvaddwstr(5,0,s2.ReadString().c_str());
-  mvaddwstr(6,0,s2.ReadString().c_str());
+  //mvaddwstr(5,0,s2.ReadString().c_str());
+  //mvaddwstr(6,0,s2.ReadString().c_str());
+  std::wstring res = s2.ReadString();
+  printw("%ls : %08x\n", res.c_str(), res.c_str());
+  res = s2.ReadString();
+  printw("%ls : %08x\n", res.c_str(), res.c_str());
   s2.CloseAll();
 
   ok = get_wch(&ch);
