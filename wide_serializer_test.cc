@@ -23,31 +23,17 @@ int main() {
       input.push_back(ch);
   }
 
-  //printw("%ls\n", ch);
-  //mvaddwstr(1,0,input.c_str());
+  mvaddwstr(1,0,input.c_str());
   refresh();
-  Project *p =  new Project(L"MyProject");
+  Project *p =  new Project(input);
   Serializer* s = new Serializer("", "./bla");
   s->SetVersion(NOTES_VERSION);
   p->AddTaskNamed(L"new task meet with fiancé");
-  p->AddTaskNamed(input);
+  p->AddTaskNamed(L"cool new öäü");
   p->Serialize(s);
-  ok = get_wch(&ch);
   s->CloseAll();
   delete p;
   delete s;
-
-  /*
-  Serializer s2("./bla", "./bla2");
-  s2.SetVersion(NOTES_VERSION);
-  mvaddwstr(5,0,s2.ReadString().c_str());
-  mvaddwstr(6,0,s2.ReadString().c_str());
-  std::wstring res = s2.ReadString();
-  printw("%ls\n",  res.c_str());
-  res = s2.ReadString();
-  printw("%ls\n", res.c_str());
-  s2.CloseAll();
-   */
 
   ok = get_wch(&ch);
   endwin();
