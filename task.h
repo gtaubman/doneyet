@@ -21,7 +21,8 @@
 
 using std::map;
 using std::ofstream;
-using std::string;
+using std::wostream;
+using std::wstring;
 using std::vector;
 
 typedef enum TaskStatus_ {
@@ -34,20 +35,20 @@ typedef enum TaskStatus_ {
 
 class Task : public ListItem {
  public:
-  Task(const string& title, const string& description);
+  Task(const wstring &title, const wstring &description);
   virtual ~Task();
   static Task* NewTaskFromSerializer(Serializer* s);
 
   bool HasNotes();
-  void AddNote(const string& note);
-  void DeleteNote(const string& note);
-  vector<string> Notes();
-  map<string, string> MappedNotes();
+  void AddNote(const wstring& note);
+  void DeleteNote(const wstring& note);
+  vector<wstring> Notes();
+  map<wstring, wstring> MappedNotes();
 
-  string Title() { return title_; }
-  static string TitleWrapper(Task* t) { return t->Title(); }
-  string Description() { return description_; }
-  static string DescriptionWrapper(Task* t) { return t->Description(); }
+  wstring Title() { return title_; }
+  static wstring TitleWrapper(Task* t) { return t->Title(); }
+  wstring Description() { return description_; }
+  static wstring DescriptionWrapper(Task* t) { return t->Description(); }
   Date CompletionDate() { return completion_date_; }
   static time_t CompletionDateWrapper(Task* t) {
     return t->CompletionDate().Time();
@@ -86,23 +87,23 @@ class Task : public ListItem {
   Task* Parent() { return parent_; }
 
   // Functions required by list item
-  const string TextForColumn(const string& c) {
-    if (c == "Task") return title_;
-    if (c == "Created") return creation_date_.ToString();
-    if (c == "Completed") {
-      if (completion_date_.Time() == 0) return "";
-      return completion_date_.ToString();
+  const wstring TextForColumn(const wstring& c) {
+    if (c == L"Task") return title_;
+    if (c == L"Created") return convToWstring(creation_date_.ToString());
+    if (c == L"Completed") {
+      if (completion_date_.Time() == 0) return L"";
+      return convToWstring(completion_date_.ToString());
     }
-    if (c == "N") return (notes_.size() ? "X" : "");
-    return "UNKNOWN";
+    if (c == L"N") return (notes_.size() ? L"X" : L"");
+    return L"UNKNOWN";
   }
   int ListColor();
   int NumListChildren() { return NumFilteredChildren(); }
   Task* ListChild(int c) { return FilteredChild(c); }
   Task* ListParent() { return Parent(); }
-  void SetListText(const string& text) { title_ = text; }
+  void SetListText(const wstring& text) { title_ = text; }
 
-  void ToStream(ostream& out, int depth);
+  void ToStream(wostream& out, int depth);
 
  private:
   friend class Project;
@@ -112,8 +113,8 @@ class Task : public ListItem {
   TaskStatus status_;
   vector<Task*> subtasks_;
   vector<Task*> filtered_tasks_;
-  string title_;
-  string description_;
+  wstring title_;
+  wstring description_;
   Date creation_date_;
   Date start_date_;
   Date completion_date_;

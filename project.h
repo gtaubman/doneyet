@@ -12,22 +12,24 @@
 
 using std::ifstream;
 using std::ofstream;
+using std::wostream;
 using std::string;
+using std::wstring;
 using std::vector;
 
 class Project : public HierarchicalListDataSource {
  public:
-  explicit Project(string name);
+  explicit Project(wstring name);
   virtual ~Project();
 
   static Project* NewProjectFromFile(string path);
 
   void FilterTasks(FilterPredicate<Task>* filter);
   void FilterTasks() { FilterTasks(&base_filter_); }
-  void RunSearchFilter(const string& find);
+  void RunSearchFilter(const wstring& find);
 
-  string Name() const { return name_; }
-  Task* AddTaskNamed(const string& name);
+  wstring Name() const { return name_; }
+  Task* AddTaskNamed(const wstring& name);
   void Serialize(Serializer* s);
 
   // A count of every item in the tree.
@@ -52,7 +54,7 @@ class Project : public HierarchicalListDataSource {
  private:
   TaskStatus ComputeStatusForTask(Task* t);
 
-  string name_;
+  wstring name_;
   vector<Task*> tasks_;
   vector<Task*> filtered_tasks_;
   AndFilterPredicate<Task> base_filter_;

@@ -32,14 +32,13 @@ class Serializer {
 
   int Version() { return version_; }
   void SetVersion(int v) { version_ = v; }
-  void Flush();
 
   void CloseAll();
   bool Okay() { return okay_; }
 
  private:
-  wofstream* out_;
-  wifstream* in_;
+  FILE* out_;
+  FILE* in_;
 
   bool okay_;
 

@@ -14,21 +14,17 @@ using std::wstring;
 Serializer::Serializer(const string& inpath, const string& outpath)
     : out_(nullptr), in_(nullptr), okay_(true) {
   if (!inpath.empty()) {
-    in_ = new std::wifstream(inpath.c_str(), std::ios::in | std::ios::binary);
-    if (in_->fail()) {
+    in_ = fopen(inpath.c_str(), "rb");
+    if (in_ == nullptr) {
       cout << "Error attempting to unserialize from path: " << inpath << endl;
-      delete in_;
-      in_ = nullptr;
       okay_ = false;
     }
   }
 
   if (!outpath.empty()) {
-    out_ = new std::wofstream(outpath.c_str(), std::ios::out | std::ios::binary);
-    if (out_->fail()) {
+    out_ = fopen(outpath.c_str(), "wb");
+    if (out_ == nullptr) {
       cout << "Error attempting to serialize from path: " << outpath << endl;
-      delete out_;
-      out_ = nullptr;
       okay_ = false;
     }
   }
@@ -36,16 +32,16 @@ Serializer::Serializer(const string& inpath, const string& outpath)
 }
 
 Serializer::~Serializer() {
-  delete in_;
-  delete out_;
 }
 
 void Serializer::WriteInt32(int i) { WriteUint32(static_cast<uint32>(i)); }
 
 void Serializer::WriteUint32(uint32 ui) {
   assert(out_ != nullptr);
-  const wchar_t* c = (const wchar_t*)&ui;
-  out_->write(c, 1);
+  size_t written = fwrite(&ui, sizeof(uint32), 1, out_);
+  if (written != 1) {
+      cout << "Error attempting to serialize Uint32 to file" << endl;
+  }
 }
 
 void Serializer::WriteInt64(int64 i) { WriteUint64(i); }
@@ -56,17 +52,21 @@ void Serializer::WriteUint64(uint64 i) {
 }
 
 void Serializer::WriteString(const wstring& str) {
-  uint32 bytelength = uint32( str.length());
-  WriteUint32(bytelength);
-  //*out_ << str;
-  out_->write(str.c_str(), bytelength);
+  uint32 strlength = uint32( str.length());
+  WriteUint32(strlength);
+  size_t written = fwrite(str.c_str(), sizeof(wchar_t), strlength, out_);
+    if (written != strlength) {
+        cout << "Error attempting to serialize string to file" << endl;
+    }
 }
 
 uint32 Serializer::ReadUint32() {
     assert(in_ != nullptr);
     uint32 i = 0;
-    wchar_t * c = (wchar_t*)&i;
-    in_->read(c, 1);
+    size_t read = fread(&i, sizeof (uint32), 1, in_);
+    if (read != 1){
+        cout << "Error attempting to deserialize uint32 from file" << endl;
+    }
     return i;
 }
 
@@ -81,29 +81,21 @@ uint64 Serializer::ReadUint64() {
 
 wstring Serializer::ReadString() {
   // First read the size of the string
-  uint32 str_size = ReadUint32();
-
-  wchar_t data[1000000] = {0};
-  in_->read(data, str_size);
-
-  return wstring(data);
+  uint32 strlength = ReadUint32();
+  wchar_t buffer[1000000] = {0};
+  size_t read = fread(buffer, sizeof (wchar_t ), strlength, in_);
+    if (read != strlength) {
+        cout << "Error attempting to deserialize string from file" << endl;
+    }
+  return wstring(buffer);
 }
 
-void Serializer::Flush() {
-    if (out_) {
-        out_->flush();
-    }
-
-    if (in_) {
-        in_->sync();
-    }
-}
 void Serializer::CloseAll() {
   if (out_) {
-    out_->close();
+      fclose(out_);
   }
 
   if (in_) {
-    in_->close();
+      fclose(in_);
   }
 }

@@ -3,8 +3,9 @@
 #include <map>
 
 using std::map;
+using std::wstring;
 
-Project::Project(string name) : name_(name) { ShowAllTasks(); }
+Project::Project(wstring name) : name_(name) { ShowAllTasks(); }
 
 Project::~Project() {
   for (int i = 0; i < tasks_.size(); ++i) {
@@ -22,8 +23,8 @@ void Project::FilterTasks(FilterPredicate<Task>* filter) {
   filtered_tasks_ = filter->FilterVector(tasks_);
 }
 
-Task* Project::AddTaskNamed(const string& name) {
-  Task* nt = new Task(name, "");
+Task* Project::AddTaskNamed(const wstring& name) {
+  Task* nt = new Task(name, L"");
   tasks_.push_back(nt);
   return nt;
 }
@@ -56,7 +57,7 @@ Project* Project::NewProjectFromFile(string path) {
   s.SetVersion(file_version);
 
   // Find the project's name
-  string project_name = s.ReadString();
+  wstring project_name = s.ReadString();
   Project* p = new Project(project_name);
 
   // Find how many tasks there are.
@@ -203,7 +204,7 @@ void Project::ShowCompletedLastWeek() {
   FilterTasks();
 }
 
-void Project::RunSearchFilter(const string& needle) {
+void Project::RunSearchFilter(const wstring& needle) {
   // Clear the current filters.
   base_filter_.Clear();
 
@@ -227,7 +228,7 @@ void Project::RunSearchFilter(const string& needle) {
   FilterTasks();
 }
 
-ostream& operator<<(ostream& out, Project& project) {
+wostream& operator<<(wostream& out, Project& project) {
   for (int i = 0; i < project.NumFilteredRoots(); ++i) {
     project.FilteredRoot(i)->ToStream(out, 0);
   }

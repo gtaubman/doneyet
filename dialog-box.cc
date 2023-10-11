@@ -1,6 +1,7 @@
+#define _XOPEN_SOURCE_EXTENDED
 #include "dialog-box.h"
 
-string DialogBox::RunMultiLine(const string& title, const string& default_text,
+wstring DialogBox::RunMultiLine(const wstring& title, const wstring& default_text,
                                int width, int height) {
   // Create the text field
   FIELD* field = new_field(height, width, 0, 0, 0, 0);
@@ -9,7 +10,7 @@ string DialogBox::RunMultiLine(const string& title, const string& default_text,
   set_field_back(field, A_UNDERLINE);
   field_opts_off(field, O_STATIC);
   if (!default_text.empty()) {
-    set_field_buffer(field, 0, default_text.c_str());
+    set_field_buffer(field, 0, (char *) default_text.c_str());
   }
 
   // Make the usual list of fields
@@ -104,10 +105,10 @@ string DialogBox::RunMultiLine(const string& title, const string& default_text,
   form_driver(form, REQ_VALIDATION);
 
   // Get whatever they wrote:
-  string answer(field_buffer(field, 0));
+  wstring answer((wchar_t *)field_buffer(field, 0));
 
   // trim trailing whitespace
-  int notwhite = (int)answer.find_last_not_of(" \t\n");
+  int notwhite = (int)answer.find_last_not_of(L" \t\n");
   answer.erase(notwhite + 1);
   StrUtils::trim_multiple_spaces(answer);
 
@@ -120,17 +121,17 @@ string DialogBox::RunMultiLine(const string& title, const string& default_text,
 
   if (hit_escape) {
     // Clear out whatever was in the box if they hit escape.
-    answer = "";
+    answer = L"";
   }
   return answer;
 }
 
-string DialogBox::RunCentered(const string& title, const string& default_text) {
+wstring DialogBox::RunCentered(const wstring& title, const wstring& default_text) {
   return DialogBox::RunMultiLine(title, default_text, (int)title.size(), 1);
 }
 
-string DialogBox::RunCenteredWithWidth(const string& title,
-                                       const string& default_text,
+wstring DialogBox::RunCenteredWithWidth(const wstring& title,
+                                       const wstring& default_text,
                                        const int width) {
   return DialogBox::RunMultiLine(title, default_text, width, 1);
 }
