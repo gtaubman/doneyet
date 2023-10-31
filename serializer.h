@@ -30,11 +30,11 @@ class Serializer {
   uint64 ReadUint64();
   wstring ReadString();
 
-  int Version() { return version_; }
+  int Version() const { return int(version_); }
   void SetVersion(int v) { version_ = v; }
 
   void CloseAll();
-  bool Okay() { return okay_; }
+  bool Okay() const { return okay_; }
 
  private:
   FILE* out_;
