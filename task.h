@@ -4,7 +4,7 @@
 // TODO: Swap(Task*, Task*) is still a bit flakey if the tasks are in the
 // "wrong" order.  Fix that.
 
-#include <ncursesw/ncurses.h>
+#include <ncurses/ncurses.h>
 
 #include <ctime>
 #include <fstream>
@@ -21,8 +21,8 @@
 
 using std::map;
 using std::ofstream;
-using std::wostream;
-using std::wstring;
+using std::ostream;
+using std::string;
 using std::vector;
 
 typedef enum TaskStatus_ {
@@ -35,20 +35,20 @@ typedef enum TaskStatus_ {
 
 class Task : public ListItem {
  public:
-  Task(const wstring &title, const wstring &description);
+  Task(const string &title, const string &description);
   virtual ~Task();
   static Task* NewTaskFromSerializer(Serializer* s);
 
   bool HasNotes();
-  void AddNote(const wstring& note);
-  void DeleteNote(const wstring& note);
-  vector<wstring> Notes();
-  map<wstring, wstring> MappedNotes();
+  void AddNote(const string& note);
+  void DeleteNote(const string& note);
+  vector<string> Notes();
+  map<string, string> MappedNotes();
 
-  wstring Title() { return title_; }
-  static wstring TitleWrapper(Task* t) { return t->Title(); }
-  wstring Description() { return description_; }
-  static wstring DescriptionWrapper(Task* t) { return t->Description(); }
+  string Title() { return title_; }
+  static string TitleWrapper(Task* t) { return t->Title(); }
+  string Description() { return description_; }
+  static string DescriptionWrapper(Task* t) { return t->Description(); }
   Date CompletionDate() { return completion_date_; }
   static time_t CompletionDateWrapper(Task* t) {
     return t->CompletionDate().Time();
@@ -87,23 +87,23 @@ class Task : public ListItem {
   Task* Parent() { return parent_; }
 
   // Functions required by list item
-  const wstring TextForColumn(const wstring& c) {
-    if (c == L"Task") return title_;
-    if (c == L"Created") return convToWstring(creation_date_.ToString());
-    if (c == L"Completed") {
-      if (completion_date_.Time() == 0) return L"";
-      return convToWstring(completion_date_.ToString());
+  const string TextForColumn(const string& c) {
+    if (c == "Task") return title_;
+    if (c == "Created") return creation_date_.ToString();
+    if (c == "Completed") {
+      if (completion_date_.Time() == 0) return "";
+      return completion_date_.ToString();
     }
-    if (c == L"N") return (notes_.size() ? L"X" : L"");
-    return L"UNKNOWN";
+    if (c == "N") return (notes_.size() ? "X" : "");
+    return "UNKNOWN";
   }
   int ListColor();
   int NumListChildren() { return NumFilteredChildren(); }
   Task* ListChild(int c) { return FilteredChild(c); }
   Task* ListParent() { return Parent(); }
-  void SetListText(const wstring& text) { title_ = text; }
+  void SetListText(const string& text) { title_ = text; }
 
-  void ToStream(wostream& out, int depth);
+  void ToStream(ostream& out, int depth);
 
  private:
   friend class Project;
@@ -113,8 +113,8 @@ class Task : public ListItem {
   TaskStatus status_;
   vector<Task*> subtasks_;
   vector<Task*> filtered_tasks_;
-  wstring title_;
-  wstring description_;
+  string title_;
+  string description_;
   Date creation_date_;
   Date start_date_;
   Date completion_date_;

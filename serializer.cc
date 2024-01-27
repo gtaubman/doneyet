@@ -2,14 +2,11 @@
 
 #include <cassert>
 #include <cstring>
-
-#include <fstream>
 #include <iostream>
 
 using std::cout;
 using std::endl;
 using std::string;
-using std::wstring;
 
 Serializer::Serializer(const string& inpath, const string& outpath)
     : out_(nullptr), in_(nullptr), okay_(true) {
@@ -51,7 +48,7 @@ void Serializer::WriteUint64(uint64 i) {
   WriteUint32(i);
 }
 
-void Serializer::WriteString(const wstring& str) {
+void Serializer::WriteString(const string& str) {
   uint32 strlength = uint32( str.length());
   WriteUint32(strlength);
   size_t written = fwrite(str.c_str(), sizeof(wchar_t), strlength, out_);
@@ -79,15 +76,15 @@ uint64 Serializer::ReadUint64() {
   return i;
 }
 
-wstring Serializer::ReadString() {
+string Serializer::ReadString() {
   // First read the size of the string
   uint32 strlength = ReadUint32();
-  wchar_t buffer[1000000] = {0};
-  size_t read = fread(buffer, sizeof (wchar_t ), strlength, in_);
+  char buffer[1000000] = {0};
+  size_t read = fread(buffer, sizeof (char ), strlength, in_);
     if (read != strlength) {
         cout << "Error attempting to deserialize string from file" << endl;
     }
-  return wstring(buffer);
+  return string(buffer);
 }
 
 void Serializer::CloseAll() {

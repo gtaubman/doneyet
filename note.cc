@@ -1,6 +1,6 @@
 #include "note.h"
 
-Note::Note(const wstring& text) {
+Note::Note(const string& text) {
   text_ = text;
   date_.SetToNow();
 }
@@ -9,9 +9,9 @@ Note::~Note() {
   // Nothing to delete.
 }
 
-wstring Note::Text() { return convToWstring(date_.ToString()) + L": " + text_; }
+string Note::Text() { return date_.ToString() + ": " + text_; }
 
-wstring Note::GetText() { return text_; }
+string Note::GetText() { return text_; }
 
 void Note::Serialize(Serializer* s) {
   s->WriteString(text_);

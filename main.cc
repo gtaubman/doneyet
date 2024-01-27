@@ -1,7 +1,6 @@
-#define _XOPEN_SOURCE_EXTENDED
 #include <locale.h>
-#include <ncursesw/menu.h>
-#include <ncursesw/ncurses.h>
+#include <ncurses/menu.h>
+#include <ncurses/ncurses.h>
 
 #include "doneyet-config.h"
 #include "workspace.h"
@@ -21,9 +20,7 @@ int main(int argc, char** argv) {
       return 1;
     }
 
-    setlocale(
-        LC_ALL,
-        "");    // setting locale helps drawing (still not entirely sure why)
+    setlocale( LC_ALL, "");    // setting locale helps drawing (still not entirely sure why)
     initscr();  // Create the standard window.
     keypad(stdscr, true);  // Enable keyboard mappings
     nonl();                // Disable weird newline stuff.

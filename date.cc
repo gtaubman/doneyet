@@ -23,15 +23,6 @@ string Date::ToString() const {
   return string(buf);
 }
 
-std::wstring convToWstring(const std::string& src)
-{
-    size_t len = src.length();
-    wchar_t dst[1000];
-    std::mbstowcs(dst, src.c_str(), len);
-    wstring w(dst);
-    return w;
-}
-
 void Date::Serialize(Serializer* s) const {
   s->WriteInt32(static_cast<int32>(time_));
 }

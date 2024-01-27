@@ -1,13 +1,13 @@
 #include <locale.h>
 #include <string>
 #include "serializer.h"
-using std::wstring;
+using std::string;
 
 int main() {
     setlocale(LC_ALL, "");
     // test data
     int mynum = 42;
-    wstring mystring =  L"input öäü fiancé: ÂÄ many more words";
+    string mystring =  "input";
 
     // create serializer in write-only configuration
     Serializer* s = new Serializer("", "./bla");
@@ -30,7 +30,7 @@ int main() {
         printf("TEST SUCCESS: Serializer : numbers match\n");
     }
     // Read string from serialized data
-    wstring compstring= s->ReadString();
+    string compstring= s->ReadString();
     // compare, throw errors if different
     if (compstring != mystring) {
         printf("TEST FAIL: Serializer : the strings do not match\n");

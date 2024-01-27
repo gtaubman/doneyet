@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <ncurses/curses.h>
 #include "list-chooser.h"
 
 #include <stdlib.h>

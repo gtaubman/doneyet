@@ -18,7 +18,7 @@
 #include <string>
 #include <vector>
 
-using std::wstring;
+using std::string;
 using std::vector;
 
 // Filter Predicate
@@ -140,24 +140,24 @@ class LTFilterPredicate : public FilterPredicate<T1> {
 template <class T>
 class StringContainsFilterPredicate : public FilterPredicate<T> {
  public:
-  StringContainsFilterPredicate(wstring needle,
-                                wstring (*text_getter_function)(T*)) {
+  StringContainsFilterPredicate(string needle,
+                                string (*text_getter_function)(T*)) {
     needle_ = needle;
     text_getter_function_ = text_getter_function;
   }
   virtual ~StringContainsFilterPredicate() {}
 
   virtual bool ObjectPasses(T* t) {
-    const wstring text = text_getter_function_(t);
+    const string text = text_getter_function_(t);
     if (this->is_not_) {
-      return (text.find(needle_) == wstring::npos);
+      return (text.find(needle_) == string::npos);
     }
-    return (text.find(needle_) != wstring::npos);
+    return (text.find(needle_) != string::npos);
   }
 
  private:
-  wstring needle_;
-  wstring (*text_getter_function_)(T*);
+  string needle_;
+  string (*text_getter_function_)(T*);
 };
 
 // AND Filter Predicate

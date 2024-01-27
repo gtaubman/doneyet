@@ -1,7 +1,7 @@
 #define _XOPEN_SOURCE_EXTENDED
 #include "dialog-box.h"
 
-wstring DialogBox::RunMultiLine(const wstring& title, const wstring& default_text,
+string DialogBox::RunMultiLine(const string& title, const string& default_text,
                                int width, int height) {
   // Create the text field
   FIELD* field = new_field(height, width, 0, 0, 0, 0);
@@ -105,10 +105,10 @@ wstring DialogBox::RunMultiLine(const wstring& title, const wstring& default_tex
   form_driver(form, REQ_VALIDATION);
 
   // Get whatever they wrote:
-  wstring answer((wchar_t *)field_buffer(field, 0));
+  string answer(field_buffer(field, 0));
 
   // trim trailing whitespace
-  int notwhite = (int)answer.find_last_not_of(L" \t\n");
+  int notwhite = (int)answer.find_last_not_of(" \t\n");
   answer.erase(notwhite + 1);
   StrUtils::trim_multiple_spaces(answer);
 
@@ -121,17 +121,17 @@ wstring DialogBox::RunMultiLine(const wstring& title, const wstring& default_tex
 
   if (hit_escape) {
     // Clear out whatever was in the box if they hit escape.
-    answer = L"";
+    answer = "";
   }
   return answer;
 }
 
-wstring DialogBox::RunCentered(const wstring& title, const wstring& default_text) {
+string DialogBox::RunCentered(const string& title, const string& default_text) {
   return DialogBox::RunMultiLine(title, default_text, (int)title.size(), 1);
 }
 
-wstring DialogBox::RunCenteredWithWidth(const wstring& title,
-                                       const wstring& default_text,
+string DialogBox::RunCenteredWithWidth(const string& title,
+                                       const string& default_text,
                                        const int width) {
   return DialogBox::RunMultiLine(title, default_text, width, 1);
 }

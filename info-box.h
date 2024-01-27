@@ -2,8 +2,8 @@
 #define INFO_BOX_H_
 
 #include <math.h>
-#include <ncursesw/form.h>
-#include <ncursesw/ncurses.h>
+#include <ncurses/form.h>
+#include <ncurses/ncurses.h>
 
 #include <string>
 
