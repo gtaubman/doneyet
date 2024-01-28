@@ -7,15 +7,7 @@
 #define CTRL(x)	((x) & 0x1f)
 #define ESCAPE		CTRL('[')
 
-int main(int argc, char *argv[]) {
-    static const char *help[] =
-            {
-                    "Commands:",
-                    "  ^D,^Q,ESC           - quit program",
-                    "  <Tab>,<Down>        - move to next field",
-                    "  <BackTab>,<Up>      - move to previous field",
-                    0
-            };
+int main() {
 
 #define NUM_FIELDS 3
 #define MyRow(n) (4 + (n) * 2)
@@ -24,7 +16,6 @@ int main(int argc, char *argv[]) {
     FORM *my_form;
     bool done = FALSE;
     int n;
-    int ch;
 
     setlocale(LC_ALL, "");
 
@@ -42,7 +33,7 @@ int main(int argc, char *argv[]) {
         field_opts_off(field[n], O_AUTOSKIP);
         /* Don't go to next field when this is filled */
     }
-    field[n] = NULL;
+    field[n] = nullptr;
 
     /* Create the form and post it */
     my_form = new_form(field);
@@ -73,7 +64,7 @@ int main(int argc, char *argv[]) {
         clrtoeol();
 
         switch (ret) {
-            case KEY_CODE_YES:
+            case KEY_CODE_YES: //we have a key code, so deal with that (not a wide char)
                 switch (c2) {
                     case KEY_DOWN:
                         /* Go to next field */
@@ -92,7 +83,7 @@ int main(int argc, char *argv[]) {
                         break;
                 }
                 break;
-            case OK:
+            case OK: // we have a wide char, deal with that
                 switch (c2) {
                     case ESCAPE:
                         done = TRUE;
@@ -115,7 +106,6 @@ int main(int argc, char *argv[]) {
     for (n = 0; n < NUM_FIELDS; ++n) {
         free_field(field[n]);
     }
-
     endwin();
     return 0;
 }
