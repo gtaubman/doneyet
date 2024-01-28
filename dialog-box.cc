@@ -1,5 +1,8 @@
-#define _XOPEN_SOURCE_EXTENDED
 #include "dialog-box.h"
+
+#undef CTRL
+#define CTRL(x)	((x) & 0x1f)
+#define ESCAPE		CTRL('[')
 
 string DialogBox::RunMultiLine(const string& title, const string& default_text,
                                int width, int height) {
@@ -10,7 +13,7 @@ string DialogBox::RunMultiLine(const string& title, const string& default_text,
   set_field_back(field, A_UNDERLINE);
   field_opts_off(field, O_STATIC);
   if (!default_text.empty()) {
-    set_field_buffer(field, 0, (char *) default_text.c_str());
+    set_field_buffer(field, 0, (const char *) default_text.c_str());
   }
 
   // Make the usual list of fields
@@ -61,7 +64,7 @@ string DialogBox::RunMultiLine(const string& title, const string& default_text,
   box(form_win, 0, 0);
 
   // Draw the label text
-  CursesUtils::print_in_middle(form_win, 1, 0, form_win_cols, title.c_str(),
+  CursesUtils::print_in_middle(form_win, 1, 0, form_win_cols, title,
                                COLOR_PAIR(1));
 
   // Show the form window
@@ -70,48 +73,69 @@ string DialogBox::RunMultiLine(const string& title, const string& default_text,
 
   bool done = false;
   bool hit_escape = false;
-  while (!done) {
-    int ch = wgetch(form_win);
-    switch (ch) {
-      case 27:  // escape
-        hit_escape = true;
-        done = true;
-        break;
-      case KEY_LEFT:  // left arrow
-        form_driver(form, REQ_PREV_CHAR);
-        break;
-      case KEY_RIGHT:  // right arrow
-        form_driver(form, REQ_NEXT_CHAR);
-        break;
-      case KEY_UP:  // up arrow
-        form_driver(form, REQ_PREV_LINE);
-        break;
-      case KEY_DOWN:  // dn arrow
-        form_driver(form, REQ_NEXT_LINE);
-        break;
-      case 263:  // delete
-      case 127:  // also delete
-        form_driver(form, REQ_DEL_PREV);
-        break;
-      case '\r':
-        done = true;
-        break;
-      default:
-        form_driver(form, ch);
+    while (!done) {
+
+        wint_t c2;
+        int ret = wget_wch(form_win, &c2);
+
+
+        switch (ret) {
+            case KEY_CODE_YES:
+                switch (c2){ //we have a key code, so deal with that (not a wide char)
+                    case KEY_LEFT:
+                        form_driver_w(form, KEY_CODE_YES, REQ_PREV_CHAR);
+                        break;
+                    case KEY_RIGHT:  // right arrow
+                        form_driver_w(form, KEY_CODE_YES, REQ_NEXT_CHAR);
+                        break;
+                    case KEY_UP:  // up arrow
+                        form_driver_w(form, KEY_CODE_YES, REQ_PREV_LINE);
+                        break;
+                    case KEY_DOWN:  // dn arrow
+                        form_driver_w(form, KEY_CODE_YES, REQ_NEXT_LINE);
+                        break;
+                    case KEY_DC:
+                    case KEY_DL:
+                        form_driver_w(form, KEY_CODE_YES, REQ_DEL_PREV);
+                        break;
+                }
+                break;
+            case OK:
+                switch (c2){
+                    case ESCAPE:
+                        hit_escape = true;
+                        done = true;
+                        break;
+                    case '\n':
+                    case '\r':
+                        done = true;
+                        //form_driver_w(form, OK, REQ_END_LINE);
+                        break;
+                    case 127:
+                        form_driver_w(form, OK, REQ_DEL_PREV);
+                        break;
+                    default:
+                        form_driver_w(form, OK, (wchar_t) c2);
+                }
+                break;
+            default:
+                break;
+        }
     }
-  }
 
   // Without calling this the output doesn't actually get put in the buffer.
-  form_driver(form, REQ_VALIDATION);
-
+  int rc = form_driver_w(form, OK, REQ_VALIDATION);
+  mvprintw(0,0, "Validation: %d / %d\n", rc, E_OK);
   // Get whatever they wrote:
   string answer(field_buffer(field, 0));
 
+  /*
   // trim trailing whitespace
   int notwhite = (int)answer.find_last_not_of(" \t\n");
   answer.erase(notwhite + 1);
   StrUtils::trim_multiple_spaces(answer);
 
+   */
   // Free up our memory
   unpost_form(form);
   free_form(form);

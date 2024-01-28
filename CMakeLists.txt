@@ -29,10 +29,10 @@ target_link_libraries(wide_serializer_test ${NCURSES_LINK_LIBRARIES} -lpanel -lm
 
 add_executable(serializer_test serializer_test.cc serializer.cc )
 
-add_executable(form_test form_test.cc )
-target_link_options(form_test PRIVATE ${NCURSES_LDFLAGS})
-target_link_libraries(form_test ${NCURSES_LINK_LIBRARIES} -lformw)
+add_executable(wide_form_test wide_form_test.cc)
+target_link_options(wide_form_test PRIVATE ${NCURSES_LDFLAGS})
+target_link_libraries(wide_form_test ${NCURSES_LINK_LIBRARIES} -lformw)
 
-add_executable(menu_test menu_test.cc )
-target_link_options(menu_test PRIVATE ${NCURSES_LDFLAGS})
-target_link_libraries(menu_test ${NCURSES_LINK_LIBRARIES} -lmenu)
+add_executable(wide_dialog_test wide_dialog_test.cc dialog-box.cc utils.cc)
+target_link_options(wide_dialog_test PRIVATE ${NCURSES_LDFLAGS})
+target_link_libraries(wide_dialog_test ${NCURSES_LINK_LIBRARIES} -lformw)
