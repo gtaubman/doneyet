@@ -32,3 +32,7 @@ add_executable(serializer_test serializer_test.cc serializer.cc )
 add_executable(wide_form_test wide_form_test.cc)
 target_link_options(wide_form_test PRIVATE ${NCURSES_LDFLAGS})
 target_link_libraries(wide_form_test ${NCURSES_LINK_LIBRARIES} -lformw)
+
+add_executable(wide_dialog_test wide_dialog_test.cc dialog-box.cc utils.cc)
+target_link_options(wide_dialog_test PRIVATE ${NCURSES_LDFLAGS})
+target_link_libraries(wide_dialog_test ${NCURSES_LINK_LIBRARIES} -lformw)
