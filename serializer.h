@@ -7,12 +7,12 @@
 
 #include "basic-types.h"
 
-using std::ifstream;
+using std::wifstream;
 using std::istream;
-using std::ofstream;
+using std::wofstream;
 using std::ostream;
 using std::string;
-using std::string;
+using std::wstring;
 
 class Serializer {
  public:
@@ -23,12 +23,12 @@ class Serializer {
   void WriteUint32(uint32 i);
   void WriteInt64(int64 i);
   void WriteUint64(uint64 i);
-  void WriteString(const string& str);
+  void WriteString(const wstring& str);
 
   uint32 ReadUint32();
   int32 ReadInt32();
   uint64 ReadUint64();
-  string ReadString();
+  wstring ReadString();
 
   int Version() const { return int(version_); }
   void SetVersion(int v) { version_ = v; }

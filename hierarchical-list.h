@@ -1,7 +1,7 @@
 #ifndef HIERARCHICAL_LIST_H_
 #define HIERARCHICAL_LIST_H_
 
-#include <ncurses/ncurses.h>
+#include <ncursesw/ncurses.h>
 
 #include <string>
 #include <vector>
@@ -18,13 +18,13 @@
 // column, the following will achieve that with in_percent set to false:
 //   "Column One:X,Column Two:8,Column Three:X"
 
-using std::string;
+using std::wstring;
 using std::vector;
 
 struct ColumnSpec {
-  ColumnSpec(const string& s, bool is_percent)
+  ColumnSpec(const wstring& s, bool is_percent)
       : spec(s), in_percents(is_percent) {}
-  string spec;
+  wstring spec;
   bool in_percents;
 };
 
@@ -32,11 +32,11 @@ class ListItem {
  public:
   ListItem();
   virtual ~ListItem();
-  virtual const string TextForColumn(const string& c) = 0;
+  virtual const wstring TextForColumn(const wstring& c) = 0;
   virtual int NumListChildren() = 0;
   virtual ListItem* ListChild(int i) = 0;
   virtual ListItem* ListParent() = 0;
-  virtual void SetListText(const string& text) = 0;
+  virtual void SetListText(const wstring& text) = 0;
   virtual int ListColor() { return 0; }
 
   virtual int Height() { return height_; }
@@ -74,7 +74,7 @@ enum ScrollType {
 
 class HierarchicalList {
  public:
-  HierarchicalList(string& name, int height, int width, int y, int x,
+  HierarchicalList(wstring& name, int height, int width, int y, int x,
                    const ColumnSpec& column_spec);
   virtual ~HierarchicalList();
 
@@ -96,7 +96,7 @@ class HierarchicalList {
   void EditSelectedItem();
   ListItem* SelectedItem() { return selected_item_; }
 
-  void SetPrependText(string p) {
+  void SetPrependText(wstring p) {
     prepend_ = p;
     prepend_size_ = p.length();
   }
@@ -127,7 +127,7 @@ class HierarchicalList {
 
   // This is a list of columns in order.
   vector<WINDOW*> columns_;
-  vector<string> column_names_;
+  vector<wstring> column_names_;
 
   // Which column we currently have selected.
   int selected_column_;
@@ -150,7 +150,7 @@ class HierarchicalList {
 
   // If wanted, hierarchical lists can display a small header with a title.
   // This is good for when they're being used as a whole window.
-  string name_;
+  wstring name_;
 
   ListItem* selected_item_;
 
@@ -163,7 +163,7 @@ class HierarchicalList {
   vector<ListItem*> item_for_line_;
 
   // The following string is prepended to every task.  Default's to "- ".
-  string prepend_;
+  wstring prepend_;
   int prepend_size_;
 
   // This determines whether or not to align the text in a line after scooting

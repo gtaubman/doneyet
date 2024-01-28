@@ -1,5 +1,6 @@
+#define _XOPEN_SOURCE_EXTENDED
 #include <locale.h>
-#include <ncurses/form.h>
+#include <ncursesw/form.h>
 
 int main() {
   setlocale(LC_ALL, "");
@@ -15,14 +16,15 @@ int main() {
   mvprintw(2, 0, "Press DOWN KEY to abort\n");
   refresh();
 
-  int ch;
+  int ok;
+  wint_t ch;
   for (;;) {
-    ch = getch();
+    ok = get_wch(&ch);
     if (ch == KEY_DOWN) {
       break;
     } else {
       //printf("%ls \n", L"\U0001f600");
-      printw("%ls : %08x\n", ch, ch);
+      printw("%lc : %08x\n", ch, ch);
     }
     refresh();
   }

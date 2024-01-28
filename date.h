@@ -27,4 +27,6 @@ class Date {
   time_t time_;
 };
 
+std::wstring convToWstring(const std::string& src);
+
 #endif  // DATE_H_

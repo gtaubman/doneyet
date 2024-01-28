@@ -7,7 +7,7 @@
 #include "dialog-box.h"
 #include "utils.h"
 
-using std::string;
+using std::wstring;
 
 ListItem::ListItem() : height_(1), index_(-1), depth_(-1) {
   should_expand_ = true;
@@ -17,7 +17,7 @@ ListItem::~ListItem() {
   // Nothing to delete at the moment.
 }
 
-HierarchicalList::HierarchicalList(string& name, int height, int width, int y,
+HierarchicalList::HierarchicalList(wstring& name, int height, int width, int y,
                                    int x, const ColumnSpec& spec) {
   // Create the frills window
   height_ = height;
@@ -31,7 +31,7 @@ HierarchicalList::HierarchicalList(string& name, int height, int width, int y,
   indent_ = 2;
   name_ = name;
   selected_item_ = NULL;
-  prepend_ = "- ";
+  prepend_ = L"- ";
   flush_left_text_border_ = true;
   draw_column_headers_ = true;
   prepend_size_ = prepend_.length();
@@ -71,7 +71,7 @@ void HierarchicalList::Draw() {
       int col_width = CursesUtils::winwidth(columns_[i]);
       int xstart = col_start + (int)floor(col_width / 2) -
                    (int)ceil(column_names_[i].length() / 2);
-      mvwprintw(win_, col_height, xstart, "%s", column_names_[i].c_str());
+      mvwprintw(win_, col_height, xstart, "%ls", column_names_[i].c_str());
 
       col_start += CursesUtils::winwidth(columns_[i]) + 1;
     }
@@ -163,8 +163,8 @@ int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {
   int max_lines_used = 0;
   for (int c = 0; c < columns_.size(); ++c) {
     WINDOW* column = columns_[c];
-    string text = "";
-    if (!c) text += (node->ShouldExpand() ? prepend_ : string("+ "));
+    wstring text = L"";
+    if (!c) text += (node->ShouldExpand() ? prepend_ : wstring(L"+ "));
     text += node->TextForColumn(column_names_[c]);
 
     wmove(column, line_num, indent);
@@ -419,8 +419,8 @@ bool HierarchicalList::ParseColumnSpec(const ColumnSpec& spec) {
   int usable_height = height_ - (1 + top_offset);  // bottom border + top border
 
   // First we need to split things on commas:
-  vector<string> column_specs;
-  StrUtils::SplitStringUsing(",", spec.spec, &column_specs);
+  vector<wstring> column_specs;
+  StrUtils::SplitStringUsing(L",", spec.spec, &column_specs);
 
   // Now that we know how many columns we have, we need to update the
   // usable_width variable to take into account the lines drawn between columns.
@@ -431,20 +431,22 @@ bool HierarchicalList::ParseColumnSpec(const ColumnSpec& spec) {
   int num_exes = 0;
   int used = 0;
   for (int i = 0; i < column_specs.size(); ++i) {
-    vector<string> column_info;
-    StrUtils::SplitStringUsing(":", column_specs[i], &column_info);
+    vector<wstring> column_info;
+    StrUtils::SplitStringUsing(L":", column_specs[i], &column_info);
     if (column_info.size() != 2 || column_info[0].empty() ||
         column_info[1].empty()) {
       return false;
     }
     column_names_.push_back(column_info[0]);
 
-    if (column_info[1] == "X" || column_info[1] == "x") {
+    if (column_info[1] == L"X" || column_info[1] == L"x") {
       column_widths.push_back(-1);
       ++num_exes;
     } else {
       int len = column_info[1].length();
-      int column_width = atoi(column_info[1].c_str());
+      char buffer[32];
+      wcstombs(buffer, column_info[1].c_str(),len);
+      int column_width = atoi(buffer);
       if (!spec.in_percents) {
         column_widths.push_back(column_width);
       } else {
@@ -491,8 +493,8 @@ void HierarchicalList::EditSelectedItem() {
     return;
   }
 
-  string answer = DialogBox::RunMultiLine(
-      "Please Edit Task", selected_item_->TextForColumn(column_names_[0]),
+  wstring answer = DialogBox::RunMultiLine(
+      L"Please Edit Task", selected_item_->TextForColumn(column_names_[0]),
       CursesUtils::winwidth(win_) / 3, CursesUtils::winheight(win_) / 3);
 
   if (!answer.empty()) {
@@ -541,7 +543,7 @@ void HierarchicalList::UpdateFlattenedItems() {
         testing_width -= item->Depth() * indent_;
         prepend_size = prepend_.size();
       }
-      string text = "";
+      wstring text = L"";
       if (!c) {
         text += prepend_;
       }

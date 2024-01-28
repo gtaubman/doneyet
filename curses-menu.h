@@ -1,7 +1,7 @@
 #ifndef CURSES_MENU_H_
 #define CURSES_MENU_H_
 
-#include <ncurses/menu.h>
+#include <ncursesw/menu.h>
 
 #include <string>
 #include <vector>

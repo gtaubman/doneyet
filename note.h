@@ -8,17 +8,17 @@
 
 class Note {
  public:
-  explicit Note(const string& text);
+  explicit Note(const wstring& text);
   virtual ~Note();
 
-  string Text();
-  string GetText();
+  wstring Text();
+  wstring GetText();
   void Serialize(Serializer* s);
   void ReadFromSerializer(Serializer* s);
 
  private:
   Date date_;
-  string text_;
+  wstring text_;
 };
 
 #endif  // NOTE_H_

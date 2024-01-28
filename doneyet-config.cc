@@ -1,6 +1,6 @@
 #include "doneyet-config.h"
 
-#include <ncurses/ncurses.h>
+#include <ncursesw/ncurses.h>
 
 #include <cctype>
 

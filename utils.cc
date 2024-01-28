@@ -22,7 +22,7 @@ window_info CursesUtils::get_window_info(WINDOW* win) {
 }
 
 void CursesUtils::print_in_middle(WINDOW* win, int starty, int startx,
-                                  int width, const std::string str, chtype color) {
+                                  int width, const std::wstring str, chtype color) {
   int length;
   int x;
   int y;
@@ -37,7 +37,7 @@ void CursesUtils::print_in_middle(WINDOW* win, int starty, int startx,
   temp = float(width - length) / 2;
   x = startx + (int)temp;
   wattron(win, color | A_BOLD);
-  mvwprintw(win, y, x, "%s", str.c_str());
+  mvwprintw(win, y, x, "%ls", str.c_str());
   wattroff(win, color | A_BOLD);
 
   // Draw a horizontal line
@@ -62,34 +62,34 @@ int CursesUtils::winwidth(WINDOW* win) {
   return w;
 }
 
-int StrUtils::chars_to_whitespace(const string& str, int i) {
-  int p = str.find(" ", i);
-  return p == string::npos ? str.size() - i : p - i;
+int StrUtils::chars_to_whitespace(const wstring& str, int i) {
+  int p = str.find(L" ", i);
+  return p == wstring::npos ? str.size() - i : p - i;
 }
 
-void StrUtils::trim_multiple_spaces(string& str) {
+void StrUtils::trim_multiple_spaces(wstring& str) {
   int space = 0;
   while (true) {
-    space = str.find_first_of(" ", space);
-    if (space == string::npos) {
+    space = str.find_first_of(L" ", space);
+    if (space == wstring::npos) {
       return;
     }
-    int next_char = str.find_first_not_of(" ", space);
+    int next_char = str.find_first_not_of(L" ", space);
     ++space;
     str.erase(space, next_char - space);
     ++space;
   }
 }
 
-void StrUtils::SplitStringUsing(const string splitter, const string str,
-                                vector<string>* vec) {
+void StrUtils::SplitStringUsing(const wstring splitter, const wstring str,
+                                vector<wstring>* vec) {
   if (!splitter.size()) {
     return;
   }
 
   int start_pos = 0;
   size_t find_pos;
-  while ((find_pos = str.find(splitter, start_pos)) != string::npos) {
+  while ((find_pos = str.find(splitter, start_pos)) != wstring::npos) {
     vec->push_back(str.substr(start_pos, find_pos - start_pos));
     start_pos = find_pos + splitter.size();
   }
@@ -98,7 +98,7 @@ void StrUtils::SplitStringUsing(const string splitter, const string str,
   }
 }
 
-int StrUtils::HeightOfTextInWidth(int width, const string& text,
+int StrUtils::HeightOfTextInWidth(int width, const wstring& text,
                                   int non_first_line_indent) {
   int lines_used = 1;
   int curx = 0;

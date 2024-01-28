@@ -8,10 +8,10 @@
 #include "file-versions.h"
 #include "utils.h"
 
-using std::string;
+using std::wstring;
 using std::wostream;
 
-Task::Task(const string &title, const string &description)
+Task::Task(const wstring &title, const wstring &description)
     : parent_(NULL),
       status_(CREATED),
       title_(title),
@@ -28,18 +28,18 @@ Task::~Task() {
 }
 
 Task* Task::NewTaskFromSerializer(Serializer* s) {
-  string title = s->ReadString();
-  string description = s->ReadString();
+  wstring title = s->ReadString();
+  wstring description = s->ReadString();
   Task* t = new Task(title, description);
   t->UnSerializeFromSerializer(s);
   return t;
 }
 
-void Task::AddNote(const string& note) { notes_.push_back(new Note(note)); }
+void Task::AddNote(const wstring& note) { notes_.push_back(new Note(note)); }
 
 bool Task::HasNotes() { return !notes_.empty(); }
 
-void Task::DeleteNote(const string& note) {
+void Task::DeleteNote(const wstring& note) {
   std::vector<Note*>::iterator delete_it;
   bool found = false;
 
@@ -54,16 +54,16 @@ void Task::DeleteNote(const string& note) {
   }
 }
 
-vector<string> Task::Notes() {
-  vector<string> notes;
+vector<wstring> Task::Notes() {
+  vector<wstring> notes;
   for (int i = 0; i < notes_.size(); ++i) {
     notes.push_back(notes_[i]->GetText());
   }
   return notes;
 }
 
-map<string, string> Task::MappedNotes() {
-  map<string, string> mappedNotes;
+map<wstring, wstring> Task::MappedNotes() {
+  map<wstring, wstring> mappedNotes;
   for (int i = 0; i < notes_.size(); ++i) {
     mappedNotes[notes_[i]->Text()] = notes_[i]->GetText();
   }
@@ -226,7 +226,7 @@ void Task::UnSerializeFromSerializer(Serializer* s) {
   if (s->Version() >= NOTES_VERSION) {
     int num_notes = s->ReadInt32();
     for (int i = 0; i < num_notes; ++i) {
-      Note* n = new Note("");
+      Note* n = new Note(L"");
       n->ReadFromSerializer(s);
       notes_.push_back(n);
     }
@@ -299,13 +299,13 @@ int Task::NumFilteredChildren() { return filtered_tasks_.size(); }
 
 Task* Task::FilteredChild(int c) { return filtered_tasks_[c]; }
 
-void Task::ToStream(ostream& out, int depth) {
-  const string marker = "- ";
+void Task::ToStream(wostream& out, int depth) {
+  const wstring marker = L"- ";
   for (int i = 0; i < depth; ++i) {
     out << " ";
   }
-  vector<string> words;
-  StrUtils::SplitStringUsing(" ", title_, &words);
+  vector<wstring> words;
+  StrUtils::SplitStringUsing(L" ", title_, &words);
 
   out << marker;
   int line_length = depth + marker.length();

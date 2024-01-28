@@ -1,6 +1,6 @@
 #include "workspace.h"
 
-#include <ncurses/ncurses.h>
+#include <ncursesw/ncurses.h>
 #include <stdlib.h>
 
 #include <fstream>
@@ -544,7 +544,7 @@ void Workspace::Quit() {
 
 Project* Workspace::CreateNewProject() {
   string answer =
-      DialogBox::RunCentered("Please enter a Project Name", "Default Project");
+      DialogBox::RunCentered("Please Enter a Project Name", "Default Project");
   if (!answer.empty()) {
     return new Project(answer);
   }
