@@ -1,18 +1,16 @@
 #define _XOPEN_SOURCE_EXTENDED
-#include <clocale>
 #include <ncursesw/ncurses.h>
 #include <ncursesw/form.h>
 #include "dialog-box.h"
+#include <cassert>
 
 
 #undef CTRL
 #define CTRL(x)	((x) & 0x1f)
 #define ESCAPE		CTRL('[')
-#define BACKSPACE	CTRL('?')
 
 string DialogBox::RunMultiLine(const string& title, const string& default_text,
                                int width, int height) {
-  setlocale(LC_ALL, "");
   // Create the text field
   FIELD* field = new_field(height, width, 0, 0, 0, 0);
 
@@ -24,7 +22,7 @@ string DialogBox::RunMultiLine(const string& title, const string& default_text,
   }
 
   // Make the usual list of fields
-  FIELD* fields[] = {field, NULL};
+  FIELD* fields[] = {field, nullptr};
 
   // Finally make our form
   FORM* form = new_form(fields);
@@ -119,7 +117,7 @@ string DialogBox::RunMultiLine(const string& title, const string& default_text,
                         //form_driver_w(form, OK, REQ_END_LINE);
                         break;
                     case 127:
-                        form_driver_w(form, KEY_CODE_YES, REQ_DEL_PREV);
+                        form_driver_w(form, KEY_CODE_YES, REQ_DEL_PREV); // KEY_CODE_YES is strictly needed!
                         break;
                     default:
                         form_driver_w(form, OK, (wchar_t) c2);
@@ -132,12 +130,7 @@ string DialogBox::RunMultiLine(const string& title, const string& default_text,
 
   // Without calling this the output doesn't actually get put in the buffer.
   int rc = form_driver_w(form, KEY_CODE_YES, REQ_VALIDATION);
-  mvprintw(0,0, "Validation: %d / %d\n", rc, E_OK);
-    char * ptr = (char *) field_buffer(fields[0], 0);
-    mvprintw(11,0, "Pointer: %p", ptr);
-    mvprintw(12,0, "Printing test: %ls", L"testing baby");
-    mvprintw(13,0, "Pointer Content: %s", ptr );
-    mvprintw(14,0, "String length: %ld", strlen(ptr));
+  assert(E_OK==rc);
   // Get whatever they wrote:
   string answer(field_buffer(fields[0], 0));
 
