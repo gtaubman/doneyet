@@ -1,10 +1,6 @@
-#include "task.h"
-
 #include <assert.h>
-
 #include <algorithm>
-#include <string>
-
+#include "task.h"
 #include "file-versions.h"
 #include "utils.h"
 

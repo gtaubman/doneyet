@@ -2,11 +2,7 @@
 #define INFO_BOX_H_
 
 #include <math.h>
-#include <ncurses/form.h>
-#include <ncurses/ncurses.h>
-
 #include <string>
-
 #include "utils.h"
 
 using std::string;

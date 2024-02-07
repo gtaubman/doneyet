@@ -1,10 +1,12 @@
 #ifndef HIERARCHICAL_LIST_H_
 #define HIERARCHICAL_LIST_H_
 
-#include <ncurses/ncurses.h>
-
 #include <string>
 #include <vector>
+#define _XOPEN_SOURCE_EXTENDED
+#include <ncursesw/ncurses.h>
+#include "hierarchical-list.h"
+
 
 // The column spec consists of one or more <column name>:<column width> pairs.
 // The width can also be an X or an x which will give that column an even share

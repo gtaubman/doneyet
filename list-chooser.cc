@@ -1,5 +1,9 @@
 #include <stdio.h>
-#include <ncurses/curses.h>
+#include <locale.h>
+#define _XOPEN_SOURCE_EXTENDED
+#include <ncursesw/ncurses.h>
+#include "dialog-box.h"
+#include <locale>
 #include "list-chooser.h"
 
 #include <stdlib.h>

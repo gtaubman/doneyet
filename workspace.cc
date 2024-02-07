@@ -1,10 +1,7 @@
 #include "workspace.h"
 
-#include <ncurses/ncurses.h>
 #include <stdlib.h>
-
 #include <fstream>
-#include <iostream>
 
 #include "constants.h"
 #include "dialog-box.h"

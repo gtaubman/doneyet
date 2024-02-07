@@ -1,9 +1,6 @@
-#include "hierarchical-list.h"
-
 #include <math.h>
 #include <stdlib.h>
-#include <string.h>
-
+#include "hierarchical-list.h"
 #include "dialog-box.h"
 #include "utils.h"
 

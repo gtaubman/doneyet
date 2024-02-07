@@ -1,5 +1,6 @@
 #include <locale.h>
-#include <ncursesw/form.h>
+#define _XOPEN_SOURCE_EXTENDED
+#include <ncursesw/ncurses.h>
 #include <string>
 #include "project.h"
 #include "file-versions.h"

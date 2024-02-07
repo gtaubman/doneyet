@@ -1,5 +1,9 @@
 #include "info-box.h"
 
+#define _XOPEN_SOURCE_EXTENDED
+#include <ncursesw/form.h>
+#include <ncursesw/ncurses.h>
+
 void draw_borders(WINDOW* screen) {
   int x, y, i;
 

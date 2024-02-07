@@ -1,9 +1,7 @@
-#include "doneyet-config.h"
-
-#include <ncurses/ncurses.h>
-
 #include <cctype>
-
+#define _XOPEN_SOURCE_EXTENDED
+#include <ncurses/ncurses.h>
+#include "doneyet-config.h"
 #include "config-parser.h"
 #include "file-manager.h"
 

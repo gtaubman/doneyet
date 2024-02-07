@@ -2,9 +2,7 @@
 #define DIALOG_BOX_H_
 
 #include <cmath>
-
 #include <string>
-
 #include "utils.h"
 
 using std::string;

@@ -1,8 +1,8 @@
+#include <cassert>
 #define _XOPEN_SOURCE_EXTENDED
 #include <ncursesw/ncurses.h>
 #include <ncursesw/form.h>
 #include "dialog-box.h"
-#include <cassert>
 
 
 #undef CTRL

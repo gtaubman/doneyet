@@ -3,7 +3,6 @@
 
 #include <assert.h>
 #include <signal.h>
-
 #include <string>
 #include <vector>
 

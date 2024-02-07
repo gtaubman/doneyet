@@ -1,5 +1,5 @@
 #include <locale.h>
-#include <ncurses/form.h>
+#include <ncursesw/form.h>
 
 int main() {
   setlocale(LC_ALL, "");
@@ -22,7 +22,7 @@ int main() {
       break;
     } else {
       //printf("%ls \n", L"\U0001f600");
-      printw("%ls : %08x\n", ch, ch);
+      printw("%d : %08x\n", ch, ch);
     }
     refresh();
   }

@@ -1,9 +1,5 @@
-#include <locale.h>
-#include <ncursesw/menu.h>
-#include <ncursesw/ncurses.h>
-
-#include "doneyet-config.h"
 #include "workspace.h"
+#include "doneyet-config.h"
 
 int main(int argc, char** argv) {
   if (argc >= 2) {  // at least one argument or more

@@ -1,8 +1,7 @@
+#include <locale.h>
 #define _XOPEN_SOURCE_EXTENDED
 #include <ncursesw/ncurses.h>
-#include <ncursesw/form.h>
 #include "dialog-box.h"
-#include <clocale>
 #include <locale>
 
 int main() {

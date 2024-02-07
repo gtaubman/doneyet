@@ -1,7 +1,11 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
-#include <ncurses/ncurses.h>
+#include <locale.h>
+#define _XOPEN_SOURCE_EXTENDED
+#include <ncursesw/ncurses.h>
+#include "dialog-box.h"
+#include <locale>
 
 #include <string>
 #include <vector>
