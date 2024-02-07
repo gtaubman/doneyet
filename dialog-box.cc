@@ -18,7 +18,7 @@ string DialogBox::RunMultiLine(const string& title, const string& default_text,
   set_field_back(field, A_UNDERLINE);
   field_opts_off(field, O_STATIC);
   if (!default_text.empty()) {
-    set_field_buffer(field, 0, (const char *) default_text.c_str());
+    set_field_buffer(field, 0, default_text.c_str());
   }
 
   // Make the usual list of fields
@@ -45,7 +45,7 @@ string DialogBox::RunMultiLine(const string& title, const string& default_text,
   // between the label region and the text region.
   int form_win_rows = rows + 2 + label_rows + 1;
 
-  // Get the dimensions of the main screen so we can put this new window in the
+  // Get the dimensions of the main screen, so we can put this new window in the
   // center of it.
   window_info info = CursesUtils::get_window_info(stdscr);
 
