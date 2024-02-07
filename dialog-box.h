@@ -1,9 +1,7 @@
 #ifndef DIALOG_BOX_H_
 #define DIALOG_BOX_H_
 
-#include <math.h>
-#include <ncurses/form.h>
-#include <ncurses/ncurses.h>
+#include <cmath>
 
 #include <string>
 
@@ -20,7 +18,7 @@ class DialogBox {
 
   static string RunCenteredWithWidth(const string& title,
                                      const string& default_text,
-                                     const int width);
+                                     int width);
 };
 
 #endif  // DIALOG_BOX_H_
