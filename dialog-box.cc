@@ -116,7 +116,7 @@ string DialogBox::RunMultiLine(const string& title, const string& default_text,
                         done = true;
                         //form_driver_w(form, OK, REQ_END_LINE);
                         break;
-                    case 127:
+                    case 127: //BACKSPACE
                         form_driver_w(form, KEY_CODE_YES, REQ_DEL_PREV); // KEY_CODE_YES is strictly needed!
                         break;
                     default:

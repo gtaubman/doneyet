@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "hierarchical-list.h"
 #include "dialog-box.h"
 #include "utils.h"
@@ -191,7 +192,19 @@ int HierarchicalList::Draw(ListItem* node, int line_num, int indent) {
         ++cury;
         ++lines_used;
       }
-      mvwaddch(column, cury, curx++, text.c_str()[i]);
+      // https://stackoverflow.com/questions/3911536/utf-8-unicode-whats-with-0xc0-and-0x80
+      // https://github.com/MayamaTakeshi/sngrep/commit/869263de0951e3a51bd374dc5b05b70159059a06
+      if (isascii(text.c_str()[i])){
+            mvwaddch(column, cury, curx++, text.c_str()[i]);
+      } else { // deal with utf-8, where more than 1 byte may be needed to represent a character
+          int len = 0, j=i;
+          while (text.c_str()[i]!='\0') { //count how many chars we have to go through to come up with
+              // a printable character
+              len += (text.c_str()[i++] & 0xc0) != 0x80;
+          }
+          mvwaddnstr(column, cury, curx, &text.c_str()[j], i-j);
+          curx += len;
+      }
     }
 
     // If we're selected, we're done reversing the text.
