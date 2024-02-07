@@ -51,7 +51,7 @@ void Serializer::WriteUint64(uint64 i) {
 void Serializer::WriteString(const string& str) {
   uint32 strlength = uint32( str.length());
   WriteUint32(strlength);
-  size_t written = fwrite(str.c_str(), sizeof(wchar_t), strlength, out_);
+  size_t written = fwrite(str.c_str(), sizeof(char), strlength, out_);
     if (written != strlength) {
         cout << "Error attempting to serialize string to file" << endl;
     }

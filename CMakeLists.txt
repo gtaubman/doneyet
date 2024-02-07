@@ -17,21 +17,21 @@ include_directories(${NCURSES_INCLUDE_DIRS})
 #add_executable(doneyet config-parser.cc curses-menu.cc date.cc dialog-box.cc doneyet-config.cc file-manager.cc filter-predicate.cc hierarchical-list.cc info-box.cc list-chooser.cc main.cc note.cc project.cc serializer.cc task.cc utils.cc workspace.cc )
 
 #target_link_options(doneyet PRIVATE ${NCURSES_LDFLAGS})
-#target_link_libraries(doneyet ${NCURSES_LINK_LIBRARIES} -lpanel -lmenu -lform)
+#target_link_libraries(doneyet ${NCURSES_LINK_LIBRARIES} -lpanelw -lmenuw -lformw)
 
 add_executable(wide_input_test wide_input_test.cc)
 target_link_options(wide_input_test PRIVATE ${NCURSES_LDFLAGS})
 target_link_libraries(wide_input_test ${NCURSES_LINK_LIBRARIES} -lpanel -lmenu -lform)
 
-#add_executable(wide_serializer_test wide_serializer_test.cc project.cc task.cc serializer.cc utils.cc date.cc note.cc hierarchical-list.cc dialog-box.cc)
-#target_link_options(wide_serializer_test PRIVATE ${NCURSES_LDFLAGS})
-#target_link_libraries(wide_serializer_test ${NCURSES_LINK_LIBRARIES} -lpanel -lmenu -lform)
+add_executable(wide_serializer_test wide_serializer_test.cc project.cc task.cc serializer.cc utils.cc date.cc note.cc hierarchical-list.cc dialog-box.cc)
+target_link_options(wide_serializer_test PRIVATE ${NCURSES_LDFLAGS})
+target_link_libraries(wide_serializer_test ${NCURSES_LINK_LIBRARIES} -lpanelw -lmenuw -lformw)
 
-add_executable(serializer_test serializer_test.cc serializer.cc )
+#add_executable(serializer_test serializer_test.cc serializer.cc )
 
-add_executable(wide_form_test wide_form_test.cc)
-target_link_options(wide_form_test PRIVATE ${NCURSES_LDFLAGS})
-target_link_libraries(wide_form_test ${NCURSES_LINK_LIBRARIES} -lformw)
+#add_executable(wide_form_test wide_form_test.cc)
+#target_link_options(wide_form_test PRIVATE ${NCURSES_LDFLAGS})
+#target_link_libraries(wide_form_test ${NCURSES_LINK_LIBRARIES} -lformw)
 
 add_executable(wide_dialog_test wide_dialog_test.cc dialog-box.cc utils.cc)
 target_link_options(wide_dialog_test PRIVATE ${NCURSES_LDFLAGS})

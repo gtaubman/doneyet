@@ -215,8 +215,7 @@ void Workspace::Run() {
         Quit();
         break;
       default:
-        InfoBox::ShowMultiLine(
-            "Help: currently unknown command:", std::to_string(ch), 50, 2);
+        break;
     }
     DisplayNotes(static_cast<Task*>(list_->SelectedItem()));
     list_->Draw();
