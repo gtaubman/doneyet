@@ -45,7 +45,7 @@ int main() {
                     : ((ret == ERR)
                        ? "ERR"
                        : "?")));
-        mvprintw(3, 2, "Memory: %p", field_buffer(fields[0], 0));
+        mvprintw(3, 2, "Memory: %p", (void*) field_buffer(fields[0], 0));
         mvprintw(4, 2, "RC: %d", localrc);
         clrtoeol();
 
@@ -68,16 +68,16 @@ int main() {
     //wchar_t buffer[100];
     //memcpy(buffer, field_buffer(fields[0], 0), 100 );
     char * ptr = (char *) field_buffer(fields[0], 0);
-    mvprintw(11,0, "Pointer: %p", ptr);
+    mvprintw(11,0, "Pointer: %p", (void*)ptr);
     mvprintw(12,0, "Printing test: %ls", L"testing baby");
     mvprintw(13,0, "Pointer Content: %s", ptr );
     mvprintw(14,0, "String length: %ld", strlen(ptr));
     unsigned int *s=(unsigned int*) ptr;
     int i=0;
     while(*s){
-	mvprintw(15+i,0,"%02x", (unsigned int) *s);
+	    mvprintw(15+i,0,"%02x", (unsigned int) *s);
         i++;
-	s++;
+	    s++;
     }
 
     getch();
