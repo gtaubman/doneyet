@@ -1,32 +1,34 @@
 #include <locale.h>
 #define _XOPEN_SOURCE_EXTENDED
 #include <ncursesw/ncurses.h>
+
 #include <string>
-#include "project.h"
+
 #include "file-versions.h"
+#include "project.h"
 
 int main() {
   setlocale(LC_ALL, "");
   /* Initialize curses */
   initscr();
   cbreak();
-  //noecho();
+  // noecho();
   keypad(stdscr, TRUE);
 
   std::string input;
   int ch;
   refresh();
-  Project *p =  new Project("this");
+  Project* p = new Project("this");
   Serializer* s = new Serializer("", "./bla");
   s->SetVersion(NOTES_VERSION);
   p->AddTaskNamed("this2");
-  //p->AddTaskNamed("😎 new öäü");
+  // p->AddTaskNamed("😎 new öäü");
   p->Serialize(s);
   s->CloseAll();
   delete p;
   delete s;
 
-  //ch = getch();
+  // ch = getch();
   endwin();
   return 0;
 }

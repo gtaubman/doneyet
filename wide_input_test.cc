@@ -21,7 +21,7 @@ int main() {
     if (ch == KEY_DOWN) {
       break;
     } else {
-      //printf("%ls \n", L"\U0001f600");
+      // printf("%ls \n", L"\U0001f600");
       printw("%d : %08x\n", ch, ch);
     }
     refresh();
