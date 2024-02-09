@@ -16,7 +16,6 @@ int main() {
   keypad(stdscr, TRUE);
 
   std::string input;
-  int ch;
   refresh();
   Project* p = new Project("this");
   Serializer* s = new Serializer("", "./bla");
@@ -28,6 +27,7 @@ int main() {
   delete p;
   delete s;
 
+  // int ch;
   // ch = getch();
   endwin();
   return 0;

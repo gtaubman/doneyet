@@ -14,6 +14,9 @@ pkg_check_modules(NCURSES REQUIRED ncursesw)
 
 include_directories(${NCURSES_INCLUDE_DIRS})
 
+add_compile_options(-Wall -Wextra -Wno-unused-parameter -Wno-sign-compare -Wpedantic)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
 add_executable(doneyet config-parser.cc curses-menu.cc date.cc dialog-box.cc doneyet-config.cc file-manager.cc filter-predicate.cc hierarchical-list.cc info-box.cc list-chooser.cc main.cc note.cc project.cc serializer.cc task.cc utils.cc workspace.cc )
 
 target_link_options(doneyet PRIVATE ${NCURSES_LDFLAGS})

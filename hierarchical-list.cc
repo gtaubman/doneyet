@@ -453,7 +453,6 @@ bool HierarchicalList::ParseColumnSpec(const ColumnSpec& spec) {
       column_widths.push_back(-1);
       ++num_exes;
     } else {
-      int len = column_info[1].length();
       int column_width = atoi(column_info[1].c_str());
       if (!spec.in_percents) {
         column_widths.push_back(column_width);
