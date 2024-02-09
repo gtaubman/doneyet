@@ -38,7 +38,7 @@ class Task : public ListItem {
   virtual ~Task();
   static Task* NewTaskFromSerializer(Serializer* s);
 
-  bool HasNotes();
+  bool HasNotes() const;
   void AddNote(const string& note);
   void DeleteNote(const string& note);
   vector<string> Notes();

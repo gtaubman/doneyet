@@ -25,7 +25,7 @@ Workspace::Workspace()
   InitializeMenuBar();
 
   // Figure out which project we want to load.
-  FileManager* fm = FileManager::DefaultFileManager();
+  fm = FileManager::DefaultFileManager();
   if (fm->NumSavedProjects()) {
     string project_name = ListChooser::GetChoice(fm->SavedProjectNames());
     if (project_name.empty()) {
@@ -35,7 +35,7 @@ Workspace::Workspace()
     }
   } else {
     project_ = CreateNewProject();
-    if (project_ == NULL) {
+    if (project_ == nullptr) {
       return;
     }
   }
@@ -49,7 +49,7 @@ Workspace::Workspace()
   struct sigaction sa;
   sa.sa_sigaction = SigWinchHandler;
   sigemptyset(&sa.sa_mask);
-  sigaction(SIGWINCH, &sa, NULL);
+  sigaction(SIGWINCH, &sa, nullptr);
 
   Run();
 }
@@ -58,9 +58,7 @@ Workspace::~Workspace() {
   delete project_;
   delete menubar_;
   delete list_;
-  if (notes_list_ != NULL) {
-    delete notes_list_;
-  }
+  delete notes_list_;
 }
 
 // A: Show all tasks.
@@ -90,7 +88,7 @@ Workspace::~Workspace() {
 // \r: Quit.
 void Workspace::Run() {
   list_->Draw();
-  if (notes_list_ != NULL) {
+  if (notes_list_ != nullptr) {
     notes_list_->Draw();
   }
   doupdate();
@@ -101,8 +99,8 @@ void Workspace::Run() {
     if (do_resize) {
       delete list_;
       delete notes_list_;
-      list_ = NULL;
-      notes_list_ = NULL;
+      list_ = nullptr;
+      notes_list_ = nullptr;
 
       // End our window and refresh to get the new terminal size.
       endwin();
@@ -132,14 +130,14 @@ void Workspace::Run() {
         break;
       case 'd': {  // Deleted selected task
         // If nothing is selected there's nothing to delete.
-        if (selected_task == NULL) {
+        if (selected_task == nullptr) {
           break;
         }
 
         // First things first, potentially make sure they really want to delete
         // this task.
         DoneyetConfig* config = DoneyetConfig::GlobalConfig();
-        assert(config != NULL);
+        assert(config != nullptr);
         if (config->PromptOnDeleteTask()) {
           if (!ListChooser::GetYesNo(
                   "Are you sure you want to delete this task?", false)) {
@@ -216,7 +214,7 @@ void Workspace::Run() {
     }
     DisplayNotes(static_cast<Task*>(list_->SelectedItem()));
     list_->Draw();
-    if (notes_list_ != NULL) {
+    if (notes_list_ != nullptr) {
       notes_list_->Draw();
     }
     doupdate();
@@ -248,7 +246,7 @@ void Workspace::InitializeLists() {
                                        info.width - notes_width, notes_spec);
     notes_list_->SetDatasource(&notes_source_);
   } else {
-    notes_list_ = NULL;
+    notes_list_ = nullptr;
   }
 }
 
@@ -259,7 +257,7 @@ void Workspace::AddTask(Task* t) {
                               CursesUtils::winheight() / 3);
   if (text.empty()) return;
 
-  if (t == NULL) {
+  if (t == nullptr) {
     // We add a task to the root level list if no task is selected.
     project_->AddTaskNamed(text);
   } else {
@@ -276,7 +274,7 @@ void Workspace::DisplayHelp() {
 }
 
 void Workspace::MoveTask(Task* t) {
-  if (t == NULL || t->Parent() == NULL) return;
+  if (t == nullptr || t->Parent() == nullptr) return;
 
   // Now we get characters until they hit return.
   int amount_moved = 0;
@@ -313,6 +311,9 @@ void Workspace::MoveTask(Task* t) {
       case '\r':
         done = true;
         break;
+      default:
+        break;
+
     }
     project_->FilterTasks();
     list_->Update();
@@ -362,7 +363,7 @@ void Workspace::ShowMenuBar(Task* t) {
 }
 
 void Workspace::AddNote(Task* t) {
-  if (t == NULL) return;
+  if (t == nullptr) return;
   string note = DialogBox::RunCenteredWithWidth("Add Note", "",
                                                 CursesUtils::winwidth() / 3);
   if (!note.empty()) t->AddNote(note);
@@ -440,7 +441,7 @@ void Workspace::RunFind() {
 }
 
 void Workspace::ToggleStatus(Task* t) {
-  if (t != NULL && !t->NumChildren()) {
+  if (t != nullptr && !t->NumChildren()) {
     switch (t->Status()) {
       case CREATED:
         t->SetStatus(IN_PROGRESS);
@@ -464,7 +465,7 @@ void Workspace::ToggleStatus(Task* t) {
 void Workspace::NewProject() {
   SaveCurrentProject();
   Project* p = CreateNewProject();
-  if (p != NULL) {
+  if (p != nullptr) {
     delete project_;
     project_ = p;
     list_->SetDatasource(project_);
@@ -487,7 +488,7 @@ void Workspace::OpenProject() {
 
 void Workspace::SaveCurrentProject() {
   // Serialize the current project to its file.
-  if (project_ == NULL) {
+  if (project_ == nullptr) {
     return;
   }
 
@@ -508,7 +509,7 @@ void Workspace::PerformFullListUpdate() {
 }
 
 void Workspace::DisplayNotes(Task* t) {
-  if (t == NULL) {
+  if (t == nullptr) {
     notes_source_.Clear();
   } else {
     notes_source_.SetVector(t->Notes());
@@ -544,7 +545,7 @@ Project* Workspace::CreateNewProject() {
   if (!answer.empty()) {
     return new Project(answer);
   }
-  return NULL;
+  return nullptr;
 }
 
 void Workspace::ShowAllTasks() {

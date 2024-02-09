@@ -8,7 +8,7 @@ using std::string;
 using std::wostream;
 
 Task::Task(const string &title, const string &description)
-    : parent_(NULL),
+    : parent_(nullptr),
       status_(CREATED),
       title_(title),
       description_(description) {
@@ -33,7 +33,7 @@ Task* Task::NewTaskFromSerializer(Serializer* s) {
 
 void Task::AddNote(const string& note) { notes_.push_back(new Note(note)); }
 
-bool Task::HasNotes() { return !notes_.empty(); }
+bool Task::HasNotes() const { return !notes_.empty(); }
 
 void Task::DeleteNote(const string& note) {
   std::vector<Note*>::iterator delete_it;
