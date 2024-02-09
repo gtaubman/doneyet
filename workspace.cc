@@ -25,13 +25,13 @@ Workspace::Workspace()
   InitializeMenuBar();
 
   // Figure out which project we want to load.
-  fm = FileManager::DefaultFileManager();
-  if (fm->NumSavedProjects()) {
-    string project_name = ListChooser::GetChoice(fm->SavedProjectNames());
+  FileManager* fmref = FileManager::DefaultFileManager();
+  if (fmref->NumSavedProjects()) {
+    string project_name = ListChooser::GetChoice(fmref->SavedProjectNames());
     if (project_name.empty()) {
       return;
     } else {
-      project_ = Project::NewProjectFromFile(fm->ProjectDir() + project_name);
+      project_ = Project::NewProjectFromFile(fmref->ProjectDir() + project_name);
     }
   } else {
     project_ = CreateNewProject();
