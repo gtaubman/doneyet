@@ -23,7 +23,7 @@ string Date::ToString() const {
 }
 
 void Date::Serialize(Serializer* s) const {
-  s->WriteInt32(static_cast<int32>(time_));
+  s->WriteUint64(static_cast<uint64>(time_));
 }
 
-void Date::ReadFromSerializer(Serializer* s) { time_ = s->ReadInt32(); }
+void Date::ReadFromSerializer(Serializer* s) { time_ = s->ReadUint64(); }

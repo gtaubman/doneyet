@@ -13,7 +13,7 @@ int main() {
     Serializer* s = new Serializer("", "./bla");
 
     // write test data
-    s->WriteUint32(mynum);
+    s->WriteUint64(mynum);
     s->WriteString(mystring);
     s->CloseAll();
     delete s;
@@ -22,7 +22,7 @@ int main() {
     s = new Serializer("./bla", "./bla2");
 
     // Read number from serialized data
-    int compnum = s->ReadUint32();
+    int compnum = s->ReadUint64();
     // compare, throw errors if different from expected
     if (compnum != mynum) {
         printf("TEST FAIL: Serializer : the numbers do not match\n");
@@ -37,6 +37,8 @@ int main() {
     } else {
         printf("TEST SUCCESS: Serializer : strings match\n");
     }
+    printf("sizeof int: %lu\n", sizeof (int));
+    printf("sizeof time_t: %lu\n", sizeof (time_t));
     // cleanup on serializer
     s->CloseAll();
     delete s;

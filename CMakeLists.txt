@@ -27,7 +27,7 @@ add_executable(wide_serializer_test wide_serializer_test.cc project.cc task.cc s
 target_link_options(wide_serializer_test PRIVATE ${NCURSES_LDFLAGS})
 target_link_libraries(wide_serializer_test ${NCURSES_LINK_LIBRARIES} -lpanelw -lmenuw -lformw)
 
-#add_executable(serializer_test serializer_test.cc serializer.cc )
+add_executable(serializer_test serializer_test.cc serializer.cc )
 
 add_executable(wide_form_test wide_form_test.cc)
 target_link_options(wide_form_test PRIVATE ${NCURSES_LDFLAGS})

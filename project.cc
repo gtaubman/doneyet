@@ -31,7 +31,7 @@ Task* Project::AddTaskNamed(const string& name) {
 
 void Project::Serialize(Serializer* s) {
   // Write a serialization version.
-  s->WriteInt64(s->Version());
+  s->WriteUint32(s->Version());
 
   // Write our project name to the file.
   s->WriteString(name_);
@@ -53,7 +53,7 @@ Project* Project::NewProjectFromFile(string path) {
   }
 
   // Read the file version
-  uint64 file_version = s.ReadUint64();
+  uint32 file_version = s.ReadUint32();
   s.SetVersion(file_version);
 
   // Find the project's name
